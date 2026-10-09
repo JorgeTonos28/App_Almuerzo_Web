@@ -21,7 +21,7 @@ public class FixedClock : TimeProvider
 public class TestDirectory : IDirectoryIdentityProvider
 {
     public Task<DirectoryIdentity?> AuthenticateAsync(string username, string password, CancellationToken ct)
-        => Task.FromResult<DirectoryIdentity?>(password == "test-only" && username.EndsWith("@infotep.gob.do") ? new DirectoryIdentity(username, "Colaborador de prueba", username.Split('@')[0] switch { "general" => "1000", "admin" => "1001", "user" => "1002", "other" => "1003", _ => "1004" }) : null);
+        => Task.FromResult<DirectoryIdentity?>(password == "test-only" && username.EndsWith("@infotep.gob.do") ? new DirectoryIdentity(username, "Colaborador de prueba", username.Split('@')[0] switch { "general" or "alias" => "1000", "admin" => "1001", "user" => "1002", "other" => "1003", _ => "1004" }) : null);
 }
 public class AppFactory : WebApplicationFactory<Program>
 {

@@ -44,10 +44,12 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     o.Events.OnValidatePrincipal = async context => {
         var email = context.Principal?.FindFirstValue(ClaimTypes.Email);
         var directoryCode = context.Principal?.FindFirstValue("directory_code");
-        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(directoryCode)) { context.RejectPrincipal(); return; }
+        var directoryAccount = context.Principal?.FindFirstValue("directory_account");
+        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(directoryCode) || string.IsNullOrWhiteSpace(directoryAccount)) { context.RejectPrincipal(); return; }
         var db = context.HttpContext.RequestServices.GetRequiredService<AppDbContext>();
         var u = await db.Users.AsNoTracking().Include(x => x.Department).SingleOrDefaultAsync(x => x.Email == email);
         if (u?.EmployeeCode is { Length: > 0 } code && code != directoryCode) { context.RejectPrincipal(); return; }
+        if (u != null && u.DirectoryAccount != directoryAccount) { context.RejectPrincipal(); return; }
         var identity = new ClaimsIdentity(context.Principal!.Identity);
         foreach (var claim in identity.FindAll(ClaimTypes.Role).Concat(identity.FindAll("enabled")).Concat(identity.FindAll("department")).ToArray()) identity.RemoveClaim(claim);
         if (LunchService.Enabled(u)) { identity.AddClaim(new Claim(ClaimTypes.Role, u!.Role)); identity.AddClaim(new Claim("enabled", "true")); identity.AddClaim(new Claim("department", u.DepartmentId!)); }

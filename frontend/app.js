@@ -1520,6 +1520,20 @@ createApp({
     };
 
     // Admin Actions
+    const directoryLinkSaving = ref(false);
+    const resetDirectoryLink = () => {
+      if (directoryLinkSaving.value) return;
+      showModal('La sesión de este colaborador se cerrará. El próximo login vinculará la cuenta AD cuyo código verificado coincida. Verifica primero el cambio con TI.', 'Restablecer vínculo AD', 'CONFIRM', () => {
+        directoryLinkSaving.value = true;
+        almuerzo.run.withSuccessHandler(res => {
+          directoryLinkSaving.value = false;
+          if (!res.ok) { showModal(res.msg, 'Error'); return; }
+          adminState.userModal.open = false;
+          if (adminState.userModal.data.email === user.value.email) { window.location.href = '/Auth/Login'; return; }
+          loadAdminData(true);
+        }).withFailureHandler(err => { directoryLinkSaving.value = false; showModal(err.message || 'No se pudo restablecer el vínculo.', 'Error'); }).apiResetDirectoryLink(adminState.userModal.data.email);
+      });
+    };
     const openUserModal = (u = null) => {
        adminState.userModal.isNew = !u;
 
@@ -2561,7 +2575,7 @@ createApp({
       toggleAdminView, loadAdminData, openChefRanking, returnToOrders, loadChefRanking, handleChefTargetTap, handleChefCakeTap, getChefTargetLabel, toggleChefGamePlay, syncChefGame,
 
       // Admin Actions
-      openUserModal, saveUser, toggleUserStatus, adminCancelOrder,
+      directoryLinkSaving, resetDirectoryLink, openUserModal, saveUser, toggleUserStatus, adminCancelOrder,
       openDeptModal, saveDept, deleteDept, saveConfig, runTestDailyCloseEmails, clearFilters,
 
       // Dept Helpers

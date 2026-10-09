@@ -24,6 +24,9 @@ namespace Almuerzo.Web.Data.Migrations
                     b.Property<string>("DepartmentId")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("DirectoryAccount")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("EmployeeCode")
                         .HasColumnType("TEXT");
 
@@ -55,6 +58,10 @@ namespace Almuerzo.Web.Data.Migrations
                     b.HasKey("Email");
 
                     b.HasIndex("DepartmentId");
+
+                    b.HasIndex("DirectoryAccount")
+                        .IsUnique()
+                        .HasFilter("DirectoryAccount IS NOT NULL");
 
                     b.HasIndex("EmployeeCode")
                         .IsUnique()

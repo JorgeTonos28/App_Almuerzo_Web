@@ -28,6 +28,6 @@ public class ReportsController(ReportService reports, LunchService lunch, AppDbC
         if (expected.Length == 0 || !CryptographicOperations.FixedTimeEquals(SHA256.HashData(Encoding.UTF8.GetBytes("Bearer " + expected)), SHA256.HashData(Encoding.UTF8.GetBytes(actual)))) return Unauthorized();
         try { BusinessRules.Date(date); } catch (BusinessException) { return BadRequest(); }
         var rows = await db.Menu.AsNoTracking().Where(x => x.Date == date && x.Enabled).ToListAsync();
-        return Json(new { ok = true, fecha = date, date, exists = rows.Count > 0, existeMenu = rows.Count > 0, appVersion = "0.1.1", items = rows.Select(x => new { id = x.Id, categoria = x.CategoryId, plato = BusinessRules.Text(x.Dish), descripcion = BusinessRules.Text(x.Description) }) });
+        return Json(new { ok = true, fecha = date, date, exists = rows.Count > 0, existeMenu = rows.Count > 0, appVersion = "0.1.2", items = rows.Select(x => new { id = x.Id, categoria = x.CategoryId, plato = BusinessRules.Text(x.Dish), descripcion = BusinessRules.Text(x.Description) }) });
     }
 }

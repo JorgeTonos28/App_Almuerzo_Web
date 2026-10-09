@@ -14,7 +14,7 @@ ExtraHub aporta el patrón MVC / EF Core / cookies / servicios. El PR #15 propor
 
 ASP.NET Core 10 MVC con autorización del servidor; interfaz Vue portada directamente del HTML, CSS y lógica de App_Almuerzo. La plantilla se compila durante `npm run build`; Vue en producción usa su runtime sin compilador. Todos los scripts, fuentes y estilos son locales. No se requiere Google Apps Script para operar la aplicación.
 
-EF Core / SQLite se usa para la migración y pruebas locales y para una instalación inicial de una instancia. Los servicios concentran identidad, permisos, reglas del calendario, menú, pedidos, reportes, importación y operaciones. Hay tres migraciones y semillas idempotentes; la tercera añade imágenes de identidad visual en la base privada. La implantación en SQL Server o en múltiples instancias requiere migraciones específicas y coordinación de trabajos; no se considera resuelta en esta versión.
+EF Core / SQLite se usa para la migración y pruebas locales y para una instalación inicial de una instancia. Los servicios concentran identidad, permisos, reglas del calendario, menú, pedidos, reportes, importación y operaciones. Hay cuatro migraciones y semillas idempotentes; la tercera añade imágenes de identidad visual en la base privada y la cuarta la vinculación única de cuenta AD. La implantación en SQL Server o en múltiples instancias requiere migraciones específicas y coordinación de trabajos; no se considera resuelta en esta versión.
 
 La interfaz heredada invoca un puente asíncrono por `POST /api/rpc` con una lista cerrada de operaciones. Las identidades y roles del navegador no se aceptan como autoridad. Los errores de negocio se muestran en el flujo existente y los cambios de datos, auditoría y correo se confirman en una transacción.
 
@@ -91,12 +91,16 @@ En el navegador se guardaron un pedido, una semana con TSV multilínea y una act
 
 Estas comprobaciones no equivalen a la aceptación completa del clon: deben contrastarse todos los módulos con el sistema vigente y sus responsables, incluyendo los recursos de Drive y las integraciones reales que aún faltan.
 
-## Configuración de v0.1.1
+## Configuración de v0.1.2
 
 Seguir [SETUP-AD-MAIL.md](SETUP-AD-MAIL.md) para introducir token y contraseña SMTP con entrada oculta, habilitar AD, iniciar con la base importada, comprobar solicitudes/aprobaciones/revocaciones y probar correos. La cola puede ejecutarse sin activar trabajos diarios. El opt-in de SMTP en Development exige un único buzón de prueba. La prueba de cierre incluye Excel/PDF consolidados y por departamento sin respaldos ni mantenimiento.
 
 El panel general CONFIG permite cargar favicon y sello PNG y editar texto del pie. La configuración se refleja en la aplicación, login y acceso denegado; PNG se valida y sanitiza, el texto se codifica, las imágenes permanecen en SQLite privado y los archivos reemplazados se eliminan. El favicon inicial utiliza el logo de cubiertos existente.
 
 Verificación de v0.1.1: 51 pruebas sintéticas pasan en Release, incluidos contrato ASMX, normalización de cuenta, perfil ambiguo, XML/XXE, límites y timeout, código verificado frente a formularios manipulados, conflictos de identidad, CSRF/rol de branding, PNG corrupto o fuera de límites, guardado/restauración, entrega Pickup, restricciones SMTP y reportes de prueba departamentales. Build/publish sin errores y snapshot EF sin cambios pendientes. La base real recibió la nueva migración y repetir el libro devolvió `alreadyImported`, sin reinsertar datos.
+
+En v0.1.2, el código único verificado permite vincular la cuenta AD conservando el correo y pedidos de Sheets cuando existen aliases diferentes. El vínculo queda persistido y no permite que otra cuenta use después el mismo código. Los perfiles vinculados conservan nombre/código AD; su restablecimiento exige ADMIN_GEN, se audita y revoca sesiones. La guía incluye ese procedimiento. Las pruebas adicionales verifican conservación de históricos/roles, bloqueo de apropiación de vínculos y permiso/revocación al restablecerlos.
+
+Verificación final de v0.1.2: 54 pruebas correctas en Release, publicación y modelo EF sin cambios pendientes, cuatro migraciones aplicadas a la base real e importación repetida sin duplicados. En el navegador se comprobó el perfil vinculado, la confirmación de restablecimiento y el cierre inmediato de su sesión sintética. El formulario dispone de scroll interno en pantallas cortas. Los paquetes publicados y los commits locales excluyen bases, imágenes subidas, correos y secretos.
 
 En navegador se cargaron ambas imágenes de prueba, se guardó el texto y se restauró el favicon predeterminado/eliminó el sello; la recarga conservó los cambios. CONFIG se verificó a 390px y escritorio sin imágenes rotas ni errores de consola; se corrigió el ancho de la cuadrícula móvil. Las capturas locales de v0.1.1 están en `artifacts/qa`, fuera de Git.

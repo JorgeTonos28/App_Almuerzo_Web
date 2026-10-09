@@ -1148,23 +1148,27 @@
     <!-- Admin User Modal -->
     <div v-if="adminState.userModal.open" class="fixed inset-0 z-[70] flex items-center justify-center p-4">
        <div class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm" @click="adminState.userModal.open = false"></div>
-       <div class="bg-white rounded-2xl shadow-xl w-full max-w-md relative overflow-hidden animate-fade-in-up">
-          <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+       <div class="bg-white rounded-2xl shadow-xl w-full max-w-md relative overflow-hidden animate-fade-in-up flex flex-col max-h-[90dvh]">
+          <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 shrink-0">
              <h3 class="font-bold text-lg text-gray-800">{{ adminState.userModal.isNew ? 'Nuevo Usuario' : 'Editar Usuario' }}</h3>
              <button @click="adminState.userModal.open = false" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
           </div>
-          <div class="p-6 space-y-4">
+          <div class="p-6 space-y-4 min-h-0 overflow-y-auto">
              <div>
                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Correo</label>
                 <input v-model="adminState.userModal.data.email" :disabled="!adminState.userModal.isNew" type="email" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none disabled:opacity-50">
              </div>
+             <div v-if="adminState.userModal.data.directoryAccount" class="bg-blue-50 border border-blue-100 rounded-lg p-3">
+                <p class="text-xs font-semibold text-blue-800">Cuenta AD vinculada</p><p class="text-xs text-blue-700 break-all mt-1">{{ adminState.userModal.data.directoryAccount }}</p>
+                <button v-if="isAdminGen" type="button" @click="resetDirectoryLink" :disabled="directoryLinkSaving" class="text-xs font-semibold text-blue-700 mt-2 disabled:opacity-50"><i v-if="directoryLinkSaving" class="fa-solid fa-circle-notch fa-spin mr-1" aria-hidden="true"></i>{{ directoryLinkSaving ? 'Restableciendo…' : 'Restablecer vínculo AD' }}</button>
+             </div>
              <div>
                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Nombre</label>
-                <input v-model="adminState.userModal.data.nombre" type="text" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <input v-model="adminState.userModal.data.nombre" :readonly="!!adminState.userModal.data.directoryAccount" type="text" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
              </div>
              <div>
                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Código de Empleado</label>
-                <input v-model="adminState.userModal.data.codigo" type="text" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="4 dígitos (ej. 5445)" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <input v-model="adminState.userModal.data.codigo" :readonly="!!adminState.userModal.data.directoryAccount" type="text" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="4 dígitos (ej. 5445)" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
              </div>
              <div>
                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Departamento</label>

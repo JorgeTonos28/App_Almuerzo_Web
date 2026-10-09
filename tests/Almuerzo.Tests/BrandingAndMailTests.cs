@@ -122,4 +122,33 @@ public class BrandingAndMailTests
         Assert.Equal(2, records.Count); Assert.All(records, x => { Assert.Equal("test@example.test", x.Recipient); Assert.True(File.Exists(x.AttachmentPath)); Assert.EndsWith(".xlsx", x.AttachmentPath); Assert.EndsWith(".pdf", JsonNode.Parse(x.ExtraAttachmentsJson)![0]!.ToString()); });
         Assert.NotEqual(records[0].AttachmentPath, records[1].AttachmentPath); Assert.Empty(await db.JobRuns.ToListAsync());
     }
+    [Fact] public async Task VerifiedEmployeeCodeLinksAnEmailAliasWithoutChangingHistoryOrPermissions()
+    {
+        await using var app = new AppFactory(); await app.Seed();
+        using (var scope = app.Services.CreateScope()) { var db = scope.ServiceProvider.GetRequiredService<AppDbContext>(); db.Orders.Add(new Order { Id = "legacy", Email = "general@infotep.gob.do", Name = "Nombre histórico", DepartmentId = "a", Date = "2026-10-08", Summary = "Pedido histórico" }); await db.SaveChangesAsync(); }
+        using var alias = app.Client(); Assert.Equal("/", await app.Login(alias, "alias@infotep.gob.do"));
+        Assert.True((await app.Rpc(alias, "apiGetAdminData"))["ok"]!.GetValue<bool>());
+        using var check = app.Services.CreateScope(); var database = check.ServiceProvider.GetRequiredService<AppDbContext>(); var user = await database.Users.FindAsync("general@infotep.gob.do");
+        Assert.Equal("alias@infotep.gob.do", user!.DirectoryAccount); Assert.Equal(Roles.GeneralAdmin, user.Role); Assert.Equal("a", user.DepartmentId); Assert.Equal(4, await database.Users.CountAsync());
+        Assert.Equal("general@infotep.gob.do", (await database.Orders.FindAsync("legacy"))!.Email); Assert.Equal("Nombre histórico", (await database.Orders.FindAsync("legacy"))!.Name);
+        Assert.Equal(1, await database.Audit.CountAsync(x => x.Action == "LinkDirectoryAccount"));
+    }
+    [Fact] public async Task AnotherDirectoryAccountCannotTakeOverAnExistingLink()
+    {
+        await using var app = new AppFactory(); await app.Seed(); using var general = app.Client(); await app.Login(general, "general@infotep.gob.do");
+        using var alias = app.Client(); var html = await alias.GetStringAsync("/Auth/Login");
+        var response = await alias.PostAsync("/Auth/Login", new FormUrlEncodedContent(new Dictionary<string, string> { ["Username"] = "alias@infotep.gob.do", ["Password"] = "test-only", ["__RequestVerificationToken"] = AppFactory.Token(html) }));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode); Assert.Contains("revisión administrativa", WebUtility.HtmlDecode(await response.Content.ReadAsStringAsync())); Assert.Equal(HttpStatusCode.Redirect, (await alias.GetAsync("/")).StatusCode);
+    }
+    [Fact] public async Task OnlyGeneralAdminCanResetDirectoryLinkAndExistingSessionIsRevoked()
+    {
+        await using var app = new AppFactory(); await app.Seed(); using var general = app.Client(); using var department = app.Client(); using var user = app.Client();
+        await app.Login(general, "general@infotep.gob.do"); await app.Login(department, "admin@infotep.gob.do"); await app.Login(user, "user@infotep.gob.do");
+        Assert.False((await app.Rpc(department, "apiResetDirectoryLink", "user@infotep.gob.do"))["ok"]!.GetValue<bool>());
+        Assert.False((await app.Rpc(general, "apiAdminSaveUser", new { email = "user@infotep.gob.do", nombre = "Fake", codigo = "2002", departamento = "a", rol = "USER", estado = "ACTIVO" }))["ok"]!.GetValue<bool>());
+        Assert.True((await app.Rpc(general, "apiResetDirectoryLink", "user@infotep.gob.do"))["ok"]!.GetValue<bool>());
+        Assert.Equal(HttpStatusCode.Redirect, (await user.GetAsync("/")).StatusCode);
+        Assert.Equal("/", await app.Login(user, "user@infotep.gob.do"));
+        using var scope = app.Services.CreateScope(); var db = scope.ServiceProvider.GetRequiredService<AppDbContext>(); var u = await db.Users.FindAsync("user@infotep.gob.do"); Assert.Equal(Roles.User, u!.Role); Assert.Equal("1002", u.EmployeeCode); Assert.Equal("a", u.DepartmentId);
+    }
 }

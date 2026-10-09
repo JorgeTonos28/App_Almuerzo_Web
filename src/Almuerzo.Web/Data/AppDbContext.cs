@@ -25,6 +25,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     {
         b.Entity<AppUser>().HasKey(x => x.Email);
         b.Entity<AppUser>().HasIndex(x => x.EmployeeCode).IsUnique().HasFilter("EmployeeCode IS NOT NULL");
+        b.Entity<AppUser>().HasIndex(x => x.DirectoryAccount).IsUnique().HasFilter("DirectoryAccount IS NOT NULL");
         b.Entity<AppUser>().HasOne(x => x.Department).WithMany().HasForeignKey(x => x.DepartmentId).OnDelete(DeleteBehavior.Restrict);
         b.Entity<AppUser>().Property(x => x.Revision).IsConcurrencyToken();
         b.Entity<Department>().HasIndex(x => x.Name).IsUnique();

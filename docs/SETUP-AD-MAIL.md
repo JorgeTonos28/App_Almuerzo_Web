@@ -1,4 +1,4 @@
-# Habilitar AD, correo y pruebas · v0.1.1
+# Habilitar AD, correo y pruebas · v0.1.2
 
 ## 1. Preparar el proyecto
 
@@ -44,7 +44,9 @@ dotnet user-secrets set 'Mail:Mode' 'Pickup' --project src/Almuerzo.Web
 
 El endpoint predeterminado ya es `https://ona-app-01.infotep.gob.do:8005/ADService.asmx`. Si TI indica otros nombres de columna, configurar `Ad:FullNameColumn` y `Ad:EmployeeCodeColumn`; los aliases habituales y los nombres XML con acentos están soportados. `Ad:DirectoryDomain` vale `INFOTEP`; modificarlo solo si TI confirma otro nombre NetBIOS.
 
-Se admite `usuario`, `usuario@infotep.gob.do` o `INFOTEP\usuario`. Se consulta el servicio con el nombre de cuenta normalizado. Puesto que el contrato devuelve nombre y código, **el correo local se deriva como `usuario@infotep.gob.do`**. No se supone que el servicio entregue un correo verificado. Si una cuenta importada usa un alias diferente, la administración debe revisar su correspondencia antes de habilitarla. Un correo/código conflictivo bloquea el login; no se unen cuentas ni se transfieren privilegios automáticamente.
+Se admite `usuario`, `usuario@infotep.gob.do` o `INFOTEP\usuario`. Se consulta el servicio con el nombre de cuenta normalizado. El contrato devuelve nombre y código, sin correo: **una cuenta importada se reconoce por su código de empleado único verificado en AD, conservando su correo, pedidos, departamento y rol**. Se registra la cuenta AD vinculada, aunque el nombre de cuenta difiera del correo de Sheets. La autenticación nunca cambia estado, departamento ni rol. Para un colaborador sin registro local se propone `usuario@infotep.gob.do` como correo; la administración debe revisar ese dato y aprobar su acceso.
+
+Se bloquean coincidencias ambiguas, códigos/correos contradictorios y una cuenta AD distinta que intente utilizar un vínculo existente. Si TI cambia el nombre de cuenta, un `ADMIN_GEN` puede abrir **USUARIOS → Editar → Restablecer vínculo AD**, verificar el cambio y confirmar. La sesión vigente se revoca y el siguiente login vuelve a comprobar el código AD antes de establecer el vínculo. La acción queda auditada. Nombre y código de perfiles vinculados provienen del directorio y no se sobrescriben desde la edición ordinaria de usuarios.
 
 El código AD debe contener entre uno y cuatro dígitos: se normaliza a cuatro, conservando ceros. El nombre y el código vienen del directorio. No se pide una contraseña propia de Almuerzo ni se almacena la contraseña AD.
 

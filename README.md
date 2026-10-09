@@ -1,4 +1,4 @@
-# App Almuerzo Web · 0.1.1
+# App Almuerzo Web · 0.1.2
 
 Migración de App_Almuerzo v7.36 a ASP.NET Core 10 MVC, EF Core y SQLite. La interfaz Vue conserva la estructura y los estilos del sistema de Apps Script. Los permisos y las reglas de negocio se verifican en el servidor.
 
@@ -49,7 +49,7 @@ Los parámetros iniciales son:
 | `Ad:FullNameColumn` / `Ad:EmployeeCodeColumn` | `NombreCompleto` / `Codigo`, aliases XML habituales soportados |
 | `Ad:Token` | secreto enviado como campo `Token` del formulario HTTPS; nunca guardarlo en Git |
 
-Se llama a `Autenticacion` con `Token`, `NombreUsuario` y `Password`; únicamente si devuelve true se consulta `DatosUsuarioAD` con token y usuario. El nombre y código se verifican en cada login. Se deriva el correo `usuario@infotep.gob.do`, ya que el contrato no devuelve correo. Conflictos con el código/correo importado requieren revisión administrativa; no se transfieren roles automáticamente.
+Se llama a `Autenticacion` con `Token`, `NombreUsuario` y `Password`; únicamente si devuelve true se consulta `DatosUsuarioAD` con token y usuario. El nombre y código se verifican en cada login. El código único verificado vincula la cuenta AD con el usuario importado, conservando su correo e históricos, incluso cuando el nombre de cuenta AD difiere del correo de Sheets. El vínculo se persiste; conflictos posteriores requieren revisión. Solo `ADMIN_GEN` puede restablecerlo, con auditoría y revocación de sesión. La autenticación nunca habilita cuentas ni cambia roles/departamentos. Para usuarios nuevos se propone `usuario@infotep.gob.do`, ya que el contrato no devuelve correo.
 
 En desarrollo, usar User Secrets. [scripts/Set-AdToken.ps1](scripts/Set-AdToken.ps1) solicita el token oculto y lo escribe mediante stdin, sin incluirlo en la línea de comandos. En producción usar un gestor de secretos o variables de entorno (`Ad__Token`, `Ad__Endpoint`, etc.). La contraseña institucional se envía únicamente al endpoint configurado, no se persiste ni se registra.
 

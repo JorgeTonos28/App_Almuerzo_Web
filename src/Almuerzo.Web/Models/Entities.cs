@@ -30,6 +30,7 @@ public class AppUser
     public string Role { get; set; } = Roles.User;
     public string Status { get; set; } = "PENDIENTE";
     public string? EmployeeCode { get; set; }
+    public string? DirectoryAccount { get; set; }
     public string PreferencesJson { get; set; } = "{}";
     public string GameJson { get; set; } = "{}";
     public string Revision { get; set; } = Guid.NewGuid().ToString();
