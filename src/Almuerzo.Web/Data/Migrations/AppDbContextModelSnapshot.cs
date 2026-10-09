@@ -90,6 +90,20 @@ namespace Almuerzo.Web.Data.Migrations
                     b.ToTable("Audit");
                 });
 
+            modelBuilder.Entity("Almuerzo.Web.Models.BrandingAsset", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<byte[]>("Content")
+                        .IsRequired()
+                        .HasColumnType("BLOB");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BrandingAssets");
+                });
+
             modelBuilder.Entity("Almuerzo.Web.Models.Department", b =>
                 {
                     b.Property<string>("Id")

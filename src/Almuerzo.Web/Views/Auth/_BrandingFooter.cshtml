@@ -1,0 +1,5 @@
+@model Almuerzo.Web.Services.BrandingSettings
+<footer class="w-full max-w-md text-center text-xs text-gray-400">
+    <p class="break-words">@Model.FooterText</p>
+    @if (Model.FooterSignatureUrl.Length > 0) { <img src="@Model.FooterSignatureUrl" alt="Sello institucional" class="h-10 max-w-full object-contain mx-auto mt-3 opacity-60"> }
+</footer>

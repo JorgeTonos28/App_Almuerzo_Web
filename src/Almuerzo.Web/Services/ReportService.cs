@@ -39,11 +39,8 @@ public class ReportService(AppDbContext db, StoragePaths paths)
             recipients.AddRange(copies.Select(x => x is System.Text.Json.Nodes.JsonObject ? LunchService.Str(x, "email") : x?.ToString() ?? "").Where(x => System.Net.Mail.MailAddress.TryCreate(x, out _)));
         void Queue(string recipient, string subject, string attachment, string extra) { db.Outbox.Add(new MailMessageRecord { Recipient = recipient, Subject = subject, Body = $"Adjuntos el Excel y PDF del pedido de almuerzo para el {date}.", AttachmentPath = attachment, ExtraAttachmentsJson = JsonSerializer.Serialize(new[] { extra }) }); count++; }
         foreach (var email in recipients.Distinct()) Queue(email, $"Reporte general de almuerzo {date}", file, pdf);
-        if (testRecipient == null)
-        {
-            var admins = await db.Users.Where(x => x.Role == Roles.DepartmentAdmin && x.Status == "ACTIVO" && x.Department!.Status == "ACTIVO").ToListAsync();
-            foreach (var group in admins.GroupBy(x => x.DepartmentId)) { if (group.Key == null) continue; var deptFile = await GenerateAsync(date, group.Key); var deptPdf = await GenerateAsync(date, group.Key, "pdf"); foreach (var admin in group) Queue(admin.Email, $"Reporte de almuerzo del departamento {date}", deptFile, deptPdf); }
-        }
+        var admins = await db.Users.Where(x => x.Role == Roles.DepartmentAdmin && x.Status == "ACTIVO" && x.Department!.Status == "ACTIVO").ToListAsync();
+        foreach (var group in admins.GroupBy(x => x.DepartmentId)) { if (group.Key == null) continue; var deptFile = await GenerateAsync(date, group.Key); var deptPdf = await GenerateAsync(date, group.Key, "pdf"); foreach (var admin in group) Queue(testRecipient ?? admin.Email, $"Reporte de almuerzo del departamento {date}", deptFile, deptPdf); }
         return count;
     }
 }

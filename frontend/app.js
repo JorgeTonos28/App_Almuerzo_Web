@@ -4,7 +4,39 @@ createApp({
   render: AlmuerzoRender,
   setup() {
     const csrfToken = document.querySelector("meta[name=csrf-token]").content;
-    const footerSignatureUrl = window.__INITIAL_DATA__?.footerSignatureUrl || "";
+    const appearance = window.__INITIAL_DATA__?.branding || {};
+    const footerText = ref(appearance.footerText || '');
+    const footerSignatureUrl = ref(appearance.footerSignatureUrl || '');
+    const faviconUrl = ref(appearance.faviconUrl || '/assets/favicon.svg');
+    const brandingForm = reactive({ footerText: footerText.value, favicon: null, stamp: null, resetFavicon: false, removeStamp: false });
+    const brandingSaving = ref(false);
+    const brandingMessage = ref('');
+    const clearBrandingFile = kind => { brandingForm[kind] = null; const input = document.getElementById('branding-' + kind); if (input) input.value = ''; };
+    const selectBrandingFile = (event, kind) => {
+      brandingForm[kind] = event.target.files?.[0] || null;
+      if (kind === 'favicon') brandingForm.resetFavicon = false; else brandingForm.removeStamp = false;
+      brandingMessage.value = '';
+    };
+    const saveBranding = async () => {
+      if (brandingSaving.value) return;
+      brandingSaving.value = true; brandingMessage.value = '';
+      try {
+        const body = new FormData(); body.append('footerText', brandingForm.footerText);
+        body.append('resetFavicon', String(brandingForm.resetFavicon)); body.append('removeStamp', String(brandingForm.removeStamp));
+        for (const kind of ['favicon', 'stamp']) if (brandingForm[kind]) body.append(kind, brandingForm[kind]);
+        const response = await fetch('/branding', { method: 'POST', headers: { 'X-CSRF-TOKEN': csrfToken }, body });
+        if (response.status === 401 || response.status === 403) throw new Error('Tu sesión no tiene permiso para guardar estos cambios. Inicia sesión como administrador general.');
+        if (response.status === 413) throw new Error('Las imágenes exceden el tamaño permitido.');
+        const result = await response.json();
+        if (!response.ok || !result.ok) throw new Error(result.msg || 'No se pudo guardar. Verifica el tamaño de las imágenes y tu sesión.');
+        footerText.value = result.branding.footerText; footerSignatureUrl.value = result.branding.footerSignatureUrl; faviconUrl.value = result.branding.faviconUrl;
+        brandingForm.footerText = footerText.value; brandingForm.resetFavicon = false; brandingForm.removeStamp = false;
+        clearBrandingFile('favicon'); clearBrandingFile('stamp');
+        document.getElementById('app-favicon').href = faviconUrl.value;
+        brandingMessage.value = 'Cambios guardados.';
+      } catch (error) { brandingMessage.value = error.message || 'No se pudo guardar la configuración.'; }
+      finally { brandingSaving.value = false; }
+    };
     // === ESTADO (STATE) ===
     const loading = ref(true);
     const submitting = ref(false);
@@ -2491,7 +2523,7 @@ createApp({
 
     return {
       // Estado
-      csrfToken, footerSignatureUrl, loading, submitting, user, menu, myOrder, adminData,
+      csrfToken, footerText, footerSignatureUrl, faviconUrl, brandingForm, brandingSaving, brandingMessage, clearBrandingFile, selectBrandingFile, saveBranding, loading, submitting, user, menu, myOrder, adminData,
       currentDate, dates, comments,
       summaryDateStart, summaryDateEnd, activeUsersCount,
       chefGameState, chefGame, chefRanking,

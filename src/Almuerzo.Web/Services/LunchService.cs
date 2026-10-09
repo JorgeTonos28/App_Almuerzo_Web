@@ -81,7 +81,7 @@ public class LunchService(AppDbContext db, BusinessRules rules, ReportService re
         var providerRating = await db.Ratings.AsNoTracking().SingleOrDefaultAsync(x => x.Email == target.Email && x.Kind == "PROVIDER" && x.Scope == period);
         var deptUsers = actor.Role == Roles.DepartmentAdmin ? await db.Users.AsNoTracking().Where(x => x.DepartmentId == actor.DepartmentId && x.Status == "ACTIVO" && x.Email != actor.Email).Select(x => new { email = x.Email, nombre = x.Name }).ToArrayAsync() : [];
         return new {
-            ok = true, appVersion = "0.1.0", nextBusinessDay = rules.NextBusinessDay(holidays).ToString("yyyy-MM-dd"), user = UserDto(target), activeUser = UserDto(actor), deptUsers,
+            ok = true, appVersion = "0.1.1", nextBusinessDay = rules.NextBusinessDay(holidays).ToString("yyyy-MM-dd"), user = UserDto(target), activeUser = UserDto(actor), deptUsers,
             userPrefs = Obj(target.PreferencesJson), currentDate = date, dates = openDates.Select(d => new { value = d, label = BusinessRules.Date(d).ToString("ddd dd MMM", CultureInfo.GetCultureInfo("es-DO")) }),
             menu = date != null ? MenuOf(date) : new Dictionary<string, object>(), allMenus = openDates.ToDictionary(d => d, MenuOf), allOrders = orders.ToDictionary(x => x.Date, OrderDto),
             myOrder = orders.Where(x => x.Date == date).Select(OrderDto).FirstOrDefault(), adminData = actor.Role == Roles.User ? null : await Stats(actor, date),
@@ -99,7 +99,7 @@ public class LunchService(AppDbContext db, BusinessRules rules, ReportService re
     }
     private async Task<object> AdminData(AppUser actor)
     {
-        Admin(actor); var cfg = actor.Role == Roles.GeneralAdmin ? await Config() : new(); var cutoff = BusinessRules.Date(rules.Today).AddDays(-60).ToString("yyyy-MM-dd");
+        Admin(actor); var cfg = actor.Role == Roles.GeneralAdmin ? (await Config()).Where(x => !BrandingService.Keys.Contains(x.Key)).ToDictionary(x => x.Key, x => x.Value) : new(); var cutoff = BusinessRules.Date(rules.Today).AddDays(-60).ToString("yyyy-MM-dd");
         var users = await db.Users.AsNoTracking().Include(x => x.Department).Where(x => actor.Role == Roles.GeneralAdmin || x.DepartmentId == actor.DepartmentId).ToListAsync();
         var departments = await db.Departments.AsNoTracking().ToListAsync(); var map = departments.ToDictionary(x => x.Id, x => x.Name);
         var orders = await db.Orders.AsNoTracking().Where(x => x.Status == "ACTIVO" && string.Compare(x.Date, cutoff) >= 0 && (actor.Role == Roles.GeneralAdmin || x.DepartmentId == actor.DepartmentId)).ToListAsync();
@@ -271,6 +271,7 @@ public class LunchService(AppDbContext db, BusinessRules rules, ReportService re
         {
             Require(cfg.ContainsKey(pair.Key), "Clave no permitida."); if (pair.Key == "MEAL_PRICE_HISTORY_JSON") continue;
             var value = pair.Value?.ToString() ?? ""; Require(value.Length <= 20000, "Configuración demasiado extensa.");
+            if (BrandingService.Keys.Contains(pair.Key)) { Require(value == cfg[pair.Key], "Usa el panel de identidad visual para cambiar estos valores."); continue; }
             if (pair.Key is "HORA_ENVIO" or "HORA_RECORDATORIO") Require(TimeOnly.TryParseExact(value, "HH:mm", out _), "Hora inválida.");
             if (pair.Key == "MINUTOS_PREV_CIERRE") Require(int.TryParse(value, out var v) && v is >= 0 and <= 300, "Minutos inválidos.");
             if (pair.Key is "TEST_EMAIL_MODE" or "ANNOUNCEMENT_ENABLED") Require(value is "TRUE" or "FALSE", "Se requiere TRUE o FALSE.");
@@ -289,6 +290,7 @@ public class LunchService(AppDbContext db, BusinessRules rules, ReportService re
                 foreach (var recipient in recipients!) { var address = recipient is JsonObject ? Str(recipient, "email") : recipient?.ToString() ?? ""; Require(System.Net.Mail.MailAddress.TryCreate(address, out _), "Correo inválido."); }
             }
             if (pair.Key is "ADMIN_EMAILS" or "TEST_EMAIL_DEST") foreach (var e in Split(value)) Require(System.Net.Mail.MailAddress.TryCreate(e, out _), "Correo inválido.");
+            if (pair.Key == "TEST_EMAIL_DEST" && value.Length > 0) Require(System.Net.Mail.MailAddress.TryCreate(value.Trim(), out var destination) && destination.Address == value.Trim(), "Define un único correo de prueba.");
             if (pair.Key.EndsWith("_JSON")) JsonNode.Parse(value);
             await Set(pair.Key, value);
         }

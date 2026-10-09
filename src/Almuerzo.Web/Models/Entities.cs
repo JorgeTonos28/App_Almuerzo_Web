@@ -1,5 +1,11 @@
 namespace Almuerzo.Web.Models;
 
+public class BrandingAsset
+{
+    public string Id { get; set; } = Guid.NewGuid().ToString("N");
+    public byte[] Content { get; set; } = [];
+}
+
 public static class Roles
 {
     public const string User = "USER", DepartmentAdmin = "ADMIN_DEP", GeneralAdmin = "ADMIN_GEN";

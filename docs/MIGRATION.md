@@ -5,15 +5,16 @@
 - Destino: `JorgeTonos28/App_Almuerzo_Web`, inicialmente sin commits ni archivos. Rama de trabajo: `feature/migracion-aspnet`.
 - Origen funcional: `JorgeTonos28/App_Almuerzo`, v7.36, commit `16feb257cb9426df24f936c9941447e7f3fb6d12`.
 - Referencia ASP.NET: `JorgeTonos28/ExtraHub`, main `194b41675a0d1954e92a1154f1dd325ca149a8c8`.
+- Integración AD: ExtraHub PR #15, commit `bff85a6f22b8cc2d98004d6ceb8fcd29080ecf6d`, revisado junto con su AGENTS y el WSDL del servicio institucional.
 - Se revisaron AGENTS de las dos referencias. Se adaptaron versionado, migraciones y semillas, documentación, responsive, loaders, preferencias, normalización y rendimiento. AGENTS del destino exige seguridad en cada implementación.
 
-ExtraHub aporta el patrón MVC / EF Core / cookies / servicios. Su implementación pública revisada autentica contra contraseñas locales; no contiene el endpoint AD señalado, tampoco en las ramas remotas disponibles revisadas. No se ha inventado una conexión funcional con el servicio institucional: el adaptador permanece deshabilitado hasta confirmar su contrato.
+ExtraHub aporta el patrón MVC / EF Core / cookies / servicios. El PR #15 proporcionado después de la primera entrega contiene la integración ASMX. En v0.1.1 se implementan `Autenticacion` y `DatosUsuarioAD` por HTTPS/formulario y lectura XML segura. El WSDL respondió HTTP 200 y confirmó métodos y parámetros; falta probar credenciales reales. El proveedor se activa con configuración privada, sin copiar tokens.
 
 ## Arquitectura inicial
 
 ASP.NET Core 10 MVC con autorización del servidor; interfaz Vue portada directamente del HTML, CSS y lógica de App_Almuerzo. La plantilla se compila durante `npm run build`; Vue en producción usa su runtime sin compilador. Todos los scripts, fuentes y estilos son locales. No se requiere Google Apps Script para operar la aplicación.
 
-EF Core / SQLite se usa para la migración y pruebas locales y para una instalación inicial de una instancia. Los servicios concentran identidad, permisos, reglas del calendario, menú, pedidos, reportes, importación y operaciones. Hay dos migraciones y semillas idempotentes. La implantación en SQL Server o en múltiples instancias requiere migraciones específicas y coordinación de trabajos; no se considera resuelta en esta versión.
+EF Core / SQLite se usa para la migración y pruebas locales y para una instalación inicial de una instancia. Los servicios concentran identidad, permisos, reglas del calendario, menú, pedidos, reportes, importación y operaciones. Hay tres migraciones y semillas idempotentes; la tercera añade imágenes de identidad visual en la base privada. La implantación en SQL Server o en múltiples instancias requiere migraciones específicas y coordinación de trabajos; no se considera resuelta en esta versión.
 
 La interfaz heredada invoca un puente asíncrono por `POST /api/rpc` con una lista cerrada de operaciones. Las identidades y roles del navegador no se aceptan como autoridad. Los errores de negocio se muestran en el flujo existente y los cambios de datos, auditoría y correo se confirman en una transacción.
 
@@ -78,7 +79,7 @@ Durante la configuración inicial de pruebas se detectó que una configuración 
 - Reportes fuera de `wwwroot`, roles en descarga, scopes por departamento, texto Excel sin fórmulas de usuario, correo de desarrollo con salida local.
 - Dependencias auditadas; cola y auditoría sin almacenar contraseñas ni respuestas AD.
 
-Pendientes de puesta en producción: contrato real de AD, verificación SMTP, dominio/certificado HTTPS, permisos de almacenamiento y cuenta de servicio, monitorización de jobs/outbox, retención y restauración de respaldos. El ranking de juego mantiene estado aportado por el cliente con validaciones de límites; si se utiliza para premios o decisiones reales necesita eventos y puntuación calculados exclusivamente por servidor.
+Pendientes de puesta en producción: login AD con credenciales reales, verificación SMTP, dominio/certificado HTTPS, permisos de almacenamiento y cuenta de servicio, monitorización de jobs/outbox, retención y restauración de respaldos. El ranking de juego mantiene estado aportado por el cliente con validaciones de límites; si se utiliza para premios o decisiones reales necesita eventos y puntuación calculados exclusivamente por servidor.
 
 ## Pruebas y aceptación
 
@@ -90,6 +91,12 @@ En el navegador se guardaron un pedido, una semana con TSV multilínea y una act
 
 Estas comprobaciones no equivalen a la aceptación completa del clon: deben contrastarse todos los módulos con el sistema vigente y sus responsables, incluyendo los recursos de Drive y las integraciones reales que aún faltan.
 
-## Siguiente integración necesaria
+## Configuración de v0.1.1
 
-Se necesita localizar la implementación AD indicada o recibir documentación de URL, método, campos, cabecera de token y respuesta de éxito/error. El token no debe pegarse en el chat ni en archivos versionados. El script de User Secrets está preparado para ingresarlo localmente. Una vez confirmado el contrato, ajustar el proveedor, ejecutar pruebas contra AD y validar el flujo completo de solicitud, aprobación y revocación con cuentas de prueba autorizadas.
+Seguir [SETUP-AD-MAIL.md](SETUP-AD-MAIL.md) para introducir token y contraseña SMTP con entrada oculta, habilitar AD, iniciar con la base importada, comprobar solicitudes/aprobaciones/revocaciones y probar correos. La cola puede ejecutarse sin activar trabajos diarios. El opt-in de SMTP en Development exige un único buzón de prueba. La prueba de cierre incluye Excel/PDF consolidados y por departamento sin respaldos ni mantenimiento.
+
+El panel general CONFIG permite cargar favicon y sello PNG y editar texto del pie. La configuración se refleja en la aplicación, login y acceso denegado; PNG se valida y sanitiza, el texto se codifica, las imágenes permanecen en SQLite privado y los archivos reemplazados se eliminan. El favicon inicial utiliza el logo de cubiertos existente.
+
+Verificación de v0.1.1: 51 pruebas sintéticas pasan en Release, incluidos contrato ASMX, normalización de cuenta, perfil ambiguo, XML/XXE, límites y timeout, código verificado frente a formularios manipulados, conflictos de identidad, CSRF/rol de branding, PNG corrupto o fuera de límites, guardado/restauración, entrega Pickup, restricciones SMTP y reportes de prueba departamentales. Build/publish sin errores y snapshot EF sin cambios pendientes. La base real recibió la nueva migración y repetir el libro devolvió `alreadyImported`, sin reinsertar datos.
+
+En navegador se cargaron ambas imágenes de prueba, se guardó el texto y se restauró el favicon predeterminado/eliminó el sello; la recarga conservó los cambios. CONFIG se verificó a 390px y escritorio sin imágenes rotas ni errores de consola; se corrigió el ancho de la cuadrícula móvil. Las capturas locales de v0.1.1 están en `artifacts/qa`, fuera de Git.

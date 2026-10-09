@@ -19,6 +19,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<ImportRecord> Imports => Set<ImportRecord>();
     public DbSet<SourceRecord> SourceRecords => Set<SourceRecord>();
     public DbSet<JobRun> JobRuns => Set<JobRun>();
+    public DbSet<BrandingAsset> BrandingAssets => Set<BrandingAsset>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {

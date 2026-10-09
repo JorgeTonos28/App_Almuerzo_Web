@@ -35,23 +35,26 @@ builder.Services.AddControllersWithViews(o => o.Filters.Add(new AutoValidateAnti
 builder.Services.AddAntiforgery(o => { o.HeaderName = "X-CSRF-TOKEN"; o.Cookie.HttpOnly = true; o.Cookie.SameSite = SameSiteMode.Strict; o.Cookie.SecurePolicy = builder.Environment.IsDevelopment() ? CookieSecurePolicy.SameAsRequest : CookieSecurePolicy.Always; });
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<BusinessRules>(); builder.Services.AddScoped<LunchService>(); builder.Services.AddScoped<ReportService>(); builder.Services.AddScoped<WorkbookImporter>();
-builder.Services.AddHttpClient<IDirectoryIdentityProvider, DirectoryIdentityProvider>(c => c.Timeout = TimeSpan.FromSeconds(12)).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false });
+builder.Services.AddScoped<BrandingService>(); builder.Services.AddScoped<OutboxDelivery>(); builder.Services.AddSingleton<MailDeliveryPolicy>();
+builder.Services.AddHttpClient<IDirectoryIdentityProvider, DirectoryIdentityProvider>(c => c.Timeout = Timeout.InfiniteTimeSpan).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false });
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(o => {
     o.LoginPath = "/Auth/Login"; o.AccessDeniedPath = "/Auth/Denied"; o.Cookie.Name = "Almuerzo.Session"; o.Cookie.HttpOnly = true; o.Cookie.SameSite = SameSiteMode.Strict;
     o.Cookie.SecurePolicy = builder.Environment.IsDevelopment() ? CookieSecurePolicy.SameAsRequest : CookieSecurePolicy.Always;
     o.ExpireTimeSpan = TimeSpan.FromHours(8); o.SlidingExpiration = false;
     o.Events.OnValidatePrincipal = async context => {
         var email = context.Principal?.FindFirstValue(ClaimTypes.Email);
-        if (string.IsNullOrWhiteSpace(email)) { context.RejectPrincipal(); return; }
+        var directoryCode = context.Principal?.FindFirstValue("directory_code");
+        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(directoryCode)) { context.RejectPrincipal(); return; }
         var db = context.HttpContext.RequestServices.GetRequiredService<AppDbContext>();
         var u = await db.Users.AsNoTracking().Include(x => x.Department).SingleOrDefaultAsync(x => x.Email == email);
+        if (u?.EmployeeCode is { Length: > 0 } code && code != directoryCode) { context.RejectPrincipal(); return; }
         var identity = new ClaimsIdentity(context.Principal!.Identity);
         foreach (var claim in identity.FindAll(ClaimTypes.Role).Concat(identity.FindAll("enabled")).Concat(identity.FindAll("department")).ToArray()) identity.RemoveClaim(claim);
         if (LunchService.Enabled(u)) { identity.AddClaim(new Claim(ClaimTypes.Role, u!.Role)); identity.AddClaim(new Claim("enabled", "true")); identity.AddClaim(new Claim("department", u.DepartmentId!)); }
         context.ReplacePrincipal(new ClaimsPrincipal(identity));
     };
-    o.Events.OnRedirectToLogin = c => { if (c.Request.Path.StartsWithSegments("/api")) c.Response.StatusCode = 401; else c.Response.Redirect(c.RedirectUri); return Task.CompletedTask; };
-    o.Events.OnRedirectToAccessDenied = c => { if (c.Request.Path.StartsWithSegments("/api")) c.Response.StatusCode = 403; else c.Response.Redirect(c.RedirectUri); return Task.CompletedTask; };
+    o.Events.OnRedirectToLogin = c => { if (c.Request.Path.StartsWithSegments("/api") || c.Request.Path.StartsWithSegments("/branding")) c.Response.StatusCode = 401; else c.Response.Redirect(c.RedirectUri); return Task.CompletedTask; };
+    o.Events.OnRedirectToAccessDenied = c => { if (c.Request.Path.StartsWithSegments("/api") || c.Request.Path.StartsWithSegments("/branding")) c.Response.StatusCode = 403; else c.Response.Redirect(c.RedirectUri); return Task.CompletedTask; };
 });
 builder.Services.AddAuthorization(o => {
     o.AddPolicy("Enabled", p => p.RequireAuthenticatedUser().RequireClaim("enabled", "true"));

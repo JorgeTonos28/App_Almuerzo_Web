@@ -1,8 +1,8 @@
-# App Almuerzo Web · 0.1.0
+# App Almuerzo Web · 0.1.1
 
 Migración de App_Almuerzo v7.36 a ASP.NET Core 10 MVC, EF Core y SQLite. La interfaz Vue conserva la estructura y los estilos del sistema de Apps Script. Los permisos y las reglas de negocio se verifican en el servidor.
 
-Esta primera implementación permite probar los módulos con datos locales. **La integración real con AD requiere confirmar el contrato del endpoint**. No se ha conectado a AD, SMTP ni producción, y la paridad completa requiere una aceptación funcional con los responsables del sistema. El análisis detallado está en [docs/MIGRATION.md](docs/MIGRATION.md).
+La integración AD utiliza el contrato ASMX de ExtraHub PR #15, confirmado con el WSDL institucional. La administración puede configurar favicon, texto y sello del pie de página. La guía paso a paso para habilitar AD, correos y pruebas está en [docs/SETUP-AD-MAIL.md](docs/SETUP-AD-MAIL.md). Faltan la validación con credenciales AD reales, SMTP y la aceptación funcional completa con los responsables. El análisis de migración está en [docs/MIGRATION.md](docs/MIGRATION.md).
 
 ## Ejecutar y probar
 
@@ -36,18 +36,20 @@ Para preparar una importación offline en el servidor, publicar el binario y eje
 
 ## Identidad institucional y habilitación
 
-El proveedor configurable es un adaptador provisional HTTPS/JSON con token Bearer. No asumir que este es el contrato de INFOTEP hasta verificar la URL, campos y respuesta. Se revisaron main y las ramas remotas disponibles de ExtraHub y no se encontró la integración indicada; ExtraHub usa autenticación local por cookies.
+El proveedor usa los dos métodos ASMX del PR #15 de ExtraHub. La identidad institucional se verifica antes de comprobar la habilitación local y no genera privilegios automáticamente.
 
-Configurar parámetros no secretos en el entorno del servidor. Para un contrato confirmado, los valores iniciales del adaptador son:
+Los parámetros iniciales son:
 
 | Parámetro | Función / valor predeterminado |
 |---|---|
-| `Ad:ContractConfirmed` | `false`; habilitar solo después de verificar el contrato |
-| `Ad:Endpoint` | URL HTTPS de autenticación |
-| `Ad:UsernameField` / `Ad:PasswordField` | `username` / `password` en el cuerpo JSON |
-| `Ad:SuccessField` | `success`, booleano |
-| `Ad:EmailField` / `Ad:NameField` | `user.email` / `user.displayName`, rutas separadas por puntos |
-| `Ad:Token` | secreto Bearer; nunca guardarlo en Git |
+| `Ad:Enabled` | `false`; activar después de guardar el token privado |
+| `Ad:Endpoint` | `https://ona-app-01.infotep.gob.do:8005/ADService.asmx` |
+| `Ad:DirectoryDomain` | `INFOTEP`, prefijo NetBIOS aceptado junto con usuario o correo institucional |
+| `Ad:TimeoutSeconds` | `15`, plazo total de autenticación y consulta del perfil |
+| `Ad:FullNameColumn` / `Ad:EmployeeCodeColumn` | `NombreCompleto` / `Codigo`, aliases XML habituales soportados |
+| `Ad:Token` | secreto enviado como campo `Token` del formulario HTTPS; nunca guardarlo en Git |
+
+Se llama a `Autenticacion` con `Token`, `NombreUsuario` y `Password`; únicamente si devuelve true se consulta `DatosUsuarioAD` con token y usuario. El nombre y código se verifican en cada login. Se deriva el correo `usuario@infotep.gob.do`, ya que el contrato no devuelve correo. Conflictos con el código/correo importado requieren revisión administrativa; no se transfieren roles automáticamente.
 
 En desarrollo, usar User Secrets. [scripts/Set-AdToken.ps1](scripts/Set-AdToken.ps1) solicita el token oculto y lo escribe mediante stdin, sin incluirlo en la línea de comandos. En producción usar un gestor de secretos o variables de entorno (`Ad__Token`, `Ad__Endpoint`, etc.). La contraseña institucional se envía únicamente al endpoint configurado, no se persiste ni se registra.
 
@@ -55,9 +57,11 @@ La identidad AD no otorga acceso por sí sola: se requiere usuario ACTIVO, rol v
 
 ## Correo, reportes y procesos diarios
 
-`Operations:Enabled` es `false` inicialmente. Al activarlo, un proceso cada 30 segundos genera el recordatorio y cierre diario según `America/Santo_Domingo`, con claves de ejecución que evitan duplicar la cola de cierre. La cola se confirma junto con cada cambio de negocio y procesa hasta cinco intentos por correo.
+`Operations:Enabled` es `false` inicialmente. Activarlo procesa la cola cada 30 segundos, hasta cinco intentos por mensaje. `Operations:ScheduledJobsEnabled`, también `false` inicialmente, habilita recordatorio, cierre y respaldo diarios según `America/Santo_Domingo`, con claves de ejecución que evitan duplicar la cola de cierre. La cola se confirma junto con cada cambio de negocio.
 
-En Development, los mensajes se escriben en `App_Data/mail`; nunca se envían a direcciones reales. En producción configurar `Mail:Mode=Smtp`, `Host`, `Port` (587 por defecto), `From`, `Username` y el secreto `Password`. SMTP exige TLS. Mantener `TEST_EMAIL_MODE=TRUE` y definir un destino de prueba al validar. Quitar ese modo únicamente después de verificar destinatarios y permisos.
+En Development, Pickup escribe `.eml` en `App_Data/mail`. Para probar SMTP localmente se requieren `Mail:Mode=Smtp`, `Mail:AllowSmtpInDevelopment=true`, `TEST_EMAIL_MODE=TRUE` y un único `TEST_EMAIL_DEST`; ningún mensaje se entrega a la audiencia real en Development. Configurar `Mail:Host`, `Port` (587), `From`, `Username` y `Password`; [scripts/Set-MailPassword.ps1](scripts/Set-MailPassword.ps1) guarda la contraseña con entrada oculta. SMTP usa STARTTLS, con certificado válido. Los pasos de prueba y producción están en [la guía de configuración](docs/SETUP-AD-MAIL.md).
+
+El panel **CONFIG → Identidad visual y pie de página** permite texto de hasta 200 caracteres y carga PNG de favicon/sello, únicamente para `ADMIN_GEN`. El favicon predeterminado reproduce el logo de cubiertos de la app. Las imágenes se validan, se eliminan metadatos y se almacenan en la base privada; no en Git. La configuración también aparece en login y acceso denegado.
 
 El cierre genera Excel y PDF consolidados y por departamento, y respaldo SQLite local. Conserva código, colaborador, departamento, platos en columnas por categoría y notas para cocina. El PDF distribuye categorías en grupos de cinco para mantener legibilidad. Los adjuntos y respaldos quedan fuera de `wwwroot`. El endpoint autenticado `/reports/daily/yyyy-MM-dd` permite descargar Excel, con scope departamental; agregar `?format=pdf` para PDF. El endpoint `/api/menu-day/yyyy-MM-dd` requiere `Authorization: Bearer ...` con el secreto `Integrations:MenuToken`; no acepta tokens en la URL. La plantilla y el sello externos de Google Drive no vienen incluidos en el repositorio original; su fidelidad visual exacta requiere proporcionar esos archivos.
 

@@ -19,16 +19,17 @@ public class LoginModel
 }
 public class AccessModel
 {
-    [Required, RegularExpression(@"^\d{4}$")] public string Code { get; set; } = "";
+    public string Code { get; set; } = "";
     [MaxLength(150)] public string SuggestedDepartment { get; set; } = "";
 }
 
-public class AuthController(IDirectoryIdentityProvider directory, AppDbContext db, LunchService lunch) : Controller
+public class AuthController(IDirectoryIdentityProvider directory, AppDbContext db, LunchService lunch, BrandingService branding) : Controller
 {
-    [AllowAnonymous, HttpGet] public IActionResult Login() => View(new LoginModel());
+    [AllowAnonymous, HttpGet] public async Task<IActionResult> Login() { ViewBag.Branding = await branding.Get(); return View(new LoginModel()); }
     [AllowAnonymous, HttpPost, EnableRateLimiting("login")]
     public async Task<IActionResult> Login(LoginModel model, CancellationToken ct)
     {
+        ViewBag.Branding = await branding.Get();
         if (!ModelState.IsValid) return View(model);
         DirectoryIdentity? identity;
         try { identity = await directory.AuthenticateAsync(model.Username.Trim(), model.Password, ct); }
@@ -36,20 +37,25 @@ public class AuthController(IDirectoryIdentityProvider directory, AppDbContext d
         catch (Exception ex) when (ex is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException or InvalidOperationException) { ModelState.AddModelError("", "El servicio de identidad no está disponible. Intenta nuevamente."); model.Password = ""; return View(model); }
         if (identity == null) { ModelState.AddModelError("", "Credenciales inválidas."); model.Password = ""; return View(model); }
         var user = await db.Users.Include(x => x.Department).SingleOrDefaultAsync(x => x.Email == identity.Email, ct);
-        var claims = new List<Claim> { new(ClaimTypes.NameIdentifier, identity.Email), new(ClaimTypes.Email, identity.Email), new(ClaimTypes.Name, identity.Name) };
+        if (user?.EmployeeCode is { Length: > 0 } code && code != identity.EmployeeCode || await db.Users.AnyAsync(x => x.EmployeeCode == identity.EmployeeCode && x.Email != identity.Email, ct))
+        { ModelState.AddModelError("", "Los datos institucionales requieren revisión administrativa. Contacta al administrador."); model.Password = ""; return View(model); }
+        if (user != null) { user.Name = identity.Name; user.EmployeeCode = identity.EmployeeCode; await db.SaveChangesAsync(ct); }
+        var claims = new List<Claim> { new(ClaimTypes.NameIdentifier, identity.Email), new(ClaimTypes.Email, identity.Email), new(ClaimTypes.Name, identity.Name), new("directory_code", identity.EmployeeCode) };
         if (LunchService.Enabled(user)) { claims.Add(new Claim(ClaimTypes.Role, user!.Role)); claims.Add(new Claim("enabled", "true")); claims.Add(new Claim("department", user.DepartmentId!)); }
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme)), new AuthenticationProperties { IsPersistent = false });
         return RedirectToAction(LunchService.Enabled(user) ? "Index" : "Denied", LunchService.Enabled(user) ? "Home" : "Auth");
     }
     [Authorize, HttpGet] public async Task<IActionResult> Denied()
     {
+        ViewBag.Branding = await branding.Get();
         var user = await db.Users.Include(x => x.Department).SingleOrDefaultAsync(x => x.Email == User.FindFirstValue(ClaimTypes.Email));
         if (LunchService.Enabled(user)) return RedirectToAction("Index", "Home");
-        ViewBag.Pending = user?.Status == "PENDIENTE"; ViewBag.Inactive = user?.Status == "INACTIVO"; ViewBag.Departments = await db.Departments.Where(x => x.Status == "ACTIVO").OrderBy(x => x.Name).ToListAsync(); return View(new AccessModel { Code = user?.EmployeeCode ?? "", SuggestedDepartment = user?.Department?.Name ?? "" });
+        ViewBag.Pending = user?.Status == "PENDIENTE"; ViewBag.Inactive = user?.Status == "INACTIVO"; ViewBag.Departments = await db.Departments.Where(x => x.Status == "ACTIVO").OrderBy(x => x.Name).ToListAsync(); return View(new AccessModel { Code = User.FindFirstValue("directory_code") ?? "", SuggestedDepartment = user?.Department?.Name ?? "" });
     }
     [Authorize, HttpPost, EnableRateLimiting("login")] public async Task<IActionResult> RequestAccess(AccessModel model)
     {
-        if (!ModelState.IsValid) { TempData["Message"] = "Completa un código de empleado de cuatro dígitos."; return RedirectToAction(nameof(Denied)); }
+        model.Code = User.FindFirstValue("directory_code") ?? "";
+        if (!ModelState.IsValid || !System.Text.RegularExpressions.Regex.IsMatch(model.Code, "^[0-9]{4}$")) { TempData["Message"] = "La identidad o el departamento requieren revisión. Inicia sesión nuevamente."; return RedirectToAction(nameof(Denied)); }
         var email = User.FindFirstValue(ClaimTypes.Email)!; var existing = await db.Users.FindAsync(email);
         if (existing?.Status == "PENDIENTE") { TempData["Message"] = "Tu solicitud está pendiente de revisión."; return RedirectToAction(nameof(Denied)); }
         if (existing != null && LunchService.Enabled(await db.Users.Include(x => x.Department).SingleAsync(x => x.Email == email))) return RedirectToAction("Index", "Home");
