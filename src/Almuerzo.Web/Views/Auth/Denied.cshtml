@@ -1,0 +1,19 @@
+@model Almuerzo.Web.Controllers.AccessModel
+@{ Layout = null; }
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Acceso denegado · Almuerzo</title><link rel="stylesheet" href="/assets/tailwind.css"><link rel="stylesheet" href="/assets/fonts.css"><link rel="stylesheet" href="/assets/icons.css"><link rel="stylesheet" href="/assets/app.css"></head>
+<body class="bg-gray-50 text-gray-800 min-h-screen flex items-center justify-center p-5"><main class="w-full max-w-lg bg-white rounded-3xl shadow-xl border border-gray-100 p-8 sm:p-10">
+<div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-600 text-2xl flex items-center justify-center mb-6"><i class="fa-solid fa-lock" aria-hidden="true"></i></div>
+<h1 class="text-2xl font-bold text-gray-900">Acceso denegado</h1><p class="text-sm text-gray-500 mt-3">Hola, @User.Identity?.Name. Tu identidad fue validada, pero aún no tienes acceso habilitado a Almuerzo.</p>
+@if (TempData["Message"] is string message) { <p class="bg-blue-50 text-blue-700 p-3 rounded-xl mt-5" role="status">@message</p> }
+@if (ViewBag.Pending == true) { <p class="bg-amber-50 text-amber-700 p-4 rounded-xl mt-6">Tu solicitud está pendiente. Un administrador debe asignarte un rol y un departamento.</p> }
+else {
+  @if (ViewBag.Inactive == true) { <p class="mt-6 text-sm">Tu cuenta está inactiva. Puedes solicitar su revisión; el administrador deberá habilitarla.</p> }
+  <form asp-action="RequestAccess" method="post" class="space-y-5 mt-7">
+    <div><label asp-for="Code" class="block text-sm font-semibold mb-2">Código de empleado</label><input asp-for="Code" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required class="w-full rounded-xl border border-gray-200 p-3" placeholder="Cuatro dígitos"></div>
+    <div><label asp-for="SuggestedDepartment" class="block text-sm font-semibold mb-2">Departamento al que perteneces</label><select asp-for="SuggestedDepartment" class="w-full rounded-xl border border-gray-200 p-3"><option value="">Selecciona un departamento</option>@foreach (Almuerzo.Web.Models.Department d in ViewBag.Departments) { <option value="@d.Name">@d.Name</option> }</select></div>
+    <button class="w-full rounded-xl bg-blue-600 text-white p-3 font-semibold hover:bg-blue-700" type="submit">Solicitar acceso</button>
+  </form>
+}
+<form asp-action="Logout" method="post" class="mt-6"><button type="submit" class="text-sm text-gray-500 hover:text-blue-600">Cerrar sesión</button></form>
+</main></body></html>

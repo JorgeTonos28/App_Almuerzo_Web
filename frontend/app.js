@@ -1,0 +1,2562 @@
+const { createApp, ref, computed, onMounted, reactive, nextTick, watch } = Vue;
+
+createApp({
+  render: AlmuerzoRender,
+  setup() {
+    const csrfToken = document.querySelector("meta[name=csrf-token]").content;
+    const footerSignatureUrl = window.__INITIAL_DATA__?.footerSignatureUrl || "";
+    // === ESTADO (STATE) ===
+    const loading = ref(true);
+    const submitting = ref(false);
+    const activeUsersCount = ref(0);
+
+    // Datos del usuario y app
+    const user = ref({});
+    const activeUser = ref({});
+    const deptUsers = ref([]);
+    const impersonateEmail = ref('');
+    const menu = ref({});
+    const myOrder = ref(null);
+    const adminData = ref(null);
+
+    // Manejo de Fechas (Nuevo)
+    const currentDate = ref(''); // Fecha seleccionada actualmente (YYYY-MM-DD)
+    const dates = ref([]);       // Lista de fechas disponibles (tabs)
+    const allMenus = ref({});
+    const allOrders = ref({});
+    const menuCategories = ref([]);
+    const remindersEnabled = ref(true);
+    const mealPricing = ref({ current: 57, history: [{ from: '1900-01-01', price: 57 }] });
+    const currentUserPrefs = ref({});
+    const todayYmd = ref('');
+    const serverHour = ref(12);
+    const serverTime = ref('');
+
+    // Aviso General
+    const announcementConfig = ref({ enabled: false, id: '', expiresOn: '', maxDismiss: 3, slides: [] });
+    const showAnnouncementModal = ref(false);
+    const announcementSlideIndex = ref(0);
+    const announcementEditModal = ref({ open: false, enabled: true, expiresOn: '', maxDismiss: 3, slides: [], saving: false });
+
+    // Proveedor y Valoraciones
+    const providerInfo = ref({ name: 'Proveedor de Alimentos', periodId: 'PROV_2026_01', periodStart: '' });
+    const userMealRatings = ref({});
+    const userProviderRating = ref(null);
+    const mealRatingModal = ref({ open: false, date: '', dateLabel: '', orderId: '', rating: 5, comment: '', dishes: '', saving: false, error: null });
+    const providerRatingModal = ref({ open: false, rating: 5, comment: '', saving: false, error: null });
+    const providerResetModal = ref({ open: false, providerName: '', saving: false, error: null });
+    const ratingsSummary = ref({ providerStats: null, mealStats: null, loading: false });
+    const satisfactionCommunityModal = ref({ open: false, activeTab: 'PROVIDER', loading: false, data: null });
+    const chefGameState = ref({
+      score: 0,
+      remainingSeconds: 900,
+      dailyLimitSeconds: 900,
+      streak: 0,
+      bestStreak: 0,
+      penaltySeconds: 0,
+      monthLabel: ''
+    });
+    const chefGame = reactive({
+      active: false,
+      visible: false,
+      kind: 'chef',
+      trapKind: '',
+      position: 'side-left-mid',
+      message: '',
+      combo: '',
+      countdown: 0,
+      bonusMode: false,
+      bonusPending: false,
+      starBursts: [],
+      cakeVisible: false,
+      cakeStyle: {},
+      cakeTimer: null,
+      cakeMessageTimer: null,
+      cakeToken: 0,
+      dirty: false,
+      syncing: false,
+      startTimer: null,
+      roundTimer: null,
+      countdownTimer: null,
+      feedbackTimer: null,
+      clockTimer: null,
+      roundStartedAt: 0,
+      roundDurationMs: 0,
+      roundToken: 0,
+      startedForKey: '',
+      recentKinds: [],
+      lastTrapKind: ''
+    });
+    const CHEF_BONUS_STREAK_INTERVAL = 8;
+    const CHEF_BONUS_DURATION_MS = 3000;
+    const CHEF_CAKE_CHANCE = 0.004;
+    const CHEF_SCORE_CHEF = 1;
+    const CHEF_SCORE_COMBO_3 = 1;
+    const CHEF_SCORE_COMBO_5 = 2;
+    const CHEF_SCORE_PERFECT = 4;
+    const CHEF_SCORE_BONUS_TAP = 1;
+    const CHEF_SCORE_CAKE = 20;
+    const CHEF_SCORE_MISS = -2;
+    const CHEF_SCORE_ONION = -4;
+    const CHEF_SCORE_PAN = -6;
+    const chefRanking = reactive({
+      loading: false,
+      loaded: false,
+      error: '',
+      rows: [],
+      currentUser: null,
+      monthKey: '',
+      monthLabel: '',
+      showRules: false
+    });
+
+    // Summary Date Range
+    const summaryDateStart = ref('');
+    const summaryDateEnd = ref('');
+
+    // Formulario
+    const comments = ref('');
+    const selection = reactive(new Set());
+    const selectionData = reactive({});
+
+    const deptAdminSearch = ref('');
+
+    // Logo Animation State
+    const logoAnimating = ref(false);
+    const bubbleVisible = ref(false);
+    const bubbleText = ref('');
+    const bubbleTimer = ref(null);
+    const heartbeatTimer = ref(null);
+
+    // Message Modal State
+    const msgModal = reactive({
+       open: false,
+       title: '',
+       message: '',
+       type: 'ALERT', // ALERT | CONFIRM
+       onConfirm: null
+    });
+
+    const showModal = (msg, title = 'Atención', type = 'ALERT', onOk = null) => {
+       msgModal.message = msg;
+       msgModal.title = title;
+       msgModal.type = type;
+       msgModal.onConfirm = onOk;
+       msgModal.open = true;
+    };
+
+    const startHeartbeat = () => {
+       if (!activeUser.value?.email) return;
+       if (heartbeatTimer.value) return;
+       runHeartbeat();
+       heartbeatTimer.value = window.setInterval(runHeartbeat, 45000);
+    };
+
+    const stopHeartbeat = () => {
+       if (!heartbeatTimer.value) return;
+       window.clearInterval(heartbeatTimer.value);
+       heartbeatTimer.value = null;
+    };
+
+    const runHeartbeat = () => {
+       almuerzo.run
+         .withSuccessHandler(res => {
+            if (res && res.count !== null) {
+               activeUsersCount.value = res.count;
+            }
+         })
+         .withFailureHandler(() => { /* Silencioso en error */ })
+         .apiHeartbeat();
+    };
+
+    const closeMsgModal = () => {
+       msgModal.open = false;
+       msgModal.onConfirm = null;
+    };
+
+    const confirmMsgModal = () => {
+       if(msgModal.onConfirm) msgModal.onConfirm();
+       closeMsgModal();
+    };
+
+    // ADMIN STATE
+    const viewMode = ref('USER'); // USER | ADMIN
+    const adminState = reactive({
+       loading: false,
+       tab: 'USUARIOS',
+       users: [],
+       orders: [],
+       departments: [],
+       deptMap: {}, // ID -> Name
+       config: {},
+       configList: [],
+       configKeys: [],
+       holidays: [],
+       menuCategories: [],
+       userModal: { open: false, isNew: true, data: {} },
+       deptModal: { open: false, isNew: true, data: {} },
+       configEdit: false,
+       filters: {
+          orders: { search: '', dateStart: '', dateEnd: '', status: '', open: false },
+          users: { search: '' }
+       },
+       // Menu Editor
+       menuDate: '',
+       menuItems: [],
+       menuModal: { open: false, isNew: true, data: {} },
+       categoryManagerModal: { open: false, view: 'LIST' },
+       categoryModal: { open: false, isNew: true, data: { combinable_con: [] } },
+       // Menu Import
+       menuImportModal: { open: false, step: 1, weekStart: '', text: '', preview: [], error: null },
+       // Holiday Editor
+       holidayModal: { open: false, data: {} },
+       nextBusinessDay: '',
+       responsiblesList: []
+    });
+
+    // === COMPUTED PROPERTIES ===
+    const isAdmin = computed(() => activeUser.value.rol && ['ADMIN_GEN', 'ADMIN_DEP'].includes(activeUser.value.rol));
+    const isDeptAdmin = computed(() => activeUser.value.rol === 'ADMIN_DEP');
+    const isAdminGen = computed(() => activeUser.value.rol === 'ADMIN_GEN');
+    const isTestEmailMode = computed(() => String(adminState.config['TEST_EMAIL_MODE'] || '').trim().toUpperCase() === 'TRUE');
+    const chefScore = computed(() => Number(chefGameState.value?.score || 0));
+    const chefRemainingSeconds = computed(() => Math.max(0, Number(chefGameState.value?.remainingSeconds || 0)));
+    const chefGameAvailable = computed(() => chefRemainingSeconds.value > 0);
+    const chefDailyProgress = computed(() => {
+      const limit = Number(chefGameState.value?.dailyLimitSeconds || 900);
+      const used = Math.max(0, Number(chefGameState.value?.usedSeconds || 0));
+      if (!limit) return 0;
+      return Math.min(100, Math.round((used / limit) * 100));
+    });
+    const chefRemainingLabel = computed(() => {
+      const total = chefRemainingSeconds.value;
+      const minutes = Math.floor(total / 60);
+      const seconds = total % 60;
+      return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    });
+
+    const menuLoaded = computed(() => menu.value && Object.keys(menu.value).length > 0);
+    const chefGameCardVisible = computed(() => {
+      if (viewMode.value !== 'USER' || loading.value) return false;
+      if (myOrder.value) return true;
+      return !menuLoaded.value;
+    });
+    const chefGameCardKey = computed(() => {
+      if (myOrder.value) {
+        return `${currentDate.value || 'pedido'}:${myOrder.value.id || 'pedido'}`;
+      }
+      return `${currentDate.value || 'sin-fecha'}:sin-menu`;
+    });
+    const chefGameInCooldown = computed(() => chefGame.active && chefGame.countdown > 0 && Boolean(chefGame.countdownTimer));
+
+    // FILTERED LISTS
+    const filteredUsers = computed(() => {
+       const q = adminState.filters.users.search.toLowerCase();
+       if (!q) return adminState.users;
+       return adminState.users.filter(u =>
+          u.nombre.toLowerCase().includes(q) ||
+          u.email.toLowerCase().includes(q) ||
+          (u.codigo && String(u.codigo).includes(q)) ||
+          u.departamento.toLowerCase().includes(q)
+       );
+    });
+
+    const filteredAdminUsers = computed(() => {
+       const q = deptAdminSearch.value.toLowerCase();
+       if (!q) return [];
+       return adminState.users.filter(u =>
+          u.nombre.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)
+       );
+    });
+
+    const deptMoveHint = computed(() => {
+       if (!adminState.deptModal.data.admins) return [];
+       const emails = adminState.deptModal.data.admins.split(',').map(e=>e.trim().toLowerCase());
+       const moved = [];
+       const targetId = adminState.deptModal.data.id;
+
+       emails.forEach(e => {
+          const u = adminState.users.find(x => x.email.toLowerCase() === e);
+          if (u && u.rol === 'ADMIN_DEP' && (!targetId || u.departamentoId !== targetId)) {
+             const oldName = adminState.deptMap[u.departamentoId] || 'Otro';
+             moved.push(`${u.nombre} se moverá de ${oldName}`);
+          }
+       });
+       return moved;
+    });
+
+    const filteredOrders = computed(() => {
+       const f = adminState.filters.orders;
+       const q = f.search.toLowerCase();
+       return adminState.orders.filter(o => {
+          // Text Search (all fields including Creado Por and Dept)
+          if (q && !(
+             o.nombre.toLowerCase().includes(q) ||
+             o.email.toLowerCase().includes(q) ||
+             o.resumen.toLowerCase().includes(q) ||
+             (o.creado_por && o.creado_por.toLowerCase().includes(q)) ||
+             (o.dept && o.dept.toLowerCase().includes(q))
+          )) return false;
+
+          // Date Range Match
+          if (f.dateStart && o.date < f.dateStart) return false;
+          if (f.dateEnd && o.date > f.dateEnd) return false;
+
+          // Status Match
+          if (f.status && o.estado !== f.status) return false;
+
+          return true;
+       });
+    });
+
+    // Categorías configuradas por el administrador, ordenadas por su prioridad.
+    const categoryById = computed(() => {
+      const map = {};
+      menuCategories.value.forEach(category => { map[category.id] = category; });
+      return map;
+    });
+
+    const sortCategoryIds = (ids) => {
+      return [...ids].sort((a, b) => {
+        const categoryA = categoryById.value[a];
+        const categoryB = categoryById.value[b];
+        const orderA = categoryA ? Number(categoryA.orden || 999) : 999;
+        const orderB = categoryB ? Number(categoryB.orden || 999) : 999;
+        const nameA = categoryA ? categoryA.nombre : a;
+        const nameB = categoryB ? categoryB.nombre : b;
+        return orderA - orderB || nameA.localeCompare(nameB, 'es');
+      });
+    };
+
+    const activeMenuCategories = computed(() => menuCategories.value.filter(category => category.estado === 'ACTIVO'));
+    const adminMenuCategories = computed(() => {
+      const ids = new Set(menuCategories.value.map(category => category.id));
+      adminState.menuItems.forEach(item => ids.add(item.cat));
+      return sortCategoryIds(ids).map(id => categoryById.value[id] || { id, nombre: String(id).replace(/_/g, ' '), orden: 999, estado: 'INACTIVO' });
+    });
+    const categories = computed(() => {
+      if (!menu.value) return [];
+      const cats = Object.keys(menu.value);
+      return sortCategoryIds(cats);
+    });
+
+    const selectedCount = computed(() => selection.size);
+    const minorMenuWords = new Set(['de', 'del', 'la', 'las', 'el', 'los', 'y', 'e', 'o', 'u', 'con', 'al', 'en']);
+    const multiSelectCats = ['Vegetariana', 'Caldo', 'Opcion_Rapida'];
+
+    const formatMenuText = (value) => {
+      if (value === null || value === undefined) return '';
+
+      const cleaned = String(value).trim().replace(/\s+/g, ' ');
+      if (!cleaned) return '';
+
+      return cleaned
+        .toLowerCase()
+        .split(' ')
+        .map((word, index) => {
+          return word
+            .split(/([/-])/)
+            .map(part => {
+              if (!part || part === '/' || part === '-') return part;
+              if (index > 0 && minorMenuWords.has(part)) return part;
+              return part.charAt(0).toUpperCase() + part.slice(1);
+            })
+            .join('');
+        })
+        .join(' ');
+    };
+
+    const formatCurrency = (value) => {
+      const amount = Number(value || 0);
+      return new Intl.NumberFormat('es-DO', {
+        style: 'currency',
+        currency: 'DOP',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }).format(amount);
+    };
+
+    const getMealPriceForDate = (dateStr) => {
+      const fallback = Number(mealPricing.value?.current || 57);
+      const history = Array.isArray(mealPricing.value?.history) ? mealPricing.value.history : [];
+      const sortedHistory = history
+        .filter(entry => entry && entry.from && entry.price !== undefined)
+        .slice()
+        .sort((a, b) => a.from.localeCompare(b.from));
+
+      let resolvedPrice = fallback;
+      sortedHistory.forEach(entry => {
+        if (entry.from <= dateStr) {
+          resolvedPrice = Number(entry.price || resolvedPrice);
+        }
+      });
+
+      return resolvedPrice;
+    };
+
+    const resetSelectionState = () => {
+      selection.clear();
+      for (const prop of Object.getOwnPropertyNames(selectionData)) {
+        delete selectionData[prop];
+      }
+      comments.value = '';
+    };
+
+    const shouldScrollSummaryCards = computed(() => userWeeklySummary.value.length > 8);
+
+    // === SUMMARY TABLE HELPERS ===
+    const summaryHeaders = computed(() => {
+      const ids = new Set(menuCategories.value.map(category => category.id));
+      Object.values(allOrders.value).forEach(order => {
+        const categories = order && order.detalle && Array.isArray(order.detalle.categorias) ? order.detalle.categorias : [];
+        categories.forEach(category => ids.add(category));
+      });
+      return sortCategoryIds(ids);
+    });
+
+    // Initial Default Range check
+    const isDefaultSummary = computed(() => {
+       if (!summaryDateStart.value || !summaryDateEnd.value) return true;
+       const today = new Date();
+       const toYMD = (d) => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+       const start = toYMD(today);
+       const next = new Date(today); next.setDate(today.getDate() + 7);
+       const end = toYMD(next);
+       return summaryDateStart.value === start && summaryDateEnd.value === end;
+    });
+
+    const summaryTitle = computed(() => isDefaultSummary.value ? "Mi Resumen Semanal" : "Resumen Diario");
+
+    const userWeeklySummary = computed(() => {
+      if (!summaryDateStart.value || !summaryDateEnd.value) return [];
+
+      const start = new Date(summaryDateStart.value + 'T12:00:00');
+      const end = new Date(summaryDateEnd.value + 'T12:00:00');
+      const list = [];
+
+      // Generate dates in range
+      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+          const ymd = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+          // Skip weekends? Keeping them hidden if no order logic or just skip them entirely
+          // Requirement doesn't strictly say hide weekends but usually corporate lunch is Mon-Fri.
+          // However if a holiday is set on a weekday, it should probably appear if filtered?
+          // Let's stick to: If it's Saturday(6) or Sunday(0), skip.
+          if (d.getDay() === 0 || d.getDay() === 6) continue;
+
+          const label = d.toLocaleDateString('es-DO', {weekday:'long', day:'numeric', month:'numeric'});
+          // Capitalize first letter
+          const finalLabel = label.charAt(0).toUpperCase() + label.slice(1);
+
+          list.push({ value: ymd, label: finalLabel });
+      }
+
+      return list.map(d => {
+        const order = allOrders.value[d.value];
+        const row = { date: d.value, label: d.label, items: {}, mealPrice: getMealPriceForDate(d.value) };
+        let hasItems = false;
+
+        if (order && order.detalle) {
+          const det = order.detalle;
+          if (Array.isArray(det.categorias) && Array.isArray(det.items)) {
+             det.categorias.forEach((cat, idx) => {
+                if (!row.items[cat]) {
+                   row.items[cat] = det.items[idx];
+                } else {
+                   row.items[cat] += ', ' + det.items[idx];
+                }
+                hasItems = true;
+             });
+          }
+        }
+        return hasItems ? row : null;
+      }).filter(r => r !== null);
+    });
+
+    const userSummaryTotalCost = computed(() => {
+      return userWeeklySummary.value.reduce((total, row) => total + Number(row.mealPrice || 0), 0);
+    });
+
+    const displayDate = computed(() => {
+      const d = dates.value.find(x => x.value === currentDate.value);
+      return d ? d.label : currentDate.value;
+    });
+
+    const isCutoffPassed = computed(() => {
+      if (!currentDate.value) return true;
+      if (dates.value.length === 0) return true;
+      return !dates.value.some(d => d.value === currentDate.value);
+    });
+
+    // === REGLAS DE NEGOCIO (VALIDACIONES) ===
+    const specialCats = ['Vegetariana', 'Caldo', 'Opcion_Rapida'];
+    // exclusionCats: Categorías que no pueden mezclarse entre sí
+    // Nota: En el requerimiento original Arroces no va con Víveres.
+
+    // Helper: Array de categorías seleccionadas actualmente
+    const selectedCats = computed(() => {
+      const cats = new Set();
+      selection.forEach(id => {
+        if(selectionData[id]) cats.add(selectionData[id].cat);
+      });
+      return Array.from(cats);
+    });
+
+    const isSpecialSelected = computed(() => {
+      return selectedCats.value.some(c => {
+        const cat = categoryById.value[c];
+        return cat ? !cat.es_combinable : specialCats.includes(c);
+      });
+    });
+
+    // Validar si una categoría entera debe bloquearse (gris)
+    const isCatDisabled = (cat) => {
+      const targetCat = categoryById.value[cat];
+      const selected = selectedCats.value;
+      if (selected.length === 0) return false;
+
+      // 1. Si la categoría ya está seleccionada, no se deshabilita
+      if (selected.includes(cat)) return false;
+
+      // 2. Verificar reglas dinámicas de las categorías ya seleccionadas
+      for (const selCatId of selected) {
+        const selCat = categoryById.value[selCatId];
+        if (selCat) {
+          if (!selCat.es_combinable) {
+            const allowed = Array.isArray(selCat.combinable_con) ? selCat.combinable_con : [];
+            if (!allowed.includes(cat)) return true;
+          } else if (Array.isArray(selCat.combinable_con) && selCat.combinable_con.length > 0) {
+            if (!selCat.combinable_con.includes(cat)) return true;
+          }
+        }
+      }
+
+      // 3. Verificar si la categoría objetivo permite combinarse con las seleccionadas
+      if (targetCat) {
+        if (!targetCat.es_combinable) {
+          const allowed = Array.isArray(targetCat.combinable_con) ? targetCat.combinable_con : [];
+          if (selected.some(sId => !allowed.includes(sId))) return true;
+        } else if (Array.isArray(targetCat.combinable_con) && targetCat.combinable_con.length > 0) {
+          if (selected.some(sId => !targetCat.combinable_con.includes(sId))) return true;
+        }
+      }
+
+      // 4. Regla Granos (Estricta)
+      if (selected.includes('Granos')) {
+        const allowed = ['Granos', 'Arroces', 'Carnes', 'Ensaladas', 'Caldo', 'Frituritas'];
+        if (!allowed.includes(cat)) return true;
+      }
+
+      if (cat === 'Granos') {
+         if (selected.some(c => ['Viveres', 'Vegetariana', 'Opcion_Rapida'].includes(c))) return true;
+         let hasNonWhiteRice = false;
+         selection.forEach(id => {
+            const item = selectionData[id];
+            if (item && item.cat === 'Arroces' && !item.plato.toLowerCase().includes('arroz blanco')) hasNonWhiteRice = true;
+         });
+         if (hasNonWhiteRice) return true;
+      }
+
+      // 5. Regla Arroz vs Viveres (Mutuamente exclusivos)
+      if (cat === 'Arroces' && selected.includes('Viveres')) return true;
+      if (cat === 'Viveres' && selected.includes('Arroces')) return true;
+
+      return false;
+    };
+
+    // Validar items específicos
+    const isItemDisabled = (cat, item) => {
+       if (isCatDisabled(cat)) return true;
+       // Si Granos está seleccionado, y estamos en Arroces, solo Arroz Blanco está permitido.
+       if (cat === 'Arroces' && selectedCats.value.includes('Granos')) {
+          if (!item.plato.toLowerCase().includes('arroz blanco')) return true;
+       }
+       return false;
+    };
+
+    // Warnings específicos
+    const showGrainWarning = computed(() => {
+      // Si seleccionó Granos
+      if (!selectedCats.value.includes('Granos')) return false;
+
+      // Verificar si hay algún plato que contenga "Arroz Blanco" (case insensitive)
+      let hasWhiteRice = false;
+      selection.forEach(id => {
+        const item = selectionData[id];
+        if (item && item.cat === 'Arroces' && item.plato.toLowerCase().includes('arroz blanco')) {
+          hasWhiteRice = true;
+        }
+      });
+      return !hasWhiteRice; // Muestra warning si NO hay arroz blanco
+    });
+
+    const validationError = computed(() => {
+      if (selectedCount.value === 0) return null;
+      if (showGrainWarning.value) return "Debes seleccionar Arroz Blanco para acompañar los granos.";
+      return null;
+    });
+
+    const hasBlockingErrors = computed(() => {
+      return selectedCount.value === 0 || validationError.value !== null;
+    });
+
+    // === ACCIONES (ACTIONS) ===
+
+    const applyInitData = (res) => {
+      if (res.empty) {
+        dates.value = [];
+        menu.value = {};
+      }
+
+      user.value = res.user;
+      activeUser.value = res.activeUser || {};
+      deptUsers.value = res.deptUsers || [];
+      menu.value = res.menu || {};
+      myOrder.value = res.myOrder || null;
+      allMenus.value = res.allMenus || {};
+      allOrders.value = res.allOrders || {};
+      menuCategories.value = res.menuCategories || menuCategories.value;
+      if (res.menuCategories) adminState.menuCategories = res.menuCategories;
+      adminData.value = res.adminData || null;
+      currentUserPrefs.value = res.userPrefs || {};
+      remindersEnabled.value = res.userPrefs?.reminders !== false;
+
+      if (res.deptMap) adminState.deptMap = res.deptMap;
+      if (res.nextBusinessDay) adminState.nextBusinessDay = res.nextBusinessDay;
+
+      mealPricing.value = res.mealPricing || { current: 57, history: [{ from: '1900-01-01', price: 57 }] };
+      todayYmd.value = res.todayYmd || todayYmd.value;
+      serverHour.value = res.serverHour !== undefined ? res.serverHour : new Date().getHours();
+      serverTime.value = res.serverTime || new Date().toISOString();
+
+      // Aviso General
+      announcementConfig.value = res.announcementConfig || { enabled: false, id: '', expiresOn: '', maxDismiss: 3, slides: [] };
+      if (announcementConfig.value.enabled) {
+        const today = todayYmd.value || new Date().toISOString().substring(0, 10);
+        const expires = announcementConfig.value.expiresOn;
+        const isNotExpired = !expires || today <= expires;
+        const dismissCount = Number(res.userPrefs?.announcements?.[announcementConfig.value.id] || 0);
+        const maxDismiss = Number(announcementConfig.value.maxDismiss || 3);
+        if (isNotExpired && dismissCount < maxDismiss) {
+          showAnnouncementModal.value = true;
+          announcementSlideIndex.value = 0;
+        }
+      }
+
+      // Proveedor y Valoraciones
+      providerInfo.value = res.providerInfo || { name: 'Proveedor de Alimentos', periodId: 'PROV_2026_01', periodStart: '' };
+      userMealRatings.value = res.userMealRatings || {};
+      userProviderRating.value = res.userProviderRating || null;
+
+      setChefGameState(res.chefGame || {});
+      if (res.activeUser?.email) startHeartbeat();
+      else stopHeartbeat();
+
+      currentDate.value = res.currentDate;
+      dates.value = res.dates || [];
+
+      if ((res.activeUser?.rol === 'ADMIN_GEN' || res.activeUser?.rol === 'ADMIN_DEP') && adminState.users.length === 0 && !adminState.loading) {
+        window.setTimeout(() => loadAdminData(false, { silent: true }), 120);
+      }
+    };
+
+    const applyDateViewData = (res) => {
+      currentDate.value = res.currentDate;
+      menu.value = res.menu || {};
+      myOrder.value = res.myOrder || null;
+      allMenus.value = { ...allMenus.value, [res.currentDate]: res.menu || {} };
+
+      const nextOrders = { ...allOrders.value };
+      if (res.myOrder) nextOrders[res.currentDate] = res.myOrder;
+      else delete nextOrders[res.currentDate];
+      allOrders.value = nextOrders;
+
+      if (res.adminData) adminData.value = res.adminData;
+      resetSelectionState();
+    };
+
+    const setChefGameState = (state = {}) => {
+      chefGameState.value = {
+        score: 0,
+        hits: 0,
+        misses: 0,
+        usedSeconds: 0,
+        remainingSeconds: 900,
+        dailyLimitSeconds: 900,
+        streak: 0,
+        bestStreak: 0,
+        penaltySeconds: 0,
+        monthLabel: '',
+        ...state
+      };
+      chefGame.dirty = false;
+    };
+
+    const clearChefRoundTimers = () => {
+      if (chefGame.startTimer) window.clearTimeout(chefGame.startTimer);
+      if (chefGame.roundTimer) window.clearTimeout(chefGame.roundTimer);
+      if (chefGame.countdownTimer) window.clearInterval(chefGame.countdownTimer);
+      if (chefGame.feedbackTimer) window.clearTimeout(chefGame.feedbackTimer);
+      chefGame.startTimer = null;
+      chefGame.roundTimer = null;
+      chefGame.countdownTimer = null;
+      chefGame.feedbackTimer = null;
+    };
+
+    const clearChefCakeTimer = () => {
+      if (chefGame.cakeTimer) window.clearTimeout(chefGame.cakeTimer);
+      if (chefGame.cakeMessageTimer) window.clearTimeout(chefGame.cakeMessageTimer);
+      chefGame.cakeTimer = null;
+      chefGame.cakeMessageTimer = null;
+      chefGame.cakeVisible = false;
+    };
+
+    const clearChefTimers = () => {
+      clearChefRoundTimers();
+      clearChefCakeTimer();
+      if (chefGame.clockTimer) window.clearInterval(chefGame.clockTimer);
+      chefGame.clockTimer = null;
+    };
+
+    const stopChefGame = (options = {}) => {
+      clearChefTimers();
+      chefGame.active = false;
+      chefGame.visible = false;
+      chefGame.countdown = 0;
+      chefGame.message = '';
+      chefGame.combo = '';
+      chefGame.bonusMode = false;
+      chefGame.starBursts = [];
+      chefGame.syncing = false;
+      if (options.clearKey) {
+        chefGame.startedForKey = '';
+        chefGame.recentKinds = [];
+        chefGame.lastTrapKind = '';
+      }
+    };
+
+    const pauseChefGame = () => {
+      clearChefTimers();
+      chefGame.active = false;
+      chefGame.visible = false;
+      chefGame.countdown = 0;
+      chefGame.message = '';
+      chefGame.combo = '';
+      chefGame.bonusMode = false;
+      chefGame.starBursts = [];
+    };
+
+    const clampNumber = (value, min, max) => Math.min(max, Math.max(min, value));
+
+    const countRecentChefKinds = (kind, limit = 4) => {
+      return chefGame.recentKinds.slice(-limit).filter(item => item === kind).length;
+    };
+
+    const pushRecentChefKind = (kind) => {
+      chefGame.recentKinds = [...chefGame.recentKinds.slice(-5), kind];
+      if (kind === 'onion' || kind === 'pan') chefGame.lastTrapKind = kind;
+    };
+
+    const pickWeightedChefKind = (weights) => {
+      const entries = Object.entries(weights).filter(([, weight]) => weight > 0);
+      const total = entries.reduce((sum, [, weight]) => sum + weight, 0);
+      let roll = Math.random() * total;
+      for (const [kind, weight] of entries) {
+        roll -= weight;
+        if (roll <= 0) return kind;
+      }
+      return 'chef';
+    };
+
+    const chooseChefRoundKind = (streak) => {
+      const recent = chefGame.recentKinds.slice(-4);
+      const chefsInFour = recent.filter(kind => kind === 'chef').length;
+      const trapsInFour = recent.filter(kind => kind === 'onion' || kind === 'pan').length;
+      const lastTwo = chefGame.recentKinds.slice(-2);
+      const lastThree = chefGame.recentKinds.slice(-3);
+
+      if (lastTwo.length === 2 && lastTwo.every(kind => kind === 'onion' || kind === 'pan')) return 'chef';
+      if (lastThree.length === 3 && lastThree.every(kind => kind === 'chef')) {
+        return Math.random() > 0.5 ? 'onion' : 'pan';
+      }
+
+      const trapPressure = clampNumber(0.26 + (streak * 0.006), 0.24, 0.34);
+      const trapWeight = trapPressure * 100;
+      const chefWeight = 100 - trapWeight;
+      const onionWeight = trapWeight * (chefGame.lastTrapKind === 'onion' ? 0.36 : 0.64);
+      const panWeight = trapWeight * (chefGame.lastTrapKind === 'pan' ? 0.36 : 0.64);
+      const weights = {
+        chef: chefWeight,
+        onion: onionWeight,
+        pan: panWeight
+      };
+
+      if (chefsInFour >= 3) weights.chef *= 0.38;
+      if (trapsInFour >= 2) {
+        weights.onion *= 0.48;
+        weights.pan *= 0.48;
+        weights.chef *= 1.35;
+      }
+      if (countRecentChefKinds('onion', 3) >= 2) weights.onion *= 0.2;
+      if (countRecentChefKinds('pan', 3) >= 2) weights.pan *= 0.2;
+
+      return pickWeightedChefKind(weights);
+    };
+
+    const addChefBonusStars = () => {
+      const burstId = Date.now() + Math.random();
+      const stars = Array.from({ length: 6 }, (_, index) => {
+        const angle = ((Math.PI * 2) / 6) * index + (Math.random() * 0.5);
+        const distance = 1.6 + Math.random() * 1.8;
+        return {
+          id: `${burstId}-${index}`,
+          style: {
+            '--star-x': `${Math.cos(angle) * distance}rem`,
+            '--star-y': `${Math.sin(angle) * distance}rem`,
+            '--star-rot': `${Math.round((Math.random() * 160) - 80)}deg`
+          }
+        };
+      });
+      chefGame.starBursts = [...chefGame.starBursts, ...stars];
+      window.setTimeout(() => {
+        const ids = new Set(stars.map(star => star.id));
+        chefGame.starBursts = chefGame.starBursts.filter(star => !ids.has(star.id));
+      }, 520);
+    };
+
+    const maybeLaunchChefCake = () => {
+      if (!chefGame.active || chefGame.cakeVisible || Math.random() > CHEF_CAKE_CHANCE) return;
+
+      const vectors = [
+        { x: -22, y: -12, rot: -380 },
+        { x: 21, y: -10, rot: 420 },
+        { x: -23, y: 6, rot: -310 },
+        { x: 22, y: 8, rot: 360 },
+        { x: -15, y: -20, rot: -450 },
+        { x: 15, y: -21, rot: 450 }
+      ];
+      const vector = vectors[Math.floor(Math.random() * vectors.length)];
+      const jitterX = (Math.random() * 4) - 2;
+      const jitterY = (Math.random() * 3) - 1.5;
+      chefGame.cakeToken += 1;
+      chefGame.cakeVisible = true;
+      chefGame.cakeStyle = {
+        '--cake-x': `${vector.x + jitterX}rem`,
+        '--cake-y': `${vector.y + jitterY}rem`,
+        '--cake-rot': `${vector.rot}deg`,
+        '--cake-duration': `${720 + Math.round(Math.random() * 180)}ms`
+      };
+
+      const cakeToken = chefGame.cakeToken;
+      if (chefGame.cakeTimer) window.clearTimeout(chefGame.cakeTimer);
+      chefGame.cakeTimer = window.setTimeout(() => {
+        if (cakeToken !== chefGame.cakeToken) return;
+        chefGame.cakeVisible = false;
+        chefGame.cakeTimer = null;
+      }, 940);
+    };
+
+    const handleChefCakeTap = () => {
+      if (!chefGame.cakeVisible || chefGame.syncing) return;
+      if (chefGame.cakeTimer) window.clearTimeout(chefGame.cakeTimer);
+      chefGame.cakeTimer = null;
+      chefGame.cakeToken += 1;
+      chefGame.cakeVisible = false;
+      chefGameState.value = {
+        ...chefGameState.value,
+        score: Math.max(0, Number(chefGameState.value?.score || 0) + CHEF_SCORE_CAKE)
+      };
+      markChefGameDirty();
+      chefGame.combo = 'Bizcocho bonus';
+      chefGame.message = `+${CHEF_SCORE_CAKE} bizcocho`;
+      if (chefGame.cakeMessageTimer) window.clearTimeout(chefGame.cakeMessageTimer);
+      chefGame.cakeMessageTimer = window.setTimeout(() => {
+        chefGame.cakeMessageTimer = null;
+        chefGame.combo = '';
+        if (!chefGame.countdown && !chefGame.visible) chefGame.message = '';
+      }, 700);
+    };
+
+    const recordChefBonusTap = () => {
+      chefGameState.value = {
+        ...chefGameState.value,
+        score: Math.max(0, Number(chefGameState.value?.score || 0) + CHEF_SCORE_BONUS_TAP)
+      };
+      markChefGameDirty();
+      chefGame.message = '+1';
+      addChefBonusStars();
+    };
+
+    const scheduleChefGameStart = (force = false) => {
+      clearChefRoundTimers();
+      chefGame.visible = false;
+      chefGame.countdown = 0;
+      chefGame.combo = '';
+      chefGame.bonusMode = false;
+      chefGame.starBursts = [];
+
+      if (viewMode.value !== 'USER' || !chefGameCardVisible.value) {
+        chefGame.active = false;
+        return;
+      }
+
+      const orderKey = chefGameCardKey.value;
+      const hasLiveRound = chefGame.visible || chefGame.syncing || chefGame.startTimer || chefGame.roundTimer || chefGame.countdownTimer || chefGame.feedbackTimer;
+      if (!force && chefGame.active && chefGame.startedForKey === orderKey && hasLiveRound) return;
+
+      chefGame.startedForKey = orderKey;
+      chefGame.recentKinds = [];
+      chefGame.lastTrapKind = '';
+      chefGame.active = false;
+
+      if (!chefGameAvailable.value) {
+        chefGame.message = 'Tiempo diario agotado';
+        return;
+      }
+
+      chefGame.message = '';
+    };
+
+    const startChefCountdown = (seconds, done) => {
+      clearChefRoundTimers();
+      chefGame.visible = false;
+      chefGame.countdown = Math.max(0, Number(seconds || 0));
+      if (chefGame.countdown <= 0) {
+        done();
+        return;
+      }
+
+      chefGame.countdownTimer = window.setInterval(() => {
+        chefGame.countdown -= 1;
+        if (chefGame.countdown <= 0) {
+          window.clearInterval(chefGame.countdownTimer);
+          chefGame.countdownTimer = null;
+          done();
+        }
+      }, 1000);
+    };
+
+    const markChefGameDirty = () => {
+      chefGame.dirty = true;
+      chefRanking.loaded = false;
+    };
+
+    const tickChefGameClock = () => {
+      if (!chefGame.active || !chefGameAvailable.value) return;
+      const usedSeconds = Number(chefGameState.value?.usedSeconds || 0) + 1;
+      const dailyLimitSeconds = Number(chefGameState.value?.dailyLimitSeconds || 900);
+      chefGameState.value = {
+        ...chefGameState.value,
+        usedSeconds: Math.min(dailyLimitSeconds, usedSeconds),
+        remainingSeconds: Math.max(0, dailyLimitSeconds - usedSeconds)
+      };
+      markChefGameDirty();
+
+      if (!chefGameAvailable.value) {
+        pauseChefGame();
+        chefGame.message = 'Tiempo diario agotado';
+        syncChefGame(true);
+      }
+    };
+
+    const startChefClock = () => {
+      if (chefGame.clockTimer) return;
+      chefGame.clockTimer = window.setInterval(tickChefGameClock, 1000);
+    };
+
+    const startChefGame = () => {
+      if (viewMode.value !== 'USER' || !chefGameCardVisible.value || !chefGameAvailable.value) return;
+      if (!chefGame.startedForKey) scheduleChefGameStart(true);
+      chefGame.active = true;
+      chefGame.message = '';
+      startChefClock();
+      queueChefRound(80, false);
+    };
+
+    const toggleChefGamePlay = () => {
+      if (chefGameInCooldown.value) return;
+      if (chefGame.active) {
+        pauseChefGame();
+      } else {
+        startChefGame();
+      }
+    };
+
+    function queueChefRound(delayMs = 0, usePenalty = false) {
+      if (viewMode.value !== 'USER' || !chefGameCardVisible.value) {
+        stopChefGame();
+        return;
+      }
+
+      if (!chefGameAvailable.value) {
+        stopChefGame();
+        chefGame.active = true;
+        chefGame.message = 'Tiempo diario agotado';
+        return;
+      }
+
+      const penalty = usePenalty ? Number(chefGameState.value?.penaltySeconds || 0) : 0;
+      if (penalty > 0) {
+        chefGame.message = '';
+        startChefCountdown(penalty, () => spawnChefTarget(delayMs));
+        return;
+      }
+
+      clearChefRoundTimers();
+      chefGame.startTimer = window.setTimeout(() => spawnChefTarget(0), Math.max(0, delayMs));
+    }
+
+    function spawnChefTarget(extraDelay = 0) {
+      if (extraDelay > 0) {
+        chefGame.startTimer = window.setTimeout(() => spawnChefTarget(0), extraDelay);
+        return;
+      }
+
+      if (viewMode.value !== 'USER' || !chefGameCardVisible.value || !chefGame.active || !chefGameAvailable.value) return;
+
+      const streak = Number(chefGameState.value?.streak || 0);
+      const positions = ['side-left-high', 'side-left-mid', 'side-left-low', 'side-right-high', 'side-right-mid', 'side-right-low'];
+      const isBonusChef = chefGame.bonusPending && streak >= CHEF_BONUS_STREAK_INTERVAL;
+      const kind = isBonusChef ? 'chef' : chooseChefRoundKind(streak);
+
+      chefGame.kind = kind;
+      chefGame.trapKind = kind === 'chef' ? '' : kind.toUpperCase();
+      pushRecentChefKind(kind);
+      chefGame.position = positions[Math.floor(Math.random() * positions.length)];
+      chefGame.bonusMode = isBonusChef;
+      chefGame.bonusPending = false;
+      chefGame.visible = true;
+      chefGame.countdown = 0;
+      chefGame.message = '';
+      chefGame.starBursts = [];
+      chefGame.roundStartedAt = Date.now();
+      chefGame.roundToken += 1;
+      const currentRoundToken = chefGame.roundToken;
+      chefGame.roundDurationMs = isBonusChef
+        ? CHEF_BONUS_DURATION_MS
+        : kind === 'chef'
+        ? clampNumber(1200 - (streak * 55), 520, 1200)
+        : (kind === 'pan' ? 2400 : 2000);
+      maybeLaunchChefCake();
+
+      chefGame.roundTimer = window.setTimeout(() => {
+        if (currentRoundToken !== chefGame.roundToken) return;
+        if (chefGame.syncing) return;
+        if (!chefGame.visible) return;
+        if (chefGame.bonusMode) {
+          finishChefBonusRound();
+        } else if (chefGame.kind === 'chef') {
+          recordChefEvent('MISS');
+        } else {
+          recordChefEvent('TICK');
+        }
+      }, chefGame.roundDurationMs);
+    }
+
+    function finishChefBonusRound() {
+      if (chefGame.roundTimer) window.clearTimeout(chefGame.roundTimer);
+      chefGame.roundTimer = null;
+      chefGame.roundToken += 1;
+      chefGame.visible = false;
+      chefGame.bonusMode = false;
+      chefGame.starBursts = [];
+      chefGame.message = '';
+      if (!chefGame.active || !chefGameAvailable.value) return;
+      queueChefRound(120, false);
+    }
+
+    const getChefTargetLabel = () => {
+      if (chefGame.kind === 'chef' && chefGame.bonusMode) return 'Chef bonus';
+      if (chefGame.kind === 'chef') return 'Tocar chef';
+      if (chefGame.kind === 'pan') return 'Sarten quemado';
+      return 'Cebolla podrida';
+    };
+
+    const handleChefTargetTap = () => {
+      if (!chefGame.visible || chefGame.syncing) return;
+      if (chefGame.kind === 'chef' && chefGame.bonusMode) {
+        recordChefBonusTap();
+      } else if (chefGame.kind === 'chef') {
+        recordChefEvent('CHEF');
+      } else {
+        recordChefEvent('TRAP', chefGame.kind.toUpperCase());
+      }
+    };
+
+    const applyLocalChefEvent = (type, kind = '') => {
+      const current = { ...chefGameState.value };
+      const event = {
+        type,
+        delta: 0,
+        combo: '',
+        cooldownSeconds: 0,
+        capReached: !chefGameAvailable.value
+      };
+
+      if (type === 'CHEF') {
+        current.streak = Number(current.streak || 0) + 1;
+        current.hits = Number(current.hits || 0) + 1;
+        current.bestStreak = Math.max(Number(current.bestStreak || 0), current.streak);
+        current.penaltySeconds = Math.max(0, Number(current.penaltySeconds || 0) - 1);
+        event.delta = CHEF_SCORE_CHEF;
+
+        if (current.streak === 3) {
+          event.delta += CHEF_SCORE_COMBO_3;
+          event.combo = '3 chefs seguidos';
+        } else if (current.streak === 5) {
+          event.delta += CHEF_SCORE_COMBO_5;
+          event.combo = '5 chefs seguidos';
+        } else if (current.streak > 0 && current.streak % 10 === 0) {
+          event.delta += CHEF_SCORE_PERFECT;
+          event.combo = 'Racha perfecta';
+        }
+
+        if (current.streak > 0 && current.streak % CHEF_BONUS_STREAK_INTERVAL === 0) {
+          event.bonusNext = true;
+        }
+      } else if (type === 'TRAP') {
+        const trapPenalty = kind === 'PAN' ? 10 : 5;
+        current.streak = 0;
+        current.misses = Number(current.misses || 0) + 1;
+        current.penaltySeconds = Math.min(30, Number(current.penaltySeconds || 0) + trapPenalty);
+        event.delta = kind === 'PAN' ? CHEF_SCORE_PAN : CHEF_SCORE_ONION;
+        event.cooldownSeconds = current.penaltySeconds;
+      } else if (type === 'MISS') {
+        current.streak = 0;
+        current.misses = Number(current.misses || 0) + 1;
+        current.penaltySeconds = Math.min(30, Number(current.penaltySeconds || 0) + 1);
+        event.delta = CHEF_SCORE_MISS;
+        event.cooldownSeconds = current.penaltySeconds;
+      } else {
+        event.delta = 0;
+      }
+
+      if (event.delta !== 0) current.score = Math.max(0, Number(current.score || 0) + event.delta);
+      chefGameState.value = current;
+      markChefGameDirty();
+      return event;
+    };
+
+    function recordChefEvent(type, kind = '') {
+      if (chefGame.roundTimer) window.clearTimeout(chefGame.roundTimer);
+      chefGame.roundTimer = null;
+      chefGame.roundToken += 1;
+      chefGame.visible = false;
+
+      const event = applyLocalChefEvent(type, kind);
+      if (event.combo && event.delta > 0) {
+        chefGame.combo = event.combo;
+        chefGame.message = `+${event.delta} ${event.combo}`;
+      } else {
+        chefGame.combo = '';
+        if (event.delta > 0) {
+          chefGame.message = `+${event.delta} puntos`;
+        } else if (event.delta < 0) {
+          chefGame.message = `${event.delta} puntos`;
+        } else {
+          chefGame.message = '';
+        }
+      }
+
+      if (event.capReached || !chefGameAvailable.value) {
+        pauseChefGame();
+        chefGame.message = 'Tiempo diario agotado';
+        syncChefGame(true);
+        return;
+      }
+
+      if (event.bonusNext) {
+        chefGame.bonusPending = true;
+        chefGame.combo = chefGame.combo || 'Bonus listo';
+        chefGame.message = event.combo && event.delta > 0 ? chefGame.message : `${chefGame.message || 'Bonus listo'} / bonus listo`;
+      }
+
+      const penalized = Number(event.cooldownSeconds || 0) > 0;
+      const nextDelay = event.delta > 0 ? 55 : 150;
+      if (chefGame.feedbackTimer) window.clearTimeout(chefGame.feedbackTimer);
+      chefGame.feedbackTimer = window.setTimeout(() => {
+        chefGame.feedbackTimer = null;
+        chefGame.combo = '';
+        if (!penalized) chefGame.message = '';
+        queueChefRound(nextDelay, penalized);
+      }, event.combo ? 420 : 90);
+    }
+
+    const syncChefGame = (silent = false, onDone = null) => {
+      if (chefGame.syncing) {
+        if (typeof onDone === 'function') onDone(false);
+        return;
+      }
+      if (!chefGame.dirty) {
+        if (typeof onDone === 'function') onDone(true);
+        return;
+      }
+      chefGame.syncing = true;
+      almuerzo.run
+        .withSuccessHandler(res => {
+          chefGame.syncing = false;
+          if (res && res.ok) {
+            setChefGameState(res.state || chefGameState.value);
+            chefGame.message = silent ? chefGame.message : 'Puntos guardados';
+            chefRanking.loaded = false;
+            if (!silent) {
+              if (chefGame.feedbackTimer) window.clearTimeout(chefGame.feedbackTimer);
+              chefGame.feedbackTimer = window.setTimeout(() => {
+                chefGame.feedbackTimer = null;
+                if (!chefGame.active) chefGame.message = '';
+              }, 1000);
+            }
+            if (typeof onDone === 'function') onDone(true);
+          } else if (!silent) {
+            chefGame.message = (res && res.msg) || 'No se pudo guardar';
+            if (typeof onDone === 'function') onDone(false);
+          } else {
+            if (typeof onDone === 'function') onDone(false);
+          }
+        })
+        .withFailureHandler(() => {
+          chefGame.syncing = false;
+          if (!silent) chefGame.message = 'Conexion perdida';
+          if (typeof onDone === 'function') onDone(false);
+        })
+        .apiSyncChefGameState({
+          targetEmail: user.value?.email || '',
+          state: chefGameState.value
+        });
+    };
+
+    const openChefRanking = () => {
+      if (chefGameInCooldown.value) return;
+      stopChefGame();
+      viewMode.value = 'RANKING';
+      if (chefGame.dirty) {
+        chefRanking.loading = true;
+        syncChefGame(true, () => {
+          chefRanking.loading = false;
+          loadChefRanking(true);
+        });
+      } else {
+        loadChefRanking(true);
+      }
+    };
+
+    const returnToOrders = () => {
+      viewMode.value = 'USER';
+      nextTick(() => scheduleChefGameStart(false));
+    };
+
+    const loadChefRanking = (force = false) => {
+      if (chefRanking.loading) return;
+      if (chefRanking.loaded && !force) return;
+
+      chefRanking.loading = true;
+      chefRanking.error = '';
+      almuerzo.run
+        .withSuccessHandler(res => {
+          chefRanking.loading = false;
+          if (res && res.ok) {
+            chefRanking.loaded = true;
+            chefRanking.rows = res.rows || [];
+            chefRanking.currentUser = res.currentUser || null;
+            chefRanking.monthKey = res.monthKey || '';
+            chefRanking.monthLabel = res.monthLabel || '';
+          } else {
+            chefRanking.error = (res && res.msg) || 'No se pudo cargar el ranking.';
+          }
+        })
+        .withFailureHandler(() => {
+          chefRanking.loading = false;
+          chefRanking.error = 'Error de conexion cargando el ranking.';
+        })
+        .apiGetChefGameRanking(user.value?.email || '');
+    };
+
+    const loadData = (targetDate = null) => {
+      loading.value = true;
+      // Limpiamos selección al cambiar de día o recargar
+      resetSelectionState();
+      almuerzo.run
+        .withSuccessHandler(res => {
+          loading.value = false;
+          if (res.ok) {
+            applyInitData(res);
+          } else {
+            showModal("Error cargando datos: " + res.msg, "Error");
+          }
+        })
+        .withFailureHandler(err => {
+          loading.value = false;
+          showModal("Error de conexión con el servidor.", "Error de Red");
+        })
+        .apiGetInitData(targetDate, impersonateEmail.value);
+    };
+
+    // Cambiar de fecha (Tabs superiores)
+    const changeDate = (dateStr) => {
+      if (dateStr === currentDate.value) return;
+      if (chefGameInCooldown.value) return;
+
+      if (allMenus.value[dateStr]) {
+        currentDate.value = dateStr;
+        menu.value = allMenus.value[dateStr];
+        myOrder.value = allOrders.value[dateStr] || null;
+        resetSelectionState();
+      } else {
+        loading.value = true;
+        resetSelectionState();
+        almuerzo.run
+          .withSuccessHandler(res => {
+            loading.value = false;
+            if (res.ok) {
+              applyDateViewData(res);
+            } else {
+              showModal("Error cargando datos de la fecha: " + res.msg, "Error");
+            }
+          })
+          .withFailureHandler(() => {
+            loading.value = false;
+            showModal("Error cargando el menú de la fecha seleccionada.", "Error");
+          })
+          .apiGetDateViewData(dateStr, impersonateEmail.value);
+      }
+    };
+
+    const toggleItem = (cat, item) => {
+      if (isItemDisabled(cat, item) && !selection.has(item.id)) return;
+
+      if (selection.has(item.id)) {
+        selection.delete(item.id);
+        delete selectionData[item.id];
+      } else {
+        const catConfig = categoryById.value[cat];
+        const isMulti = catConfig ? catConfig.tipo_seleccion === 'MULTIPLE' : multiSelectCats.includes(cat);
+
+        // Single selection rule
+        if (!isMulti) {
+           const toRemove = [];
+           selection.forEach(id => {
+              if (selectionData[id] && selectionData[id].cat === cat) toRemove.push(id);
+           });
+           toRemove.forEach(id => {
+              selection.delete(id);
+              delete selectionData[id];
+           });
+        }
+
+        selection.add(item.id);
+        selectionData[item.id] = { cat, plato: item.plato };
+      }
+    };
+
+    const changeProxyUser = () => {
+       loadData(currentDate.value);
+    };
+
+    const savingReminders = ref(false);
+    const toggleReminders = () => {
+      if (savingReminders.value) return;
+      const previous = remindersEnabled.value;
+      remindersEnabled.value = !previous;
+      savingReminders.value = true;
+      almuerzo.run.withSuccessHandler(res => {
+        savingReminders.value = false;
+        if (!res.ok) { remindersEnabled.value = previous; showModal(res.msg || 'No se pudo guardar la preferencia.', 'Error'); }
+      }).withFailureHandler(error => {
+        savingReminders.value = false; remindersEnabled.value = previous; showModal(error.message || 'Error de conexión.', 'Error');
+      }).apiSetUserPreference('reminders', remindersEnabled.value, isDeptAdmin.value ? impersonateEmail.value : null);
+    };
+
+    const toggleAdminView = () => {
+       stopChefGame();
+       if (viewMode.value !== 'ADMIN') {
+          viewMode.value = 'ADMIN';
+          loadAdminData();
+       } else {
+          viewMode.value = 'USER';
+          nextTick(() => scheduleChefGameStart(false));
+       }
+    };
+
+    const parseResponsibleEmailsValue = (value) => {
+       if (typeof value !== 'string') return value || [];
+       const trimmed = value.trim();
+       if (!trimmed) return [];
+       try {
+          return JSON.parse(trimmed);
+       } catch(e) {
+          return trimmed;
+       }
+    };
+
+    const collectResponsibleEmailCandidates = (value) => {
+       const result = [];
+       const collect = (item) => {
+          if (!item) return;
+          if (typeof item === 'string') {
+             item.split(/[;,]/)
+               .map(email => email.trim().toLowerCase())
+               .filter(email => email)
+               .forEach(email => result.push(email));
+             return;
+          }
+          if (Array.isArray(item)) {
+             item.forEach(collect);
+             return;
+          }
+          if (typeof item === 'object') {
+             const directEmail = item.email || item.mail;
+             if (directEmail) {
+                collect(directEmail);
+                return;
+             }
+             if (item.emails) {
+                collect(item.emails);
+                return;
+             }
+             Object.keys(item).forEach(key => {
+                const nested = item[key];
+                if (Array.isArray(nested) || (nested && typeof nested === 'object')) collect(nested);
+             });
+          }
+       };
+       collect(parseResponsibleEmailsValue(value));
+       return result;
+    };
+
+    const isValidResponsibleEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || '').trim());
+
+    const normalizeResponsibleEmails = (value, options = {}) => {
+       const seen = {};
+       const valid = [];
+       const invalid = [];
+
+       collectResponsibleEmailCandidates(value).forEach(email => {
+          if (!isValidResponsibleEmail(email)) {
+             invalid.push(email);
+             return;
+          }
+          if (!seen[email]) {
+             seen[email] = true;
+             valid.push(email);
+          }
+       });
+
+       if (invalid.length && options.throwOnInvalid) {
+          const uniqueInvalid = [...new Set(invalid)];
+          throw new Error(`Corrige los correos de responsables del resumen diario: ${uniqueInvalid.join(', ')}`);
+       }
+
+       return valid;
+    };
+
+    const loadAdminData = (force = false, options = {}) => {
+       if (adminState.loading && !options.allowWhileLoading) return;
+       if (!force && adminState.users.length > 0) return;
+       adminState.loading = true;
+       almuerzo.run
+         .withSuccessHandler(res => {
+            adminState.loading = false;
+            if(res.ok) {
+               adminState.users = res.users;
+               adminState.orders = res.orders;
+               adminState.departments = res.departments || [];
+               adminState.config = res.config || {};
+               adminState.configList = res.configList || [];
+               adminState.configKeys = res.configKeys || [];
+               adminState.holidays = res.holidays || [];
+               adminState.menuCategories = res.menuCategories || [];
+               if (res.menuCategories) menuCategories.value = res.menuCategories;
+
+               adminState.responsiblesList = normalizeResponsibleEmails(adminState.config['RESPONSIBLES_EMAILS_JSON']);
+
+               // Also populate dept map from list
+               const map = {};
+               adminState.departments.forEach(d => map[d.id] = d.nombre);
+               adminState.deptMap = map;
+            } else {
+               if (!options.silent) showModal(res.msg, "Error");
+            }
+         })
+         .withFailureHandler(err => {
+            adminState.loading = false;
+            if (!options.silent) showModal(err.message || "Error cargando el panel administrativo.", "Error");
+         })
+         .apiGetAdminData();
+    };
+
+    const reloadAdminDataAfterAction = () => {
+       loadAdminData(true, { allowWhileLoading: true });
+    };
+
+    // Admin Actions
+    const openUserModal = (u = null) => {
+       adminState.userModal.isNew = !u;
+
+       // CORRECCIÓN: Usamos departamentoId si existe (u), o el ID del usuario activo si es nuevo
+       adminState.userModal.data = u
+          ? { ...u, departamento: u.departamentoId }
+          : { email: '', nombre: '', codigo: '', departamento: activeUser.value.departamentoId || '', rol: 'USUARIO', estado: 'ACTIVO' };
+
+       adminState.userModal.open = true;
+    };
+
+    const saveUser = () => {
+       if(!adminState.userModal.data.email || !adminState.userModal.data.nombre || !adminState.userModal.data.codigo) return showModal("Faltan datos requeridos (Email, Nombre y Código).");
+       if(!/^\d{4}$/.test(adminState.userModal.data.codigo)) return showModal("El código debe ser de 4 dígitos numéricos.");
+
+       adminState.loading = true;
+       almuerzo.run
+          .withSuccessHandler(res => {
+             if(res.ok) {
+                adminState.userModal.open = false;
+                reloadAdminDataAfterAction();
+             } else {
+                adminState.loading = false;
+                showModal(res.msg, "Error");
+             }
+          })
+          .withFailureHandler(err => {
+             adminState.loading = false;
+             showModal(err.message || "Error guardando el usuario.", "Error");
+          })
+          .apiAdminSaveUser(adminState.userModal.data);
+    };
+
+    const toggleUserStatus = (u) => {
+       showModal(`¿${u.estado === 'ACTIVO' ? 'Desactivar' : 'Activar'} a ${u.nombre}?`, "Confirmar Cambio", "CONFIRM", () => {
+          const newState = u.estado === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO';
+
+          // CORRECCIÓN: Sobrescribimos 'departamento' con el ID antes de enviar
+          const payload = { ...u, estado: newState, departamento: u.departamentoId };
+
+          adminState.loading = true;
+          almuerzo.run
+            .withSuccessHandler(res => {
+               if(res && res.ok) {
+                  reloadAdminDataAfterAction();
+               } else {
+                  adminState.loading = false;
+                  showModal((res && res.msg) || "No se pudo cambiar el estado del usuario.", "Error");
+               }
+            })
+            .withFailureHandler(err => {
+               adminState.loading = false;
+               showModal(err.message || "Error cambiando el estado del usuario.", "Error");
+            })
+            .apiAdminSaveUser(payload);
+        });
+    };
+
+    const adminCancelOrder = (orderId) => {
+       showModal("¿Estás seguro de cancelar este pedido?", "Cancelar Pedido", "CONFIRM", () => {
+           adminState.loading = true;
+           almuerzo.run.withSuccessHandler(res => {
+              if(res.ok) reloadAdminDataAfterAction();
+              else { showModal(res.msg, "Error"); adminState.loading = false; }
+           }).withFailureHandler(err => {
+              adminState.loading = false;
+              showModal(err.message || "Error cancelando el pedido.", "Error");
+           }).apiAdminCancelOrder(orderId);
+        });
+    };
+
+    // Department Actions
+    const openDeptModal = (d = null) => {
+       adminState.deptModal.isNew = !d;
+       adminState.deptModal.data = d ? { ...d } : { nombre: '', admins: '', estado: 'ACTIVO' };
+       adminState.deptModal.open = true;
+    };
+
+    const saveDept = () => {
+       if(!adminState.deptModal.data.nombre) return showModal("El nombre del departamento es obligatorio.");
+       adminState.loading = true;
+       almuerzo.run.withSuccessHandler(res => {
+          adminState.loading = false;
+          if(res.ok) { adminState.deptModal.open = false; loadAdminData(true); }
+          else showModal(res.msg, "Error");
+       }).apiSaveDepartment(adminState.deptModal.data);
+    };
+
+    const deleteDept = (id) => {
+       showModal("¿Eliminar departamento? Esta acción no se puede deshacer.", "Eliminar Depto", "CONFIRM", () => {
+           adminState.loading = true;
+           almuerzo.run
+              .withSuccessHandler(res => {
+                 if(res.ok) {
+                    reloadAdminDataAfterAction();
+                 } else {
+                    adminState.loading = false;
+                    showModal(res.msg, "Error");
+                 }
+              })
+              .withFailureHandler(err => {
+                 adminState.loading = false;
+                 showModal(err.message || "Error eliminando el departamento.", "Error");
+              })
+              .apiDeleteDepartment(id);
+       });
+    };
+
+    // Config Actions
+    const saveConfig = () => {
+       const payload = { ...adminState.config };
+       let responsibleEmails = [];
+       try {
+          responsibleEmails = normalizeResponsibleEmails(adminState.responsiblesList, { throwOnInvalid: true });
+       } catch (e) {
+          showModal(e.message || "Corrige los correos de responsables del resumen diario.", "Configuracion");
+          return;
+       }
+       payload['RESPONSIBLES_EMAILS_JSON'] = JSON.stringify(responsibleEmails);
+       delete payload['MEAL_PRICE_HISTORY_JSON'];
+       adminState.loading = true;
+       almuerzo.run.withSuccessHandler(res => {
+          adminState.loading = false;
+          if(res.ok) { adminState.configEdit = false; loadAdminData(true); }
+          else showModal(res.msg, "Error");
+       }).apiSaveConfig(payload);
+    };
+
+    const runTestDailyCloseEmails = () => {
+       if (!isTestEmailMode.value) return;
+       if (!String(adminState.config['TEST_EMAIL_DEST'] || '').trim()) {
+          showModal("Configura TEST_EMAIL_DEST antes de enviar la prueba.", "Modo prueba");
+          return;
+       }
+
+       showModal("Se enviaran los correos de cierre en modo prueba. No se guardaran respaldos ni se ejecutara mantenimiento.", "Enviar prueba", "CONFIRM", () => {
+          adminState.loading = true;
+          almuerzo.run
+            .withSuccessHandler(res => {
+               adminState.loading = false;
+               if (res && res.ok) {
+                  showModal(res.msg || "Prueba enviada correctamente.", "Modo prueba");
+               } else {
+                  showModal((res && res.msg) || "No se pudo enviar la prueba.", "Error");
+               }
+            })
+            .withFailureHandler(err => {
+               adminState.loading = false;
+               showModal(err.message || "Error enviando la prueba.", "Error");
+            })
+            .apiSendDailyCloseEmailsTest();
+       });
+    };
+
+    // Menu Actions
+    const checkMenuDate = () => {
+       if (!adminState.menuDate) return;
+       const d = new Date(adminState.menuDate + 'T12:00:00');
+       const day = d.getDay();
+       const now = new Date();
+       now.setHours(0,0,0,0);
+       const dZero = new Date(d);
+       dZero.setHours(0,0,0,0);
+
+       if (day === 0 || day === 6) {
+          showModal("No se puede editar fines de semana.", "Fecha Inválida");
+          adminState.menuDate = '';
+          return;
+       }
+       if (dZero < now) {
+          showModal("Solo se pueden editar fechas futuras o el día actual válido.", "Fecha Inválida");
+          adminState.menuDate = '';
+          return;
+       }
+
+       loadMenuDay();
+    };
+
+    const loadMenuDay = () => {
+       if(!adminState.menuDate) return;
+       adminState.loading = true;
+       almuerzo.run
+         .withSuccessHandler(res => {
+            adminState.loading = false;
+            if(res.ok) adminState.menuItems = res.items;
+            else {
+               showModal(res.msg, "Error");
+               adminState.menuDate = '';
+               adminState.menuItems = [];
+            }
+         })
+         .withFailureHandler(err => {
+            adminState.loading = false;
+            showModal(err.message, "Error");
+            adminState.menuDate = '';
+            adminState.menuItems = [];
+         })
+         .apiGetMenuDay(adminState.menuDate);
+    };
+
+    const openMenuModal = (item = null, cat = (activeMenuCategories.value[0] || {}).id) => {
+       adminState.menuModal.isNew = !item;
+       adminState.menuModal.data = item ? {...item} : { cat, plato: '', desc: '' };
+       adminState.menuModal.open = true;
+    };
+
+    const saveMenuItem = () => {
+       if(!adminState.menuModal.data.plato) return showModal("El nombre del plato es requerido.");
+       const payload = {
+          ...adminState.menuModal.data,
+          plato: formatMenuText(adminState.menuModal.data.plato),
+          desc: formatMenuText(adminState.menuModal.data.desc)
+       };
+       adminState.loading = true;
+       almuerzo.run
+         .withSuccessHandler(res => {
+            adminState.loading = false;
+            if(res.ok) { adminState.menuModal.open = false; loadMenuDay(); }
+            else showModal(res.msg, "Error");
+         })
+         .withFailureHandler(err => {
+            adminState.loading = false;
+            showModal(err.message, "Error");
+         })
+         .apiSaveMenuItem(adminState.menuDate, payload.cat, payload);
+    };
+
+    const deleteMenuItem = (id) => {
+       showModal("¿Eliminar plato?", "Confirmar", "CONFIRM", () => {
+           adminState.loading = true;
+           almuerzo.run
+             .withSuccessHandler(res => {
+                adminState.loading = false;
+                if(res.ok) loadMenuDay();
+                else showModal(res.msg, "Error");
+             })
+             .withFailureHandler(err => {
+                adminState.loading = false;
+                showModal(err.message || "Error eliminando el plato.", "Error");
+             })
+             .apiDeleteMenuItem(id);
+       });
+    };
+
+    const openCategoryModal = (category = null) => {
+       adminState.categoryModal.isNew = !category;
+       adminState.categoryModal.data = category
+         ? {
+             ...category,
+             aliasesText: (category.aliases || []).join(', '),
+             es_combinable: category.es_combinable !== false,
+             combinable_con: Array.isArray(category.combinable_con) ? [...category.combinable_con] : [],
+             tipo_seleccion: category.tipo_seleccion || 'UNICA'
+           }
+         : {
+             nombre: '',
+             orden: (menuCategories.value.length + 1) * 10,
+             estado: 'ACTIVO',
+             aliasesText: '',
+             es_combinable: true,
+             combinable_con: [],
+             tipo_seleccion: 'UNICA'
+           };
+       adminState.categoryManagerModal.open = true;
+       adminState.categoryManagerModal.view = 'FORM';
+    };
+
+    const openCategoryManager = () => {
+       adminState.categoryManagerModal = { open: true, view: 'LIST' };
+    };
+
+    const saveMenuCategory = () => {
+       const data = adminState.categoryModal.data;
+       if (!String(data.nombre || '').trim()) return showModal('El nombre de la categoria es obligatorio.', 'Categorias');
+       adminState.loading = true;
+       almuerzo.run
+         .withSuccessHandler(res => {
+            adminState.loading = false;
+            if (!res.ok) return showModal(res.msg || 'No se pudo guardar la categoria.', 'Error');
+            menuCategories.value = res.categories || menuCategories.value;
+            adminState.menuCategories = res.categories || adminState.menuCategories;
+            adminState.categoryManagerModal.view = 'LIST';
+         })
+         .withFailureHandler(err => {
+            adminState.loading = false;
+            showModal(err.message || 'Error guardando la categoria.', 'Error');
+         })
+         .apiSaveMenuCategory(data);
+    };
+
+    // Menu Import Logic
+    const openMenuImportModal = () => {
+       adminState.menuImportModal = { open: true, step: 1, weekStart: '', text: '', preview: [], error: null };
+    };
+
+    const parseTsvRows = (raw) => {
+       const rows = [];
+       let currentRow = [];
+       let currentCell = '';
+       let insideQuotes = false;
+
+       for (let i = 0; i < raw.length; i++) {
+          const char = raw[i];
+          const nextChar = raw[i + 1];
+
+          if (char === '"') {
+             if (insideQuotes && nextChar === '"') {
+                currentCell += '"';
+                i++;
+             } else {
+                insideQuotes = !insideQuotes;
+             }
+          } else if (char === '\t' && !insideQuotes) {
+             currentRow.push(currentCell.trim());
+             currentCell = '';
+          } else if ((char === '\r' || char === '\n') && !insideQuotes) {
+             if (char === '\r' && nextChar === '\n') i++;
+             currentRow.push(currentCell.trim());
+             if (currentRow.some(c => c !== '')) rows.push(currentRow);
+             currentRow = [];
+             currentCell = '';
+          } else {
+             if (insideQuotes && (char === '\n' || char === '\r')) {
+                if (char === '\r' && nextChar === '\n') i++;
+                if (currentCell.length > 0 && currentCell[currentCell.length - 1] !== ' ') {
+                   currentCell += ' ';
+                }
+             } else {
+                currentCell += char;
+             }
+          }
+       }
+
+       currentRow.push(currentCell.trim());
+       if (currentRow.some(c => c !== '')) rows.push(currentRow);
+
+       return rows.map(row => row.map(cell => {
+          let c = String(cell || '').trim();
+          if (c.startsWith('"') && c.endsWith('"') && c.length >= 2) {
+             c = c.slice(1, -1).trim();
+          }
+          if (c === '"' || c === '""') c = '';
+          return c;
+       }));
+    };
+
+    const processMenuImport = () => {
+       const text = adminState.menuImportModal.text;
+       const weekStart = adminState.menuImportModal.weekStart;
+
+       if(!weekStart) {
+          adminState.menuImportModal.error = "Selecciona la fecha de inicio (Lunes).";
+          return;
+       }
+       if(!text.trim()) {
+          adminState.menuImportModal.error = "Pega el contenido del Excel.";
+          return;
+       }
+
+       // 1. Calculate Working Days
+       const startDate = new Date(weekStart + 'T12:00:00');
+       if(startDate.getDay() !== 1) {
+          adminState.menuImportModal.error = "La fecha de inicio debe ser Lunes.";
+          return;
+       }
+
+       const workingDays = [];
+       const holidaySet = new Set(adminState.holidays.map(h => h.date));
+
+       // Check Mon-Fri
+       for(let i=0; i<5; i++) {
+          const d = new Date(startDate);
+          d.setDate(d.getDate() + i);
+          // Format YYYY-MM-DD manually to avoid timezone issues with toISOString
+          const year = d.getFullYear();
+          const month = String(d.getMonth() + 1).padStart(2, '0');
+          const day = String(d.getDate()).padStart(2, '0');
+          const dStr = `${year}-${month}-${day}`;
+
+          if(!holidaySet.has(dStr)) {
+             workingDays.push({ date: dStr, label: ['Lunes','Martes','Miércoles','Jueves','Viernes'][i] });
+          }
+       }
+
+       // 2. Parse Text using Robust TSV Parser
+       const parsedRows = parseTsvRows(text);
+       const normalizeCategoryLookupKey = (value) => String(value || '')
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toUpperCase()
+          .replace(/[^A-Z0-9]+/g, ' ')
+          .trim();
+       const catMap = {};
+       activeMenuCategories.value.forEach(category => {
+          catMap[normalizeCategoryLookupKey(category.nombre)] = category.id;
+          catMap[normalizeCategoryLookupKey(category.id)] = category.id;
+          (category.aliases || []).forEach(alias => { catMap[normalizeCategoryLookupKey(alias)] = category.id; });
+       });
+       const knownCats = Object.keys(catMap);
+
+       let currentCat = null;
+       const columns = {}; // Idx -> { Cat -> [items] }
+
+       parsedRows.forEach(cells => {
+          if(!cells || cells.length === 0 || !cells.some(c => c)) return;
+
+          // Detect Category Header
+          const firstCellKey = normalizeCategoryLookupKey(cells[0]);
+          const secondCellKey = cells.length > 1 ? normalizeCategoryLookupKey(cells[1]) : '';
+          const match = knownCats.find(k => k === firstCellKey || k === secondCellKey);
+
+          if(match) {
+             currentCat = catMap[match];
+             return;
+          }
+
+          if(currentCat) {
+             cells.forEach((cell, idx) => {
+                const cleaned = String(cell || '').trim();
+                if(cleaned && !['N/A', 'n/a', 'N/a', '"', '""'].includes(cleaned)) {
+                   if(!columns[idx]) columns[idx] = {};
+                   if(!columns[idx][currentCat]) columns[idx][currentCat] = [];
+                   columns[idx][currentCat].push(formatMenuText(cleaned));
+                }
+             });
+          }
+       });
+
+       const colIndices = Object.keys(columns).map(Number).sort((a,b)=>a-b);
+       const numCols = colIndices.length > 0 ? (colIndices[colIndices.length-1] + 1) : 0;
+
+       // Validation Rule
+       let dateMapping = [];
+
+       if (numCols === 5) {
+          // Map 0->Mon ... 4->Fri
+          for(let i=0; i<5; i++) {
+             const d = new Date(startDate);
+             d.setDate(d.getDate() + i);
+             const year = d.getFullYear();
+             const month = String(d.getMonth() + 1).padStart(2, '0');
+             const day = String(d.getDate()).padStart(2, '0');
+             const dStr = `${year}-${month}-${day}`;
+
+             if(!holidaySet.has(dStr)) {
+                if(columns[i]) dateMapping.push({ date: dStr, items: columns[i] });
+             }
+          }
+       } else if (numCols === workingDays.length) {
+          // Map sequentially
+          workingDays.forEach((wd, idx) => {
+             if(columns[idx]) dateMapping.push({ date: wd.date, items: columns[idx] });
+          });
+       } else {
+          adminState.menuImportModal.error = `Columnas detectadas: ${numCols}. Se esperaban 5 (Semana completa) o ${workingDays.length} (Días laborables).`;
+          return;
+       }
+
+       if (dateMapping.length === 0) {
+          adminState.menuImportModal.error = "No se encontraron platos válidos.";
+          return;
+       }
+
+       adminState.menuImportModal.preview = dateMapping;
+       adminState.menuImportModal.step = 2;
+       adminState.menuImportModal.error = null;
+    };
+
+    const saveWeeklyMenu = () => {
+       const data = {};
+       adminState.menuImportModal.preview.forEach(day => {
+          const items = [];
+          Object.keys(day.items).forEach(cat => {
+             day.items[cat].forEach(plato => {
+                items.push({ cat, plato: formatMenuText(plato) });
+             });
+          });
+          data[day.date] = items;
+       });
+
+       adminState.loading = true;
+       almuerzo.run
+         .withSuccessHandler(res => {
+            adminState.loading = false;
+            if(res.ok) {
+               adminState.menuImportModal.open = false;
+               showModal("Menú importado exitosamente.", "Éxito");
+               // Reload current view
+               loadMenuDay();
+               loadData();
+            } else {
+               showModal(res.msg, "Error");
+            }
+         })
+         .withFailureHandler(err => {
+            adminState.loading = false;
+            showModal(err.message || "Error importando el menú.", "Error");
+         })
+         .apiSaveWeeklyMenu(data);
+    };
+
+    // Holiday Actions
+    const saveHoliday = () => {
+       if(!adminState.holidayModal.data.date) return showModal("La fecha es requerida.");
+       adminState.loading = true;
+       almuerzo.run
+         .withSuccessHandler(res => {
+            adminState.loading = false;
+            if(res.ok) {
+               adminState.holidayModal.open = false;
+               adminState.holidays.push({ date: adminState.holidayModal.data.date, desc: adminState.holidayModal.data.desc });
+               loadData(); // Refresh user view
+            }
+            else showModal(res.msg, "Error");
+         })
+         .withFailureHandler(err => {
+            adminState.loading = false;
+            showModal("Error: " + err.message, "Error");
+         })
+         .apiSaveHoliday(adminState.holidayModal.data.date, adminState.holidayModal.data.desc);
+    };
+
+    const deleteHoliday = (date) => {
+       showModal("¿Eliminar día libre?", "Confirmar", "CONFIRM", () => {
+           adminState.loading = true;
+           almuerzo.run.withSuccessHandler(res => {
+               adminState.loading = false;
+               if(res.ok) {
+                  adminState.holidays = adminState.holidays.filter(h => h.date !== date);
+                  loadData();
+               }
+           }).apiDeleteHoliday(date);
+       });
+    };
+
+    const clearFilters = (type) => {
+       if(type === 'orders') {
+          adminState.filters.orders = { search: '', dateStart: '', dateEnd: '', status: '', open: true };
+       } else {
+          adminState.filters.users.search = '';
+       }
+    };
+
+    const addResponsible = () => {
+       adminState.responsiblesList.push('');
+    };
+
+    const removeResponsible = (idx) => {
+       adminState.responsiblesList.splice(idx, 1);
+    };
+
+    const addDeptAdmin = (user) => {
+       if (user.rol === 'ADMIN_GEN') return showModal("No se puede asignar un Admin General como Admin de Departamento.");
+
+       const proceed = () => {
+          let current = adminState.deptModal.data.admins ? adminState.deptModal.data.admins.split(',').map(e=>e.trim()).filter(e=>e) : [];
+          if (!current.includes(user.email)) {
+             current.push(user.email);
+             adminState.deptModal.data.admins = current.join(', ');
+          }
+       };
+
+       if (user.rol === 'ADMIN_DEP') {
+          showModal(`Advertencia: ${user.nombre} dejará de ser admin de su departamento actual. ¿Continuar?`, "Cambio de Depto", "CONFIRM", proceed);
+       } else {
+          proceed();
+       }
+    };
+
+    const removeDeptAdmin = (email) => {
+       let current = adminState.deptModal.data.admins ? adminState.deptModal.data.admins.split(',').map(e=>e.trim()).filter(e=>e) : [];
+       current = current.filter(e => e !== email);
+       adminState.deptModal.data.admins = current.join(', ');
+    };
+
+    // Métodos de Aviso General
+    const dismissAnnouncement = () => {
+      showAnnouncementModal.value = false;
+      const id = announcementConfig.value.id;
+      if (id) {
+        if (!currentUserPrefs.value.announcements) currentUserPrefs.value.announcements = {};
+        currentUserPrefs.value.announcements[id] = (Number(currentUserPrefs.value.announcements[id]) || 0) + 1;
+        almuerzo.run.apiDismissAnnouncement(id);
+      }
+    };
+
+    const nextAnnouncementSlide = () => {
+      const total = announcementConfig.value.slides ? announcementConfig.value.slides.length : 0;
+      if (announcementSlideIndex.value < total - 1) {
+        announcementSlideIndex.value++;
+      } else {
+        dismissAnnouncement();
+      }
+    };
+
+    const prevAnnouncementSlide = () => {
+      if (announcementSlideIndex.value > 0) {
+        announcementSlideIndex.value--;
+      }
+    };
+
+    const openAnnouncementConfigModal = () => {
+      const cfg = announcementConfig.value || {};
+      announcementEditModal.value = {
+        open: true,
+        enabled: cfg.enabled !== false,
+        id: cfg.id || 'anuncio_v7_31_valoraciones',
+        expiresOn: cfg.expiresOn || todayYmd.value,
+        maxDismiss: cfg.maxDismiss || 3,
+        slides: Array.isArray(cfg.slides) ? JSON.parse(JSON.stringify(cfg.slides)) : [],
+        forceNewId: false,
+        saving: false
+      };
+      if (announcementEditModal.value.slides.length === 0) {
+        announcementEditModal.value.slides.push({
+          badge: "¡Novedad!",
+          title: "Nuevo Aviso",
+          description: "Escribe aquí la descripción del aviso para los colaboradores.",
+          icon: "fa-bullhorn",
+          theme: "indigo"
+        });
+      }
+    };
+
+    const addAnnouncementSlide = () => {
+      announcementEditModal.value.slides.push({
+        badge: "Novedad",
+        title: "Nuevo Slide",
+        description: "",
+        icon: "fa-circle-info",
+        theme: "indigo"
+      });
+    };
+
+    const removeAnnouncementSlide = (idx) => {
+      if (announcementEditModal.value.slides.length > 1) {
+        announcementEditModal.value.slides.splice(idx, 1);
+      }
+    };
+
+    const saveAnnouncementConfig = () => {
+      announcementEditModal.value.saving = true;
+      almuerzo.run
+        .withSuccessHandler(res => {
+          announcementEditModal.value.saving = false;
+          if (res.ok) {
+            announcementConfig.value = res.announcementConfig;
+            announcementEditModal.value.open = false;
+            showModal("Aviso general guardado correctamente.", "Éxito");
+          } else {
+            showModal(res.msg || "Error guardando el aviso.", "Error");
+          }
+        })
+        .withFailureHandler(err => {
+          announcementEditModal.value.saving = false;
+          showModal(err.message || "Error de conexión.", "Error");
+        })
+        .apiSaveAnnouncementConfig(announcementEditModal.value);
+    };
+
+    // Métodos de Valoración de Comidas
+    const canRateMeal = (dateStr) => {
+      if (!dateStr || !allOrders.value[dateStr] || allOrders.value[dateStr].estado === 'CANCELADO') return false;
+      const today = todayYmd.value || new Date().toISOString().substring(0, 10);
+      if (dateStr < today) return true;
+      if (dateStr === today) {
+        const currentH = new Date(serverTime.value || Date.now()).toLocaleString("en-US", {timeZone:"America/Santo_Domingo",hour:"numeric",hourCycle:"h23"});
+        return currentH >= 12 || Number(serverHour.value) >= 12;
+      }
+      return false;
+    };
+
+    const openMealRatingModal = (row) => {
+      const existing = userMealRatings.value[row.date] || {};
+      mealRatingModal.value = {
+        open: true,
+        date: row.date,
+        dateLabel: row.label,
+        orderId: row.id || (allOrders.value[row.date] ? allOrders.value[row.date].id : ''),
+        rating: existing.puntuacion || 5,
+        comment: existing.comentario || '',
+        dishes: existing.platos || Object.values(row.items || {}).map(formatMenuText).join(', '),
+        saving: false,
+        error: null
+      };
+    };
+
+    const saveMealRating = () => {
+      mealRatingModal.value.saving = true;
+      mealRatingModal.value.error = null;
+      almuerzo.run
+        .withSuccessHandler(res => {
+          mealRatingModal.value.saving = false;
+          if (res.ok) {
+            mealRatingModal.value.open = false;
+            userMealRatings.value[res.rating.date] = res.rating;
+            showModal("¡Gracias por calificar tu comida!", "Valoración Recibida");
+          } else {
+            mealRatingModal.value.error = res.msg || "Error al guardar la valoración.";
+          }
+        })
+        .withFailureHandler(err => {
+          mealRatingModal.value.saving = false;
+          mealRatingModal.value.error = err.message || "Error de conexión.";
+        })
+        .apiSubmitMealRating({
+          date: mealRatingModal.value.date,
+          rating: mealRatingModal.value.rating,
+          comment: mealRatingModal.value.comment
+        });
+    };
+
+    // Métodos de Valoración de Proveedor
+    const openProviderRatingModal = () => {
+      const existing = userProviderRating.value || {};
+      providerRatingModal.value = {
+        open: true,
+        rating: existing.puntuacion || 5,
+        comment: existing.comentario || '',
+        version: existing.version || 1,
+        saving: false,
+        error: null
+      };
+    };
+
+    const saveProviderRating = () => {
+      providerRatingModal.value.saving = true;
+      providerRatingModal.value.error = null;
+      almuerzo.run
+        .withSuccessHandler(res => {
+          providerRatingModal.value.saving = false;
+          if (res.ok) {
+            providerRatingModal.value.open = false;
+            userProviderRating.value = res.providerRating;
+            showModal("¡Gracias por calificar al proveedor de alimentos!", "Valoración Recibida");
+          } else {
+            providerRatingModal.value.error = res.msg || "Error al guardar la valoración.";
+          }
+        })
+        .withFailureHandler(err => {
+          providerRatingModal.value.saving = false;
+          providerRatingModal.value.error = err.message || "Error de conexión.";
+        })
+        .apiSubmitProviderRating({
+          rating: providerRatingModal.value.rating,
+          comment: providerRatingModal.value.comment
+        });
+    };
+
+    const openProviderResetModal = () => {
+      providerResetModal.value = {
+        open: true,
+        providerName: providerInfo.value.name || '',
+        saving: false,
+        error: null
+      };
+    };
+
+    const saveProviderReset = () => {
+      if (!providerResetModal.value.providerName.trim()) {
+        providerResetModal.value.error = "El nombre del proveedor es obligatorio.";
+        return;
+      }
+      providerResetModal.value.saving = true;
+      almuerzo.run
+        .withSuccessHandler(res => {
+          providerResetModal.value.saving = false;
+          if (res.ok) {
+            providerResetModal.value.open = false;
+            providerInfo.value = res.providerInfo;
+            userProviderRating.value = null;
+            showModal("Período de evaluación del proveedor actualizado exitosamente.", "Éxito");
+            loadRatingsSummary();
+          } else {
+            providerResetModal.value.error = res.msg || "Error actualizando el proveedor.";
+          }
+        })
+        .withFailureHandler(err => {
+          providerResetModal.value.saving = false;
+          providerResetModal.value.error = err.message || "Error de conexión.";
+        })
+        .apiResetProviderPeriod({
+          providerName: providerResetModal.value.providerName
+        });
+    };
+
+    const loadRatingsSummary = () => {
+      ratingsSummary.value.loading = true;
+      almuerzo.run
+        .withSuccessHandler(res => {
+          ratingsSummary.value.loading = false;
+          if (res.ok) {
+            ratingsSummary.value.providerStats = res.providerStats;
+            ratingsSummary.value.mealStats = res.mealStats;
+          }
+        })
+        .withFailureHandler(() => {
+          ratingsSummary.value.loading = false;
+        })
+        .apiGetRatingsSummary();
+    };
+
+    const openSatisfactionCommunityModal = (tab = 'PROVIDER') => {
+      satisfactionCommunityModal.value.activeTab = tab;
+      satisfactionCommunityModal.value.open = true;
+      satisfactionCommunityModal.value.loading = true;
+      almuerzo.run
+        .withSuccessHandler(res => {
+          satisfactionCommunityModal.value.loading = false;
+          if (res.ok) {
+            satisfactionCommunityModal.value.data = res;
+          } else {
+            showModal(res.msg || 'No se pudieron cargar las métricas de satisfacción.', 'Satisfacción');
+          }
+        })
+        .withFailureHandler(err => {
+          satisfactionCommunityModal.value.loading = false;
+          showModal(err.message || 'Error de conexión al cargar satisfacción.', 'Error');
+        })
+        .apiGetRatingsSummary();
+    };
+
+    const submitOrder = () => {
+      if (hasBlockingErrors.value) return;
+
+      submitting.value = true;
+
+      // Preparamos el objeto para enviar
+      const payload = {
+        date: currentDate.value,
+        orderId: myOrder.value?.id || '',
+        impersonateEmail: impersonateEmail.value,
+        categorias: Array.from(selection).map(id => selectionData[id].cat),
+        items: Array.from(selection).map(id => selectionData[id].plato),
+        comentarios: comments.value
+      };
+
+      almuerzo.run
+        .withSuccessHandler(res => {
+          submitting.value = false;
+          if (res.ok) {
+            const nextOrder = res.order || {
+              id: myOrder.value?.id || String(Date.now()),
+              resumen: payload.items.join(', '),
+              detalle: { categorias: payload.categorias, items: payload.items, comentarios: payload.comentarios }
+            };
+            allOrders.value = { ...allOrders.value, [currentDate.value]: nextOrder };
+            myOrder.value = nextOrder;
+            if (res.adminData) adminData.value = res.adminData;
+            resetSelectionState();
+            nextTick(() => scheduleChefGameStart(true));
+          } else {
+            showModal("Error: " + res.msg, "Error");
+          }
+        })
+        .withFailureHandler(() => {
+          submitting.value = false;
+          showModal("Error enviando el pedido. Intenta nuevamente.", "Error");
+        })
+        .apiSubmitOrder(payload);
+    };
+
+    const cancelOrder = () => {
+      if (!myOrder.value) return;
+      showModal("¿Estás seguro de cancelar este pedido?", "Cancelar Pedido", "CONFIRM", () => {
+          submitting.value = true;
+          almuerzo.run
+            .withSuccessHandler(res => {
+               submitting.value = false;
+               if (res.ok) {
+                 const nextOrders = { ...allOrders.value };
+                 delete nextOrders[currentDate.value];
+                 allOrders.value = nextOrders;
+                 myOrder.value = null;
+                 if (res.adminData) adminData.value = res.adminData;
+                 resetSelectionState();
+                 stopChefGame({ clearKey: true });
+               } else {
+                  showModal(res.msg, "Error");
+               }
+            })
+            .withFailureHandler(() => {
+              submitting.value = false;
+              showModal("Error al cancelar.", "Error");
+            })
+            .apiCancelOrder(myOrder.value.id);
+      });
+    };
+
+    const triggerLogoAnimation = () => {
+       if (logoAnimating.value) return;
+
+       bubbleVisible.value = false;
+       if (bubbleTimer.value) clearTimeout(bubbleTimer.value);
+
+       logoAnimating.value = true;
+       setTimeout(() => {
+          logoAnimating.value = false;
+
+          const texts = ["¡Buen provecho!", "¡Que lo disfrutes!", "¡Excelente elección!", "¡Ñam ñam!", "¡Salud!"];
+          bubbleText.value = texts[Math.floor(Math.random() * texts.length)];
+          bubbleVisible.value = true;
+
+          bubbleTimer.value = setTimeout(() => {
+             bubbleVisible.value = false;
+          }, 4000);
+       }, 500);
+    };
+
+    // UI Helpers
+    const formatCatName = (c) => {
+      const category = categoryById.value[c];
+      return category ? category.nombre : String(c || '').replace(/_/g, ' ');
+    };
+
+    const hasSelectionInCat = (cat) => selectedCats.value.includes(cat);
+
+    const isSelected = (id) => selection.has(id);
+
+    const scrollToCat = (cat) => {
+      const el = document.getElementById('cat-'+cat);
+      if(el) {
+        // Offset for sticky header
+        const y = el.getBoundingClientRect().top + window.pageYOffset - 140;
+        window.scrollTo({top: y, behavior: 'smooth'});
+      }
+    };
+
+    const getIconForCategory = (cat) => {
+      const map = {
+        'Arroces': 'fa-bowl-rice',
+        'Granos': 'fa-spoon', // Generic
+        'Carnes': 'fa-drumstick-bite',
+        'Ensaladas': 'fa-carrot',
+        'Viveres': 'fa-utensils',
+        'Vegetariana': 'fa-leaf',
+        'Caldo': 'fa-mug-hot',
+        'Opcion_Rapida': 'fa-burger'
+      };
+      return 'fa-solid ' + (map[cat] || 'fa-circle');
+    };
+
+    const formatConfigValue = (key, value) => {
+       if (!value) return '';
+       if (key.includes('HORA')) {
+          if (String(value).match(/^\d{1,2}:\d{2}$/)) {
+             const [h, m] = value.split(':');
+             const date = new Date();
+             date.setHours(h, m);
+             return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          }
+       }
+       if (key === 'MEAL_PRICE_CURRENT') {
+          return formatCurrency(value);
+       }
+       if (key.includes('MINUTOS')) {
+          return value + ' min';
+       }
+       return value;
+    };
+
+    const initSummaryDates = () => {
+       const today = new Date();
+       const next = new Date(today);
+       next.setDate(today.getDate() + 7);
+
+       const toYMD = (d) => {
+          return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+       };
+       summaryDateStart.value = toYMD(today);
+       summaryDateEnd.value = toYMD(next);
+    };
+
+    const resetSummaryDates = () => {
+       initSummaryDates();
+    };
+
+    // Inicialización
+    watch(
+      () => [viewMode.value, chefGameCardVisible.value ? chefGameCardKey.value : ''],
+      () => {
+        if (viewMode.value === 'USER' && chefGameCardVisible.value) {
+          nextTick(() => scheduleChefGameStart(false));
+        } else {
+          stopChefGame();
+        }
+      },
+      { flush: 'post' }
+    );
+
+    onMounted(() => {
+      initSummaryDates();
+      const initialData = window.__INITIAL_DATA__;
+      if (initialData && initialData.ok) {
+        applyInitData(initialData);
+        loading.value = false;
+      } else {
+        loadData();
+      }
+    });
+
+    return {
+      // Estado
+      csrfToken, footerSignatureUrl, loading, submitting, user, menu, myOrder, adminData,
+      currentDate, dates, comments,
+      summaryDateStart, summaryDateEnd, activeUsersCount,
+      chefGameState, chefGame, chefRanking,
+
+      // Computed
+      isAdmin, isDeptAdmin, isAdminGen, isTestEmailMode, menuLoaded, categories, menuCategories, activeMenuCategories, adminMenuCategories,
+      selectedCount, validationError, hasBlockingErrors, showGrainWarning,
+      isDefaultSummary,
+      displayDate, isCutoffPassed,
+      chefScore, chefRemainingSeconds, chefGameAvailable, chefDailyProgress, chefRemainingLabel, chefGameCardVisible, chefGameCardKey, chefGameInCooldown,
+
+      // Métodos / Reglas UI
+      toggleItem, isSelected, hasSelectionInCat, isCatDisabled, isItemDisabled,
+
+      // Estado
+      savingReminders, remindersEnabled, shouldScrollSummaryCards,
+      activeUser, deptUsers, impersonateEmail,
+      viewMode, adminState,
+
+      // Aviso General
+      announcementConfig, showAnnouncementModal, announcementSlideIndex, announcementEditModal,
+      dismissAnnouncement, nextAnnouncementSlide, prevAnnouncementSlide, openAnnouncementConfigModal,
+      addAnnouncementSlide, removeAnnouncementSlide, saveAnnouncementConfig,
+
+      // Proveedor y Valoraciones
+      providerInfo, userMealRatings, userProviderRating, serverHour, serverTime,
+      mealRatingModal, providerRatingModal, providerResetModal, ratingsSummary,
+      satisfactionCommunityModal, openSatisfactionCommunityModal,
+      canRateMeal, openMealRatingModal, saveMealRating,
+      openProviderRatingModal, saveProviderRating,
+      openProviderResetModal, saveProviderReset, loadRatingsSummary,
+
+      // Acciones Principales
+      changeDate, submitOrder, cancelOrder, toggleReminders, changeProxyUser,
+      toggleAdminView, loadAdminData, openChefRanking, returnToOrders, loadChefRanking, handleChefTargetTap, handleChefCakeTap, getChefTargetLabel, toggleChefGamePlay, syncChefGame,
+
+      // Admin Actions
+      openUserModal, saveUser, toggleUserStatus, adminCancelOrder,
+      openDeptModal, saveDept, deleteDept, saveConfig, runTestDailyCloseEmails, clearFilters,
+
+      // Dept Helpers
+      addDeptAdmin, removeDeptAdmin, deptAdminSearch, filteredAdminUsers, deptMoveHint,
+
+      // Menu/Holiday
+      checkMenuDate, loadMenuDay, openMenuModal, saveMenuItem, deleteMenuItem, openCategoryManager, openCategoryModal, saveMenuCategory,
+      saveHoliday, deleteHoliday,
+      openMenuImportModal, processMenuImport, saveWeeklyMenu,
+
+      // Responsibles
+      addResponsible, removeResponsible,
+
+      // Filtered Data
+      filteredUsers, filteredOrders,
+
+      // UI Utils
+      formatCatName, scrollToCat, getIconForCategory, formatConfigValue, formatMenuText, formatCurrency,
+
+      // Summary
+      userWeeklySummary, summaryHeaders, summaryTitle, resetSummaryDates, userSummaryTotalCost,
+
+      // Logo Animation
+      logoAnimating, bubbleVisible, bubbleText, triggerLogoAnimation,
+
+      // Generic Modal
+      msgModal, closeMsgModal, confirmMsgModal
+    };
+  }
+}).mount('#app');

@@ -1,0 +1,157 @@
+namespace Almuerzo.Web.Models;
+
+public static class Roles
+{
+    public const string User = "USER", DepartmentAdmin = "ADMIN_DEP", GeneralAdmin = "ADMIN_GEN";
+    public static readonly string[] All = [User, DepartmentAdmin, GeneralAdmin];
+}
+
+public class Department
+{
+    public string Id { get; set; } = Guid.NewGuid().ToString();
+    public string Name { get; set; } = "";
+    public string Admins { get; set; } = "";
+    public string Status { get; set; } = "ACTIVO";
+    public string PreferencesJson { get; set; } = "{}";
+}
+
+public class AppUser
+{
+    public string Email { get; set; } = "";
+    public string Name { get; set; } = "";
+    public string? DepartmentId { get; set; }
+    public Department? Department { get; set; }
+    public string Role { get; set; } = Roles.User;
+    public string Status { get; set; } = "PENDIENTE";
+    public string? EmployeeCode { get; set; }
+    public string PreferencesJson { get; set; } = "{}";
+    public string GameJson { get; set; } = "{}";
+    public string Revision { get; set; } = Guid.NewGuid().ToString();
+}
+
+public class MenuCategory
+{
+    public string Id { get; set; } = Guid.NewGuid().ToString();
+    public string Name { get; set; } = "";
+    public int SortOrder { get; set; }
+    public string Status { get; set; } = "ACTIVO";
+    public string Aliases { get; set; } = "";
+    public bool Combinable { get; set; } = true;
+    public string CombinableWith { get; set; } = "";
+    public string SelectionType { get; set; } = "UNICA";
+}
+
+public class MenuItem
+{
+    public string Id { get; set; } = Guid.NewGuid().ToString();
+    public string Date { get; set; } = "";
+    public string CategoryId { get; set; } = "";
+    public MenuCategory? Category { get; set; }
+    public string Dish { get; set; } = "";
+    public string Description { get; set; } = "";
+    public bool Enabled { get; set; } = true;
+}
+
+public class Order
+{
+    public string Id { get; set; } = Guid.NewGuid().ToString();
+    public string RequestedAt { get; set; } = "";
+    public string Date { get; set; } = "";
+    public string Email { get; set; } = "";
+    public string Name { get; set; } = "";
+    public string DepartmentId { get; set; } = "";
+    public string Summary { get; set; } = "";
+    public string DetailJson { get; set; } = "{}";
+    public string Status { get; set; } = "ACTIVO";
+    public string ModifiedAt { get; set; } = "";
+    public string CreatedBy { get; set; } = "";
+    public string Revision { get; set; } = Guid.NewGuid().ToString();
+}
+
+public class Holiday
+{
+    public string Date { get; set; } = "";
+    public string Reason { get; set; } = "";
+}
+
+public class Setting
+{
+    public string Key { get; set; } = "";
+    public string Value { get; set; } = "";
+    public string Description { get; set; } = "";
+}
+
+public class Rating
+{
+    public string Id { get; set; } = Guid.NewGuid().ToString();
+    public string Kind { get; set; } = "MEAL";
+    public string Scope { get; set; } = "";
+    public string OrderId { get; set; } = "";
+    public string ProviderName { get; set; } = "";
+    public string Email { get; set; } = "";
+    public string Name { get; set; } = "";
+    public string Department { get; set; } = "";
+    public int Score { get; set; }
+    public string Comment { get; set; } = "";
+    public string Dishes { get; set; } = "";
+    public int Version { get; set; } = 1;
+    public string CreatedAt { get; set; } = "";
+    public string UpdatedAt { get; set; } = "";
+}
+
+public class RatingHistory
+{
+    public long Id { get; set; }
+    public string VoteId { get; set; } = "";
+    public string PeriodId { get; set; } = "";
+    public string ProviderName { get; set; } = "";
+    public string Email { get; set; } = "";
+    public string Name { get; set; } = "";
+    public string Department { get; set; } = "";
+    public int Score { get; set; }
+    public string Comment { get; set; } = "";
+    public string Timestamp { get; set; } = "";
+}
+
+public class AuditEvent
+{
+    public long Id { get; set; }
+    public string Actor { get; set; } = "";
+    public string Action { get; set; } = "";
+    public string EntityId { get; set; } = "";
+    public string Timestamp { get; set; } = DateTimeOffset.UtcNow.ToString("O");
+}
+
+public class MailMessageRecord
+{
+    public long Id { get; set; }
+    public string Recipient { get; set; } = "";
+    public string Subject { get; set; } = "";
+    public string Body { get; set; } = "";
+    public string AttachmentPath { get; set; } = "";
+    public string ExtraAttachmentsJson { get; set; } = "[]";
+    public int Attempts { get; set; }
+    public string? SentAt { get; set; }
+    public string CreatedAt { get; set; } = DateTimeOffset.UtcNow.ToString("O");
+}
+
+public class ImportRecord
+{
+    public string Hash { get; set; } = "";
+    public string ImportedAt { get; set; } = DateTimeOffset.UtcNow.ToString("O");
+    public string SummaryJson { get; set; } = "{}";
+}
+
+public class SourceRecord
+{
+    public long Id { get; set; }
+    public string Sheet { get; set; } = "";
+    public int Row { get; set; }
+    public string Json { get; set; } = "{}";
+}
+
+public class JobRun
+{
+    public string Key { get; set; } = "";
+    public string CompletedAt { get; set; } = DateTimeOffset.UtcNow.ToString("O");
+}

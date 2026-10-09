@@ -1,0 +1,19 @@
+{
+  "name": "almuerzo-web-assets",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "build:css": "tailwindcss -c tailwind.config.cjs -i frontend/tailwind.css -o src/Almuerzo.Web/wwwroot/assets/tailwind.css --minify",
+    "build": "node tools/vendor-assets.mjs && node tools/compile-frontend.mjs && npm run build:css"
+  },
+  "devDependencies": {
+    "@fontsource/inter": "5.2.5",
+    "@fortawesome/fontawesome-free": "6.7.2",
+    "@tailwindcss/cli": "4.3.0",
+    "tailwindcss": "4.3.3",
+    "vue": "3.5.43"
+  },
+  "overrides": {
+    "@parcel/watcher": "2.6.0"
+  }
+}

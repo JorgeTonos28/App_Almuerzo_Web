@@ -1,0 +1,17 @@
+@import "tailwindcss";
+@config "../tailwind.config.cjs";
+@source "../src/Almuerzo.Web/Templates";
+@source "../src/Almuerzo.Web/Views";
+@source "../src/Almuerzo.Web/wwwroot/assets/app.js";
+@source inline("{bg,text,border,from,to,ring}-{blue,indigo,amber,gray,red,green,purple,orange,yellow,emerald,rose,slate}-{50,100,200,300,400,500,600,700,800,900}");
+@theme {
+  --color-blue-50:#eff6ff; --color-blue-100:#dbeafe; --color-blue-200:#bfdbfe; --color-blue-500:#3b82f6; --color-blue-600:#2563eb; --color-blue-700:#1d4ed8; --color-blue-800:#1e40af;
+  --color-indigo-50:#eef2ff; --color-indigo-100:#e0e7ff; --color-indigo-500:#6366f1; --color-indigo-600:#4f46e5; --color-indigo-700:#4338ca;
+  --color-gray-50:#f9fafb; --color-gray-100:#f3f4f6; --color-gray-200:#e5e7eb; --color-gray-300:#d1d5db; --color-gray-400:#9ca3af; --color-gray-500:#6b7280; --color-gray-600:#4b5563; --color-gray-700:#374151; --color-gray-800:#1f2937; --color-gray-900:#111827;
+  --shadow-sm:0 1px 2px 0 rgb(0 0 0 / .05);
+  --shadow-md:0 4px 6px -1px rgb(0 0 0 / .1),0 2px 4px -2px rgb(0 0 0 / .1);
+}
+@layer base { *,::before,::after{border-color:#e5e7eb} button,[role=button]{cursor:pointer} }
+@utility flex-shrink-0 { flex-shrink:0; }
+@utility flex-grow { flex-grow:1; }
+@utility outline-none { outline:2px solid transparent;outline-offset:2px; }

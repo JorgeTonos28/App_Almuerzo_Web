@@ -1,0 +1,16 @@
+@media (max-width:720px) {
+  .app-header-row { gap:8px; }
+  .app-brand { gap:8px; flex-shrink:0; }
+  .app-brand>div:first-child { width:32px; height:32px; }
+  .app-brand .font-bold { font-size:14px; }
+  .app-brand .uppercase { font-size:8px; white-space:nowrap; }
+  .app-toolbar { gap:6px; min-width:0; }
+  .app-toolbar .presence-badge { display:none; }
+  .app-toolbar .w-9 { width:32px; height:32px; flex-shrink:0; }
+  .app-toolbar .border-l { gap:6px; padding-left:6px; }
+  .app-toolbar form { margin-left:0; }
+  .app-toolbar .chef-score-pill { padding:6px 8px; gap:4px; min-width:0; font-size:11px; }
+  .app-header-row:has(.proxy-selector) { position:relative; height:108px; padding-bottom:44px; }
+  .proxy-selector { position:absolute; left:16px; right:16px; bottom:8px; margin:0; }
+  .proxy-selector select { width:100%; max-width:none; }
+}
