@@ -11,7 +11,7 @@ public static class SeedData
             ["HORA_ENVIO"] = "15:00", ["MINUTOS_PREV_CIERRE"] = "30", ["HORA_RECORDATORIO"] = "13:00",
             ["ADMIN_EMAILS"] = "", ["RESPONSIBLES_EMAILS_JSON"] = "[]", ["MAIL_SENDER_NAME"] = "Comedor Institucional",
             ["APP_TITLE"] = "Solicitud de Almuerzo", ["APP_URL"] = "", ["TEST_EMAIL_MODE"] = "TRUE", ["TEST_EMAIL_DEST"] = "",
-            ["FOOTER_TEXT"] = "Dirección de Innovación © 2025", ["FAVICON_ASSET_ID"] = "", ["FOOTER_STAMP_ASSET_ID"] = "",
+            ["FOOTER_TEXT"] = "INFOTEP - DIAET © 2026", ["FAVICON_ASSET_ID"] = "", ["FOOTER_STAMP_ASSET_ID"] = "",
             ["MEAL_PRICE_CURRENT"] = "57", ["MEAL_PRICE_HISTORY_JSON"] = "[{\"from\":\"1900-01-01\",\"price\":57}]",
             ["ANNOUNCEMENT_ENABLED"] = "FALSE", ["ANNOUNCEMENT_ID"] = "", ["ANNOUNCEMENT_EXPIRES_ON"] = "",
             ["ANNOUNCEMENT_MAX_DISMISS"] = "3", ["ANNOUNCEMENT_PAYLOAD_JSON"] = "{\"slides\":[]}",
@@ -19,6 +19,8 @@ public static class SeedData
         };
         var existing = await db.Settings.Select(x => x.Key).ToListAsync();
         db.Settings.AddRange(defaults.Where(x => !existing.Contains(x.Key)).Select(x => new Setting { Key = x.Key, Value = x.Value }));
+        var footer = await db.Settings.FindAsync("FOOTER_TEXT");
+        if (footer?.Value == "Dirección de Innovación © 2025") footer.Value = defaults["FOOTER_TEXT"];
         if (!await db.Categories.AnyAsync())
         {
             var ids = new[] { "Arroces", "Granos", "Carnes", "Ensaladas", "Viveres", "Vegetariana", "Caldo", "Opcion_Rapida", "Frituritas" };

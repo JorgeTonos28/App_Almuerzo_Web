@@ -26,6 +26,16 @@ public class BrandingAndMailTests
         if (csrf) request.Headers.Add("X-CSRF-TOKEN", AppFactory.RpcToken(await client.GetStringAsync("/")));
         return await client.SendAsync(request);
     }
+    [Fact] public async Task DefaultBrandingUsesInstitutionalFooterAndBundledSignature()
+    {
+        await using var app = new AppFactory(); await app.Seed(); using var anonymous = app.Client();
+        var html = await anonymous.GetStringAsync("/Auth/Login");
+        Assert.Contains("INFOTEP - DIAET © 2026", WebUtility.HtmlDecode(html));
+        Assert.Contains("/assets/signature.png", html);
+        var signature = await anonymous.GetAsync("/assets/signature.png");
+        Assert.Equal(HttpStatusCode.OK, signature.StatusCode);
+        Assert.Equal("image/png", signature.Content.Headers.ContentType!.MediaType);
+    }
     [Fact] public async Task BrandingRequiresGeneralAdminAndCsrf()
     {
         await using var app = new AppFactory(); await app.Seed(); using var user = app.Client(); using var admin = app.Client();
@@ -67,7 +77,7 @@ public class BrandingAndMailTests
         if (kind == "dimensions") bytes = Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAAgEAAAABCAYAAABHeX1IAAAAHUlEQVR4nGNUTX79n2EUjIJRMApGwSgYBQwjDQAApbkCdA6XT4QAAAAASUVORK5CYII=");
         if (kind == "raster") bytes = Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADElEQVR4nGNgoAMAAABlAAF/+ogNAAAAAElFTkSuQmCC");
         Assert.Equal(HttpStatusCode.BadRequest, (await Save(admin, Form("Should roll back", bytes))).StatusCode);
-        using var scope = app.Services.CreateScope(); var db = scope.ServiceProvider.GetRequiredService<AppDbContext>(); Assert.Equal("Dirección de Innovación © 2025", (await db.Settings.FindAsync("FOOTER_TEXT"))!.Value); Assert.Equal(0, await db.BrandingAssets.CountAsync());
+        using var scope = app.Services.CreateScope(); var db = scope.ServiceProvider.GetRequiredService<AppDbContext>(); Assert.Equal("INFOTEP - DIAET © 2026", (await db.Settings.FindAsync("FOOTER_TEXT"))!.Value); Assert.Equal(0, await db.BrandingAssets.CountAsync());
     }
     [Fact] public async Task AccessRequestUsesDirectoryCodeEvenIfFormIsForged()
     {

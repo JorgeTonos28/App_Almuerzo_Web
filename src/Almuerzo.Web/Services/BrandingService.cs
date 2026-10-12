@@ -9,13 +9,18 @@ namespace Almuerzo.Web.Services;
 public record BrandingSettings(string FooterText, string FaviconUrl, string FooterSignatureUrl);
 public class BrandingService(AppDbContext db)
 {
+    private const string DisabledFooterSignature = "__DISABLED__";
+    private const string DefaultFooterText = "INFOTEP - DIAET © 2026";
+    private const string DefaultFooterSignature = "/assets/signature.png";
     public static readonly string[] Keys = ["FOOTER_TEXT", "FAVICON_ASSET_ID", "FOOTER_STAMP_ASSET_ID"];
     public async Task<BrandingSettings> Get()
     {
         var cfg = await db.Settings.AsNoTracking().Where(x => Keys.Contains(x.Key)).ToDictionaryAsync(x => x.Key, x => x.Value);
         static string Url(string? id) => Guid.TryParseExact(id, "N", out _) ? "/branding/" + id + ".png" : "";
         var icon = Url(cfg.GetValueOrDefault("FAVICON_ASSET_ID"));
-        return new(cfg.GetValueOrDefault("FOOTER_TEXT", "Dirección de Innovación © 2025"), icon.Length == 0 ? "/assets/favicon.svg" : icon, Url(cfg.GetValueOrDefault("FOOTER_STAMP_ASSET_ID")));
+        var stampId = cfg.GetValueOrDefault("FOOTER_STAMP_ASSET_ID");
+        var stamp = stampId == DisabledFooterSignature ? "" : Url(stampId);
+        return new(cfg.GetValueOrDefault("FOOTER_TEXT", DefaultFooterText), icon.Length == 0 ? "/assets/favicon.svg" : icon, stamp.Length == 0 && stampId != DisabledFooterSignature ? DefaultFooterSignature : stamp);
     }
 
     public async Task<BrandingSettings> Save(string footer, IFormFile? favicon, IFormFile? stamp, bool resetFavicon, bool removeStamp, string actor, CancellationToken ct)
@@ -37,7 +42,7 @@ public class BrandingService(AppDbContext db)
             var oldId = (await db.Settings.FindAsync([key], ct))?.Value;
             var asset = content == null ? null : new BrandingAsset { Content = content };
             if (asset != null) db.BrandingAssets.Add(asset);
-            await Set(key, asset?.Id ?? "");
+            await Set(key, clear ? DisabledFooterSignature : asset?.Id ?? "");
             if (!string.IsNullOrEmpty(oldId) && await db.BrandingAssets.FindAsync([oldId], ct) is { } old) db.BrandingAssets.Remove(old);
         }
         await Set("FOOTER_TEXT", footer.Trim());

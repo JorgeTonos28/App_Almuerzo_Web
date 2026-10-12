@@ -1,21 +1,21 @@
-# App Almuerzo Web · 0.1.2
+# App Almuerzo Web · 0.1.4
 
 Migración de App_Almuerzo v7.36 a ASP.NET Core 10 MVC, EF Core y SQLite. La interfaz Vue conserva la estructura y los estilos del sistema de Apps Script. Los permisos y las reglas de negocio se verifican en el servidor.
 
-La integración AD utiliza el contrato ASMX de ExtraHub PR #15, confirmado con el WSDL institucional. La administración puede configurar favicon, texto y sello del pie de página. La guía paso a paso para habilitar AD, correos y pruebas está en [docs/SETUP-AD-MAIL.md](docs/SETUP-AD-MAIL.md). Faltan la validación con credenciales AD reales, SMTP y la aceptación funcional completa con los responsables. El análisis de migración está en [docs/MIGRATION.md](docs/MIGRATION.md).
+La integración AD utiliza el contrato ASMX de ExtraHub PR #15, confirmado con el WSDL institucional. La administración puede configurar favicon, texto y sello del pie de página. La entrega incluye por defecto el crédito `INFOTEP - DIAET © 2026` y la firma institucional en el footer. La guía paso a paso para habilitar AD, correos y pruebas está en [docs/SETUP-AD-MAIL.md](docs/SETUP-AD-MAIL.md). La base entregada para producción debe solicitarse actualizada a TI por un canal privado; nunca se versionan bases reales ni el Excel de origen.
 
 ## Ejecutar y probar
 
 Requisitos: .NET SDK 10 y Node.js 24. Desde la raíz del repositorio:
 
-```powershell
+```cmd
 npm ci
 npm run build
 dotnet restore Almuerzo.sln
 dotnet build Almuerzo.sln --no-restore
 dotnet test Almuerzo.sln --no-build
-$env:ASPNETCORE_ENVIRONMENT = 'Development'
-dotnet run --project src/Almuerzo.Web --no-launch-profile --urls http://localhost:5062 -- --demo
+set ASPNETCORE_ENVIRONMENT=Development
+dotnet run --project src\Almuerzo.Web --no-launch-profile --urls http://localhost:5062 -- --demo
 ```
 
 Abrir `http://localhost:5062`. El modo demo usa una base independiente en `src/Almuerzo.Web/App_Data/demo`, un usuario sintético `demo.almuerzo@infotep.gob.do` y una contraseña aleatoria disponible **solo localmente** en `App_Data/demo/access.txt`. Nunca habilita usuarios de la base importada. El flag `--demo` se rechaza en producción. Los cambios a la plantilla, CSS o JavaScript requieren `npm run build`; editar `frontend/app.js`, `frontend/app.css` y `frontend/responsive.css`, no los archivos generados en `wwwroot/assets`. El script `port-legacy.mjs` fue usado para el bootstrap y protege los archivos existentes contra sobrescritura.
@@ -26,8 +26,9 @@ Para ejecutar con la base real, omitir `--demo` y configurar primero el proveedo
 
 El libro y sus datos son privados. No copiarlos al repositorio ni adjuntarlos a un PR. El importador lee las diez hojas, valida encabezados, conserva los registros de origen en un archivo lógico dentro de la base, redacta secretos de Config y reconcilia los conteos dentro de una transacción. Los JSON de preferencias y los históricos se preservan. Normaliza `USUARIO` a `USER`, códigos con ceros iniciales y fechas de Excel.
 
-```powershell
-./scripts/Import-Legacy.ps1 -WorkbookPath 'C:\Users\jtonos\Downloads\DB_Almuerzo.xlsx'
+```cmd
+set Storage__Path=C:\AlmuerzoPrivate
+dotnet run --project src\Almuerzo.Web --no-launch-profile -- --import C:\Users\jtonos\Downloads\DB_Almuerzo.xlsx
 ```
 
 La base local predeterminada está en `src/Almuerzo.Web/App_Data/almuerzo.db`. Repetir el mismo archivo no vuelve a insertar datos: se reconoce por SHA-256. Un archivo diferente requiere una base nueva, sin usuarios, menú ni pedidos; no se fusionan históricos de forma silenciosa. Una referencia de departamento desconocida deja la cuenta sin departamento y sin acceso hasta su corrección administrativa. La importación fuerza modo de correo de prueba y elimina la URL antigua de Apps Script del uso operativo.

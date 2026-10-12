@@ -1,11 +1,11 @@
-# Habilitar AD, correo y pruebas · v0.1.2
+# Habilitar AD, correo y pruebas · v0.1.4
 
 ## 1. Preparar el proyecto
 
-Abrir PowerShell en `C:\Dev\AppsWeb\App_Almuerzo`. Requisitos: .NET SDK 10, Node.js 24 y conexión al servicio institucional (red/VPN según corresponda).
+Abrir `cmd.exe` en `C:\Dev\AppsWeb\App_Almuerzo`. Requisitos: .NET SDK 10, Node.js 24 y conexión al servicio institucional (red/VPN según corresponda).
 
-```powershell
-Set-Location C:\Dev\AppsWeb\App_Almuerzo
+```cmd
+cd /d C:\Dev\AppsWeb\App_Almuerzo
 npm ci
 npm run build
 dotnet restore Almuerzo.sln
@@ -13,12 +13,12 @@ dotnet build Almuerzo.sln -c Release --no-restore
 dotnet test Almuerzo.sln -c Release --no-build
 ```
 
-La base del Excel entregado ya está importada localmente: 329 usuarios, 21 departamentos, 2,282 platos y 10,647 pedidos. No volver a copiarla al repositorio ni a `wwwroot`. El arranque aplica las migraciones y añade los nuevos ajustes sin sobrescribir los existentes. Los favicon y sellos cargados se guardan en esa base privada.
+La base de prueba local del Excel entregado queda fuera de Git y de `wwwroot`: 329 usuarios, 21 departamentos, 2,282 platos y 10,647 pedidos. Para producción, TI debe solicitar la base o el Excel actualizado al momento del despliegue, porque este conjunto solo sirve para pruebas regresivas y puede quedar desactualizado.
 
 Para importar en otra instalación vacía, con la aplicación detenida:
 
-```powershell
-./scripts/Import-Legacy.ps1 -WorkbookPath 'C:\ruta\DB_Almuerzo.xlsx' -StoragePath 'C:\AlmuerzoPrivate'
+```cmd
+scripts\Import-Legacy.cmd C:\ruta\DB_Almuerzo.xlsx C:\AlmuerzoPrivate
 ```
 
 Repetir el mismo libro es idempotente; un libro diferente no se mezcla con una base operativa. Para ejecutar desde binarios publicados, añadir `-PublishedDirectory 'C:\ruta\publicada'`.
@@ -54,9 +54,9 @@ El código AD debe contener entre uno y cuatro dígitos: se normaliza a cuatro, 
 
 Si otro proceso ocupa el puerto 5062, cerrarlo con `Ctrl+C` en su terminal o utilizar otro puerto. La demostración preparada para esta entrega usa 5064 y una base separada. Ejecutar **sin `--demo`**:
 
-```powershell
-$env:ASPNETCORE_ENVIRONMENT = 'Development'
-dotnet run --project src/Almuerzo.Web -c Release --no-build --no-launch-profile --urls http://localhost:5062
+```cmd
+set ASPNETCORE_ENVIRONMENT=Development
+dotnet run --project src\Almuerzo.Web -c Release --no-build --no-launch-profile --urls http://localhost:5062
 ```
 
 Abrir [Almuerzo local](http://localhost:5062). Ingresar con la cuenta institucional y contraseña habitual. El modo Development permite HTTP únicamente para estas pruebas en localhost. La instalación publicada debe usar HTTPS.
@@ -113,6 +113,8 @@ Volver a `Mail:Mode=Pickup` y `Mail:AllowSmtpInDevelopment=false` cuando termine
 ## 7. Configurar favicon y pie de página
 
 Como administrador general: **Panel de Administración → CONFIG → Identidad visual y pie de página**.
+
+La instalación nueva muestra `INFOTEP - DIAET © 2026` y la firma institucional incluida en `wwwroot/assets/signature.png`; el texto queda a la izquierda y la firma a la derecha. La administración puede sustituir la firma o quitarla sin modificar los archivos del repositorio.
 
 1. Editar el texto (hasta 200 caracteres; vacío para ocultarlo).
 2. Cargar un favicon PNG, máximo 512 KB y 512 × 512 px. El predeterminado reproduce el logo azul con cubiertos de la app.
