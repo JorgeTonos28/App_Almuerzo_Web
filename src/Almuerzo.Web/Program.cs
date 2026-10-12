@@ -32,13 +32,13 @@ else if (OperatingSystem.IsWindows()) protection.ProtectKeysWithDpapi();
 else if (!builder.Environment.IsDevelopment()) throw new InvalidOperationException("Producción requiere un certificado para cifrar las claves de Data Protection en este sistema operativo.");
 builder.Services.AddDbContext<AppDbContext>((sp, o) => o.UseSqlite(sp.GetRequiredService<IConfiguration>().GetConnectionString("DefaultConnection") ?? new Microsoft.Data.Sqlite.SqliteConnectionStringBuilder { DataSource = Path.Combine(sp.GetRequiredService<StoragePaths>().Root, "almuerzo.db"), DefaultTimeout = 30 }.ToString()));
 builder.Services.AddControllersWithViews(o => o.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
-builder.Services.AddAntiforgery(o => { o.HeaderName = "X-CSRF-TOKEN"; o.Cookie.HttpOnly = true; o.Cookie.SameSite = SameSiteMode.Strict; o.Cookie.SecurePolicy = builder.Environment.IsDevelopment() ? CookieSecurePolicy.SameAsRequest : CookieSecurePolicy.Always; });
+builder.Services.AddAntiforgery(o => { o.HeaderName = "X-CSRF-TOKEN"; o.Cookie.Name = "Almuerzo.Antiforgery.v2"; o.Cookie.HttpOnly = true; o.Cookie.SameSite = SameSiteMode.Strict; o.Cookie.SecurePolicy = builder.Environment.IsDevelopment() ? CookieSecurePolicy.SameAsRequest : CookieSecurePolicy.Always; });
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<BusinessRules>(); builder.Services.AddScoped<LunchService>(); builder.Services.AddScoped<ReportService>(); builder.Services.AddScoped<WorkbookImporter>();
 builder.Services.AddScoped<BrandingService>(); builder.Services.AddScoped<OutboxDelivery>(); builder.Services.AddSingleton<MailDeliveryPolicy>();
 builder.Services.AddHttpClient<IDirectoryIdentityProvider, DirectoryIdentityProvider>(c => c.Timeout = Timeout.InfiniteTimeSpan).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false });
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(o => {
-    o.LoginPath = "/Auth/Login"; o.AccessDeniedPath = "/Auth/Denied"; o.Cookie.Name = "Almuerzo.Session"; o.Cookie.HttpOnly = true; o.Cookie.SameSite = SameSiteMode.Strict;
+    o.LoginPath = "/Auth/Login"; o.AccessDeniedPath = "/Auth/Denied"; o.Cookie.Name = "Almuerzo.Session.v2"; o.Cookie.HttpOnly = true; o.Cookie.SameSite = SameSiteMode.Strict;
     o.Cookie.SecurePolicy = builder.Environment.IsDevelopment() ? CookieSecurePolicy.SameAsRequest : CookieSecurePolicy.Always;
     o.ExpireTimeSpan = TimeSpan.FromHours(8); o.SlidingExpiration = false;
     o.Events.OnValidatePrincipal = async context => {

@@ -46,6 +46,20 @@ public class SecurityAndBusinessTests
         using (var scope = app.Services.CreateScope()) { var db = scope.ServiceProvider.GetRequiredService<AppDbContext>(); var u = await db.Users.FindAsync("general@infotep.gob.do"); u!.Status = "INACTIVO"; await db.SaveChangesAsync(); }
         Assert.Equal(HttpStatusCode.Redirect, (await c.GetAsync("/")).StatusCode);
     }
+    [Fact] public async Task ImportedDecimalCloseSettingDoesNotBreakHome()
+    {
+        await using var app = new AppFactory(); await app.Seed();
+        using (var scope = app.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            (await db.Settings.FindAsync("MINUTOS_PREV_CIERRE"))!.Value = "30.0";
+            await db.SaveChangesAsync();
+        }
+        using var user = app.Client(); await app.Login(user, "user@infotep.gob.do");
+        var response = await user.GetAsync("/");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains("Almuerzo", await response.Content.ReadAsStringAsync());
+    }
     [Fact] public async Task OrderValidationAndMenuReplacementPreserveUnchangedOrders()
     {
         await using var app = new AppFactory(); await app.Seed(); using var user = app.Client(); using var admin = app.Client(); await app.Login(user, "user@infotep.gob.do"); await app.Login(admin, "general@infotep.gob.do");

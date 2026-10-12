@@ -6,7 +6,7 @@
 <main class="w-full max-w-md bg-white rounded-3xl shadow-xl shadow-blue-100 border border-gray-100 p-8 sm:p-10">
   <div class="w-14 h-14 rounded-2xl bg-linear-to-br from-blue-600 to-indigo-600 text-white text-2xl flex items-center justify-center shadow-lg shadow-blue-200 mb-7"><i class="fa-solid fa-utensils" aria-hidden="true"></i></div>
   <p class="text-xs uppercase tracking-wider text-blue-600 font-bold mb-2">Almuerzo pre-empacado</p><h1 class="text-3xl font-bold text-gray-900">Bienvenido</h1><p class="text-sm text-gray-500 mt-3 mb-7">Ingresa con tu cuenta institucional de INFOTEP.</p>
-  <form asp-action="Login" method="post" class="space-y-5">
+  <form asp-action="Login" method="post" target="_self" class="space-y-5">
     <div asp-validation-summary="All" class="text-sm text-red-600" role="alert"></div>
     <div><label asp-for="Username" class="block text-sm font-semibold mb-2">Usuario institucional</label><input asp-for="Username" autocomplete="username" required class="w-full rounded-xl border border-gray-200 p-3 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Usuario o correo institucional"></div>
     <div><label asp-for="Password" class="block text-sm font-semibold mb-2">Contraseña</label><input name="Password" id="Password" type="password" autocomplete="current-password" required maxlength="256" class="w-full rounded-xl border border-gray-200 p-3 focus:ring-2 focus:ring-blue-500 outline-none"></div>

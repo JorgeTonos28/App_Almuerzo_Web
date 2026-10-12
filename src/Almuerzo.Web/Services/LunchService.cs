@@ -46,7 +46,16 @@ public class LunchService(AppDbContext db, BusinessRules rules, ReportService re
     {
         var s = await db.Settings.FindAsync(key); Require(s != null, "Clave de configuración desconocida."); s!.Value = value;
     }
-    private bool Open(string date, HashSet<string> holidays, Dictionary<string, string> config) => rules.OrderingOpen(date, holidays, config.GetValueOrDefault("HORA_ENVIO", "15:00"), int.Parse(config.GetValueOrDefault("MINUTOS_PREV_CIERRE", "30")));
+    private static int CloseMinutes(Dictionary<string, string> config)
+    {
+        var raw = config.GetValueOrDefault("MINUTOS_PREV_CIERRE", "30");
+        if (int.TryParse(raw, NumberStyles.Integer, CultureInfo.InvariantCulture, out var integer)) return Math.Clamp(integer, 0, 300);
+        // Excel/Sheets imports can represent an integer setting as a decimal (for example, "30.0").
+        if (decimal.TryParse(raw, NumberStyles.Number, CultureInfo.InvariantCulture, out var decimalValue) && decimalValue is >= 0 and <= 300 && decimal.Truncate(decimalValue) == decimalValue)
+            return Math.Clamp((int)decimalValue, 0, 300);
+        return 30;
+    }
+    private bool Open(string date, HashSet<string> holidays, Dictionary<string, string> config) => rules.OrderingOpen(date, holidays, config.GetValueOrDefault("HORA_ENVIO", "15:00"), CloseMinutes(config));
     public static object UserDto(AppUser u) => new { email = u.Email, nombre = u.Name, departamentoId = u.DepartmentId, departamento = u.Department?.Name ?? "", rol = u.Role, estado = u.Status, codigo = u.EmployeeCode ?? "", directoryAccount = u.DirectoryAccount ?? "" };
     public static object CategoryDto(MenuCategory c) => new { id = c.Id, nombre = c.Name, orden = c.SortOrder, estado = c.Status, aliases = Split(c.Aliases), es_combinable = c.Combinable, combinable_con = Split(c.CombinableWith), tipo_seleccion = c.SelectionType };
     public static object OrderDto(Order o) => new { id = o.Id, resumen = BusinessRules.Text(o.Summary), detalle = Obj(o.DetailJson), estado = o.Status };
@@ -81,7 +90,7 @@ public class LunchService(AppDbContext db, BusinessRules rules, ReportService re
         var providerRating = await db.Ratings.AsNoTracking().SingleOrDefaultAsync(x => x.Email == target.Email && x.Kind == "PROVIDER" && x.Scope == period);
         var deptUsers = actor.Role == Roles.DepartmentAdmin ? await db.Users.AsNoTracking().Where(x => x.DepartmentId == actor.DepartmentId && x.Status == "ACTIVO" && x.Email != actor.Email).Select(x => new { email = x.Email, nombre = x.Name }).ToArrayAsync() : [];
         return new {
-            ok = true, appVersion = "0.1.2", nextBusinessDay = rules.NextBusinessDay(holidays).ToString("yyyy-MM-dd"), user = UserDto(target), activeUser = UserDto(actor), deptUsers,
+            ok = true, appVersion = "0.1.3", nextBusinessDay = rules.NextBusinessDay(holidays).ToString("yyyy-MM-dd"), user = UserDto(target), activeUser = UserDto(actor), deptUsers,
             userPrefs = Obj(target.PreferencesJson), currentDate = date, dates = openDates.Select(d => new { value = d, label = BusinessRules.Date(d).ToString("ddd dd MMM", CultureInfo.GetCultureInfo("es-DO")) }),
             menu = date != null ? MenuOf(date) : new Dictionary<string, object>(), allMenus = openDates.ToDictionary(d => d, MenuOf), allOrders = orders.ToDictionary(x => x.Date, OrderDto),
             myOrder = orders.Where(x => x.Date == date).Select(OrderDto).FirstOrDefault(), adminData = actor.Role == Roles.User ? null : await Stats(actor, date),
