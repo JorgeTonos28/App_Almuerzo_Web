@@ -23,7 +23,7 @@ public class AccessModel
     [MaxLength(150)] public string SuggestedDepartment { get; set; } = "";
 }
 
-public class AuthController(IDirectoryIdentityProvider directory, AppDbContext db, LunchService lunch, BrandingService branding) : Controller
+public class AuthController(IDirectoryIdentityProvider directory, AppDbContext db, LunchService lunch, BrandingService branding, DirectoryOrganization organization) : Controller
 {
     [AllowAnonymous, HttpGet] public async Task<IActionResult> Login() { ViewBag.Branding = await branding.Get(); return View(new LoginModel()); }
     [AllowAnonymous, HttpPost, EnableRateLimiting("login")]
@@ -37,28 +37,35 @@ public class AuthController(IDirectoryIdentityProvider directory, AppDbContext d
         catch (Exception ex) when (ex is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException or InvalidOperationException) { ModelState.AddModelError("", "El servicio de identidad no está disponible. Intenta nuevamente."); model.Password = ""; return View(model); }
         if (identity == null) { ModelState.AddModelError("", "Credenciales inválidas."); model.Password = ""; return View(model); }
         // The directory supplies employee code, not a verified email address. Preserve legacy contact/history.
-        var candidates = await db.Users.Include(x => x.Department).Where(x => x.DirectoryAccount == identity.Email || x.EmployeeCode == identity.EmployeeCode || x.Email == identity.Email).ToListAsync(ct);
+        var candidates = await db.Users.IgnoreQueryFilters().Include(x => x.Department).Where(x => x.DirectoryAccount == identity.Email || x.EmployeeCode == identity.EmployeeCode || x.Email == identity.Email).ToListAsync(ct);
         var user = candidates.Count == 1 ? candidates[0] : null;
         if (candidates.Count > 1 || user?.EmployeeCode is { Length: > 0 } code && code != identity.EmployeeCode || user?.DirectoryAccount is { Length: > 0 } account && account != identity.Email)
         { ModelState.AddModelError("", "Los datos institucionales requieren revisión administrativa. Contacta al administrador."); model.Password = ""; return View(model); }
+        await using var transaction = await db.Database.BeginTransactionAsync(ct);
+        try { user = await organization.Synchronize(identity, user, ct); }
+        catch (BusinessException ex) { ModelState.AddModelError("", ex.Message); model.Password = ""; return View(model); }
+        db.AllowCrossRegionWrites = true;
         if (user != null)
         {
             if (string.IsNullOrEmpty(user.DirectoryAccount)) db.Audit.Add(new AuditEvent { Actor = user.Email, Action = "LinkDirectoryAccount", EntityId = user.Email });
             user.Name = identity.Name; user.EmployeeCode = identity.EmployeeCode; user.DirectoryAccount = identity.Email;
             await db.SaveChangesAsync(ct);
         }
+        await transaction.CommitAsync(ct); db.AllowCrossRegionWrites = false;
         var localEmail = user?.Email ?? identity.Email;
-        var claims = new List<Claim> { new(ClaimTypes.NameIdentifier, localEmail), new(ClaimTypes.Email, localEmail), new(ClaimTypes.Name, identity.Name), new("directory_code", identity.EmployeeCode), new("directory_account", identity.Email) };
-        if (LunchService.Enabled(user)) { claims.Add(new Claim(ClaimTypes.Role, user!.Role)); claims.Add(new Claim("enabled", "true")); claims.Add(new Claim("department", user.DepartmentId!)); }
+        var enabled = LunchService.Enabled(user) && await db.Regions.AnyAsync(x => x.Id == user!.RegionId && x.Status == "ACTIVO", ct);
+        var claims = new List<Claim> { new(ClaimTypes.NameIdentifier, localEmail), new(ClaimTypes.Email, localEmail), new(ClaimTypes.Name, identity.Name), new("directory_code", identity.EmployeeCode), new("directory_account", identity.Email), new("region", user?.RegionId ?? Region.LegacyId) };
+        if (enabled) { claims.Add(new Claim(ClaimTypes.Role, user!.Role)); claims.Add(new Claim("enabled", "true")); claims.Add(new Claim("department", user.DepartmentId!)); }
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme)), new AuthenticationProperties { IsPersistent = false });
-        return RedirectToAction(LunchService.Enabled(user) ? "Index" : "Denied", LunchService.Enabled(user) ? "Home" : "Auth");
+        return RedirectToAction(enabled ? "Index" : "Denied", enabled ? "Home" : "Auth");
     }
     [Authorize, HttpGet] public async Task<IActionResult> Denied()
     {
         ViewBag.Branding = await branding.Get();
-        var user = await db.Users.Include(x => x.Department).SingleOrDefaultAsync(x => x.Email == User.FindFirstValue(ClaimTypes.Email));
-        if (LunchService.Enabled(user)) return RedirectToAction("Index", "Home");
-        ViewBag.Pending = user?.Status == "PENDIENTE"; ViewBag.Inactive = user?.Status == "INACTIVO"; ViewBag.Departments = await db.Departments.Where(x => x.Status == "ACTIVO").OrderBy(x => x.Name).ToListAsync(); return View(new AccessModel { Code = User.FindFirstValue("directory_code") ?? "", SuggestedDepartment = user?.Department?.Name ?? "" });
+        var user = await db.Users.IgnoreQueryFilters().Include(x => x.Department).SingleOrDefaultAsync(x => x.Email == User.FindFirstValue(ClaimTypes.Email));
+        var activeRegion = await db.Regions.AnyAsync(x => x.Id == db.RegionId && x.Status == "ACTIVO");
+        if (LunchService.Enabled(user) && activeRegion) return RedirectToAction("Index", "Home");
+        ViewBag.Pending = user?.Status == "PENDIENTE"; ViewBag.Inactive = user?.Status == "INACTIVO" || !activeRegion; ViewBag.Departments = await db.Departments.Where(x => x.Status == "ACTIVO").OrderBy(x => x.Name).ToListAsync(); return View(new AccessModel { Code = User.FindFirstValue("directory_code") ?? "", SuggestedDepartment = user?.Department?.Name ?? "" });
     }
     [Authorize, HttpPost, EnableRateLimiting("login")] public async Task<IActionResult> RequestAccess(AccessModel model)
     {
@@ -67,10 +74,10 @@ public class AuthController(IDirectoryIdentityProvider directory, AppDbContext d
         var email = User.FindFirstValue(ClaimTypes.Email)!; var existing = await db.Users.FindAsync(email);
         if (existing?.Status == "PENDIENTE") { TempData["Message"] = "Tu solicitud está pendiente de revisión."; return RedirectToAction(nameof(Denied)); }
         if (existing != null && LunchService.Enabled(await db.Users.Include(x => x.Department).SingleAsync(x => x.Email == email))) return RedirectToAction("Index", "Home");
-        if (await db.Users.AnyAsync(x => x.EmployeeCode == model.Code && x.Email != email)) { TempData["Message"] = "Ese código de empleado ya está registrado."; return RedirectToAction(nameof(Denied)); }
+        if (await db.Users.IgnoreQueryFilters().AnyAsync(x => x.EmployeeCode == model.Code && x.Email != email)) { TempData["Message"] = "Ese código de empleado ya está registrado."; return RedirectToAction(nameof(Denied)); }
         if (existing == null) db.Users.Add(new AppUser { Email = email, Name = User.Identity!.Name!, EmployeeCode = model.Code, DirectoryAccount = User.FindFirstValue("directory_account"), Status = "PENDIENTE", DepartmentId = null, Role = Roles.User });
         else { existing.Status = "PENDIENTE"; existing.EmployeeCode = model.Code; }
-        var admins = (await db.Users.Where(x => x.Role == Roles.GeneralAdmin && x.Status == "ACTIVO" && x.Department!.Status == "ACTIVO").Select(x => x.Email).ToListAsync()).Concat(LunchService.Split((await lunch.Config()).GetValueOrDefault("ADMIN_EMAILS", ""))).Distinct();
+        var admins = (await db.Users.IgnoreQueryFilters().Where(x => (x.Role == Roles.GeneralAdmin || x.Role == Roles.RegionalAdmin && x.RegionId == db.RegionId) && x.Status == "ACTIVO" && x.Department!.Status == "ACTIVO").Select(x => x.Email).ToListAsync()).Concat(LunchService.Split((await lunch.Config()).GetValueOrDefault("ADMIN_EMAILS", ""))).Distinct();
         foreach (var admin in admins) lunch.Queue(admin, "Nueva solicitud de acceso a Almuerzo", $"{User.Identity!.Name} ({email}) solicita acceso. Código: {model.Code}. Departamento sugerido: {model.SuggestedDepartment}. Revisa la solicitud y asigna rol y departamento.");
         lunch.Queue(email, "Solicitud de acceso recibida", "Tu solicitud fue recibida y está pendiente de revisión administrativa.");
         db.Audit.Add(new AuditEvent { Actor = email, Action = "RequestAccess", EntityId = email });

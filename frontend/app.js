@@ -88,49 +88,10 @@ createApp({
       penaltySeconds: 0,
       monthLabel: ''
     });
-    const chefGame = reactive({
-      active: false,
-      visible: false,
-      kind: 'chef',
-      trapKind: '',
-      position: 'side-left-mid',
-      message: '',
-      combo: '',
-      countdown: 0,
-      bonusMode: false,
-      bonusPending: false,
-      starBursts: [],
-      cakeVisible: false,
-      cakeStyle: {},
-      cakeTimer: null,
-      cakeMessageTimer: null,
-      cakeToken: 0,
-      dirty: false,
-      syncing: false,
-      startTimer: null,
-      roundTimer: null,
-      countdownTimer: null,
-      feedbackTimer: null,
-      clockTimer: null,
-      roundStartedAt: 0,
-      roundDurationMs: 0,
-      roundToken: 0,
-      startedForKey: '',
-      recentKinds: [],
-      lastTrapKind: ''
-    });
-    const CHEF_BONUS_STREAK_INTERVAL = 8;
-    const CHEF_BONUS_DURATION_MS = 3000;
-    const CHEF_CAKE_CHANCE = 0.004;
-    const CHEF_SCORE_CHEF = 1;
-    const CHEF_SCORE_COMBO_3 = 1;
-    const CHEF_SCORE_COMBO_5 = 2;
-    const CHEF_SCORE_PERFECT = 4;
-    const CHEF_SCORE_BONUS_TAP = 1;
-    const CHEF_SCORE_CAKE = 20;
-    const CHEF_SCORE_MISS = -2;
-    const CHEF_SCORE_ONION = -4;
-    const CHEF_SCORE_PAN = -6;
+    const chefGame = reactive({ active: false, dirty: false, syncing: false });
+    const lunchRush = createLunchRush(state => { setChefGameState(state); chefRanking.loaded = false; }, () => chefScore.value);
+    const rush = lunchRush.state;
+    const startRush = lunchRush.start, finishRush = lunchRush.finish, moveRush = lunchRush.move;
     const chefRanking = reactive({
       loading: false,
       loaded: false,
@@ -247,8 +208,20 @@ createApp({
     });
 
     // === COMPUTED PROPERTIES ===
-    const isAdmin = computed(() => activeUser.value.rol && ['ADMIN_GEN', 'ADMIN_DEP'].includes(activeUser.value.rol));
+    const isAdmin = computed(() => activeUser.value.rol && ['ADMIN_GEN', 'ADMIN_REG', 'ADMIN_DEP'].includes(activeUser.value.rol));
     const isDeptAdmin = computed(() => activeUser.value.rol === 'ADMIN_DEP');
+    const canManageRegion = computed(() => ['ADMIN_GEN', 'ADMIN_REG'].includes(activeUser.value.rol));
+    const regions = ref(window.__INITIAL_DATA__?.regions || []);
+    const regionalId = ref(window.__INITIAL_DATA__?.regionalId || 'central');
+    const regionalName = ref(window.__INITIAL_DATA__?.regionalName || '');
+    const regionalForm = reactive({ id: '', nombre: '', directoryCode: '', estado: 'ACTIVO' });
+    const regionalSaving = ref(false);
+    const regionalError = ref('');
+    const saveRegion = () => {
+      if (regionalSaving.value) return; regionalSaving.value = true; regionalError.value = '';
+      almuerzo.run.withSuccessHandler(res => { regionalSaving.value = false; if (res.ok) window.location.assign('/?admin=1'); else regionalError.value = res.msg; }).withFailureHandler(err => { regionalSaving.value = false; regionalError.value = err.message; }).apiSaveRegion({ ...regionalForm });
+    };
+    const editRegion = region => Object.assign(regionalForm, { ...region });
     const isAdminGen = computed(() => activeUser.value.rol === 'ADMIN_GEN');
     const isTestEmailMode = computed(() => String(adminState.config['TEST_EMAIL_MODE'] || '').trim().toUpperCase() === 'TRUE');
     const chefScore = computed(() => Number(chefGameState.value?.score || 0));
@@ -279,7 +252,7 @@ createApp({
       }
       return `${currentDate.value || 'sin-fecha'}:sin-menu`;
     });
-    const chefGameInCooldown = computed(() => chefGame.active && chefGame.countdown > 0 && Boolean(chefGame.countdownTimer));
+    const chefGameInCooldown = computed(() => false);
 
     // FILTERED LISTS
     const filteredUsers = computed(() => {
@@ -520,6 +493,7 @@ createApp({
     });
 
     // === REGLAS DE NEGOCIO (VALIDACIONES) ===
+    const categoryKey = id => String(id || '').split(':').pop();
     const specialCats = ['Vegetariana', 'Caldo', 'Opcion_Rapida'];
     // exclusionCats: Categorías que no pueden mezclarse entre sí
     // Nota: En el requerimiento original Arroces no va con Víveres.
@@ -536,7 +510,7 @@ createApp({
     const isSpecialSelected = computed(() => {
       return selectedCats.value.some(c => {
         const cat = categoryById.value[c];
-        return cat ? !cat.es_combinable : specialCats.includes(c);
+        return cat ? !cat.es_combinable : specialCats.includes(categoryKey(c));
       });
     });
 
@@ -573,24 +547,24 @@ createApp({
       }
 
       // 4. Regla Granos (Estricta)
-      if (selected.includes('Granos')) {
+      if (selected.some(c => categoryKey(c) === 'Granos')) {
         const allowed = ['Granos', 'Arroces', 'Carnes', 'Ensaladas', 'Caldo', 'Frituritas'];
-        if (!allowed.includes(cat)) return true;
+        if (!allowed.includes(categoryKey(cat))) return true;
       }
 
-      if (cat === 'Granos') {
-         if (selected.some(c => ['Viveres', 'Vegetariana', 'Opcion_Rapida'].includes(c))) return true;
+      if (categoryKey(cat) === 'Granos') {
+         if (selected.some(c => ['Viveres', 'Vegetariana', 'Opcion_Rapida'].includes(categoryKey(c)))) return true;
          let hasNonWhiteRice = false;
          selection.forEach(id => {
             const item = selectionData[id];
-            if (item && item.cat === 'Arroces' && !item.plato.toLowerCase().includes('arroz blanco')) hasNonWhiteRice = true;
+            if (item && categoryKey(item.cat) === 'Arroces' && !item.plato.toLowerCase().includes('arroz blanco')) hasNonWhiteRice = true;
          });
          if (hasNonWhiteRice) return true;
       }
 
       // 5. Regla Arroz vs Viveres (Mutuamente exclusivos)
-      if (cat === 'Arroces' && selected.includes('Viveres')) return true;
-      if (cat === 'Viveres' && selected.includes('Arroces')) return true;
+      if (categoryKey(cat) === 'Arroces' && selected.some(c => categoryKey(c) === 'Viveres')) return true;
+      if (categoryKey(cat) === 'Viveres' && selected.some(c => categoryKey(c) === 'Arroces')) return true;
 
       return false;
     };
@@ -599,7 +573,7 @@ createApp({
     const isItemDisabled = (cat, item) => {
        if (isCatDisabled(cat)) return true;
        // Si Granos está seleccionado, y estamos en Arroces, solo Arroz Blanco está permitido.
-       if (cat === 'Arroces' && selectedCats.value.includes('Granos')) {
+       if (categoryKey(cat) === 'Arroces' && selectedCats.value.some(c => categoryKey(c) === 'Granos')) {
           if (!item.plato.toLowerCase().includes('arroz blanco')) return true;
        }
        return false;
@@ -608,13 +582,13 @@ createApp({
     // Warnings específicos
     const showGrainWarning = computed(() => {
       // Si seleccionó Granos
-      if (!selectedCats.value.includes('Granos')) return false;
+      if (!selectedCats.value.some(c => categoryKey(c) === 'Granos')) return false;
 
       // Verificar si hay algún plato que contenga "Arroz Blanco" (case insensitive)
       let hasWhiteRice = false;
       selection.forEach(id => {
         const item = selectionData[id];
-        if (item && item.cat === 'Arroces' && item.plato.toLowerCase().includes('arroz blanco')) {
+        if (item && categoryKey(item.cat) === 'Arroces' && item.plato.toLowerCase().includes('arroz blanco')) {
           hasWhiteRice = true;
         }
       });
@@ -686,7 +660,7 @@ createApp({
       currentDate.value = res.currentDate;
       dates.value = res.dates || [];
 
-      if ((res.activeUser?.rol === 'ADMIN_GEN' || res.activeUser?.rol === 'ADMIN_DEP') && adminState.users.length === 0 && !adminState.loading) {
+      if (['ADMIN_GEN', 'ADMIN_REG', 'ADMIN_DEP'].includes(res.activeUser?.rol) && adminState.users.length === 0 && !adminState.loading) {
         window.setTimeout(() => loadAdminData(false, { silent: true }), 120);
       }
     };
@@ -723,554 +697,13 @@ createApp({
       chefGame.dirty = false;
     };
 
-    const clearChefRoundTimers = () => {
-      if (chefGame.startTimer) window.clearTimeout(chefGame.startTimer);
-      if (chefGame.roundTimer) window.clearTimeout(chefGame.roundTimer);
-      if (chefGame.countdownTimer) window.clearInterval(chefGame.countdownTimer);
-      if (chefGame.feedbackTimer) window.clearTimeout(chefGame.feedbackTimer);
-      chefGame.startTimer = null;
-      chefGame.roundTimer = null;
-      chefGame.countdownTimer = null;
-      chefGame.feedbackTimer = null;
+    const stopChefGame = () => { if (rush.active) return finishRush(); };
+    const scheduleChefGameStart = () => {};
+    const syncChefGame = async (silent, done) => { if (rush.id) await finishRush(); if (done) done(!rush.pending); };
+    const openChefRanking = async () => {
+      if (rush.active || rush.pending) await finishRush();
+      viewMode.value = 'RANKING'; loadChefRanking(true);
     };
-
-    const clearChefCakeTimer = () => {
-      if (chefGame.cakeTimer) window.clearTimeout(chefGame.cakeTimer);
-      if (chefGame.cakeMessageTimer) window.clearTimeout(chefGame.cakeMessageTimer);
-      chefGame.cakeTimer = null;
-      chefGame.cakeMessageTimer = null;
-      chefGame.cakeVisible = false;
-    };
-
-    const clearChefTimers = () => {
-      clearChefRoundTimers();
-      clearChefCakeTimer();
-      if (chefGame.clockTimer) window.clearInterval(chefGame.clockTimer);
-      chefGame.clockTimer = null;
-    };
-
-    const stopChefGame = (options = {}) => {
-      clearChefTimers();
-      chefGame.active = false;
-      chefGame.visible = false;
-      chefGame.countdown = 0;
-      chefGame.message = '';
-      chefGame.combo = '';
-      chefGame.bonusMode = false;
-      chefGame.starBursts = [];
-      chefGame.syncing = false;
-      if (options.clearKey) {
-        chefGame.startedForKey = '';
-        chefGame.recentKinds = [];
-        chefGame.lastTrapKind = '';
-      }
-    };
-
-    const pauseChefGame = () => {
-      clearChefTimers();
-      chefGame.active = false;
-      chefGame.visible = false;
-      chefGame.countdown = 0;
-      chefGame.message = '';
-      chefGame.combo = '';
-      chefGame.bonusMode = false;
-      chefGame.starBursts = [];
-    };
-
-    const clampNumber = (value, min, max) => Math.min(max, Math.max(min, value));
-
-    const countRecentChefKinds = (kind, limit = 4) => {
-      return chefGame.recentKinds.slice(-limit).filter(item => item === kind).length;
-    };
-
-    const pushRecentChefKind = (kind) => {
-      chefGame.recentKinds = [...chefGame.recentKinds.slice(-5), kind];
-      if (kind === 'onion' || kind === 'pan') chefGame.lastTrapKind = kind;
-    };
-
-    const pickWeightedChefKind = (weights) => {
-      const entries = Object.entries(weights).filter(([, weight]) => weight > 0);
-      const total = entries.reduce((sum, [, weight]) => sum + weight, 0);
-      let roll = Math.random() * total;
-      for (const [kind, weight] of entries) {
-        roll -= weight;
-        if (roll <= 0) return kind;
-      }
-      return 'chef';
-    };
-
-    const chooseChefRoundKind = (streak) => {
-      const recent = chefGame.recentKinds.slice(-4);
-      const chefsInFour = recent.filter(kind => kind === 'chef').length;
-      const trapsInFour = recent.filter(kind => kind === 'onion' || kind === 'pan').length;
-      const lastTwo = chefGame.recentKinds.slice(-2);
-      const lastThree = chefGame.recentKinds.slice(-3);
-
-      if (lastTwo.length === 2 && lastTwo.every(kind => kind === 'onion' || kind === 'pan')) return 'chef';
-      if (lastThree.length === 3 && lastThree.every(kind => kind === 'chef')) {
-        return Math.random() > 0.5 ? 'onion' : 'pan';
-      }
-
-      const trapPressure = clampNumber(0.26 + (streak * 0.006), 0.24, 0.34);
-      const trapWeight = trapPressure * 100;
-      const chefWeight = 100 - trapWeight;
-      const onionWeight = trapWeight * (chefGame.lastTrapKind === 'onion' ? 0.36 : 0.64);
-      const panWeight = trapWeight * (chefGame.lastTrapKind === 'pan' ? 0.36 : 0.64);
-      const weights = {
-        chef: chefWeight,
-        onion: onionWeight,
-        pan: panWeight
-      };
-
-      if (chefsInFour >= 3) weights.chef *= 0.38;
-      if (trapsInFour >= 2) {
-        weights.onion *= 0.48;
-        weights.pan *= 0.48;
-        weights.chef *= 1.35;
-      }
-      if (countRecentChefKinds('onion', 3) >= 2) weights.onion *= 0.2;
-      if (countRecentChefKinds('pan', 3) >= 2) weights.pan *= 0.2;
-
-      return pickWeightedChefKind(weights);
-    };
-
-    const addChefBonusStars = () => {
-      const burstId = Date.now() + Math.random();
-      const stars = Array.from({ length: 6 }, (_, index) => {
-        const angle = ((Math.PI * 2) / 6) * index + (Math.random() * 0.5);
-        const distance = 1.6 + Math.random() * 1.8;
-        return {
-          id: `${burstId}-${index}`,
-          style: {
-            '--star-x': `${Math.cos(angle) * distance}rem`,
-            '--star-y': `${Math.sin(angle) * distance}rem`,
-            '--star-rot': `${Math.round((Math.random() * 160) - 80)}deg`
-          }
-        };
-      });
-      chefGame.starBursts = [...chefGame.starBursts, ...stars];
-      window.setTimeout(() => {
-        const ids = new Set(stars.map(star => star.id));
-        chefGame.starBursts = chefGame.starBursts.filter(star => !ids.has(star.id));
-      }, 520);
-    };
-
-    const maybeLaunchChefCake = () => {
-      if (!chefGame.active || chefGame.cakeVisible || Math.random() > CHEF_CAKE_CHANCE) return;
-
-      const vectors = [
-        { x: -22, y: -12, rot: -380 },
-        { x: 21, y: -10, rot: 420 },
-        { x: -23, y: 6, rot: -310 },
-        { x: 22, y: 8, rot: 360 },
-        { x: -15, y: -20, rot: -450 },
-        { x: 15, y: -21, rot: 450 }
-      ];
-      const vector = vectors[Math.floor(Math.random() * vectors.length)];
-      const jitterX = (Math.random() * 4) - 2;
-      const jitterY = (Math.random() * 3) - 1.5;
-      chefGame.cakeToken += 1;
-      chefGame.cakeVisible = true;
-      chefGame.cakeStyle = {
-        '--cake-x': `${vector.x + jitterX}rem`,
-        '--cake-y': `${vector.y + jitterY}rem`,
-        '--cake-rot': `${vector.rot}deg`,
-        '--cake-duration': `${720 + Math.round(Math.random() * 180)}ms`
-      };
-
-      const cakeToken = chefGame.cakeToken;
-      if (chefGame.cakeTimer) window.clearTimeout(chefGame.cakeTimer);
-      chefGame.cakeTimer = window.setTimeout(() => {
-        if (cakeToken !== chefGame.cakeToken) return;
-        chefGame.cakeVisible = false;
-        chefGame.cakeTimer = null;
-      }, 940);
-    };
-
-    const handleChefCakeTap = () => {
-      if (!chefGame.cakeVisible || chefGame.syncing) return;
-      if (chefGame.cakeTimer) window.clearTimeout(chefGame.cakeTimer);
-      chefGame.cakeTimer = null;
-      chefGame.cakeToken += 1;
-      chefGame.cakeVisible = false;
-      chefGameState.value = {
-        ...chefGameState.value,
-        score: Math.max(0, Number(chefGameState.value?.score || 0) + CHEF_SCORE_CAKE)
-      };
-      markChefGameDirty();
-      chefGame.combo = 'Bizcocho bonus';
-      chefGame.message = `+${CHEF_SCORE_CAKE} bizcocho`;
-      if (chefGame.cakeMessageTimer) window.clearTimeout(chefGame.cakeMessageTimer);
-      chefGame.cakeMessageTimer = window.setTimeout(() => {
-        chefGame.cakeMessageTimer = null;
-        chefGame.combo = '';
-        if (!chefGame.countdown && !chefGame.visible) chefGame.message = '';
-      }, 700);
-    };
-
-    const recordChefBonusTap = () => {
-      chefGameState.value = {
-        ...chefGameState.value,
-        score: Math.max(0, Number(chefGameState.value?.score || 0) + CHEF_SCORE_BONUS_TAP)
-      };
-      markChefGameDirty();
-      chefGame.message = '+1';
-      addChefBonusStars();
-    };
-
-    const scheduleChefGameStart = (force = false) => {
-      clearChefRoundTimers();
-      chefGame.visible = false;
-      chefGame.countdown = 0;
-      chefGame.combo = '';
-      chefGame.bonusMode = false;
-      chefGame.starBursts = [];
-
-      if (viewMode.value !== 'USER' || !chefGameCardVisible.value) {
-        chefGame.active = false;
-        return;
-      }
-
-      const orderKey = chefGameCardKey.value;
-      const hasLiveRound = chefGame.visible || chefGame.syncing || chefGame.startTimer || chefGame.roundTimer || chefGame.countdownTimer || chefGame.feedbackTimer;
-      if (!force && chefGame.active && chefGame.startedForKey === orderKey && hasLiveRound) return;
-
-      chefGame.startedForKey = orderKey;
-      chefGame.recentKinds = [];
-      chefGame.lastTrapKind = '';
-      chefGame.active = false;
-
-      if (!chefGameAvailable.value) {
-        chefGame.message = 'Tiempo diario agotado';
-        return;
-      }
-
-      chefGame.message = '';
-    };
-
-    const startChefCountdown = (seconds, done) => {
-      clearChefRoundTimers();
-      chefGame.visible = false;
-      chefGame.countdown = Math.max(0, Number(seconds || 0));
-      if (chefGame.countdown <= 0) {
-        done();
-        return;
-      }
-
-      chefGame.countdownTimer = window.setInterval(() => {
-        chefGame.countdown -= 1;
-        if (chefGame.countdown <= 0) {
-          window.clearInterval(chefGame.countdownTimer);
-          chefGame.countdownTimer = null;
-          done();
-        }
-      }, 1000);
-    };
-
-    const markChefGameDirty = () => {
-      chefGame.dirty = true;
-      chefRanking.loaded = false;
-    };
-
-    const tickChefGameClock = () => {
-      if (!chefGame.active || !chefGameAvailable.value) return;
-      const usedSeconds = Number(chefGameState.value?.usedSeconds || 0) + 1;
-      const dailyLimitSeconds = Number(chefGameState.value?.dailyLimitSeconds || 900);
-      chefGameState.value = {
-        ...chefGameState.value,
-        usedSeconds: Math.min(dailyLimitSeconds, usedSeconds),
-        remainingSeconds: Math.max(0, dailyLimitSeconds - usedSeconds)
-      };
-      markChefGameDirty();
-
-      if (!chefGameAvailable.value) {
-        pauseChefGame();
-        chefGame.message = 'Tiempo diario agotado';
-        syncChefGame(true);
-      }
-    };
-
-    const startChefClock = () => {
-      if (chefGame.clockTimer) return;
-      chefGame.clockTimer = window.setInterval(tickChefGameClock, 1000);
-    };
-
-    const startChefGame = () => {
-      if (viewMode.value !== 'USER' || !chefGameCardVisible.value || !chefGameAvailable.value) return;
-      if (!chefGame.startedForKey) scheduleChefGameStart(true);
-      chefGame.active = true;
-      chefGame.message = '';
-      startChefClock();
-      queueChefRound(80, false);
-    };
-
-    const toggleChefGamePlay = () => {
-      if (chefGameInCooldown.value) return;
-      if (chefGame.active) {
-        pauseChefGame();
-      } else {
-        startChefGame();
-      }
-    };
-
-    function queueChefRound(delayMs = 0, usePenalty = false) {
-      if (viewMode.value !== 'USER' || !chefGameCardVisible.value) {
-        stopChefGame();
-        return;
-      }
-
-      if (!chefGameAvailable.value) {
-        stopChefGame();
-        chefGame.active = true;
-        chefGame.message = 'Tiempo diario agotado';
-        return;
-      }
-
-      const penalty = usePenalty ? Number(chefGameState.value?.penaltySeconds || 0) : 0;
-      if (penalty > 0) {
-        chefGame.message = '';
-        startChefCountdown(penalty, () => spawnChefTarget(delayMs));
-        return;
-      }
-
-      clearChefRoundTimers();
-      chefGame.startTimer = window.setTimeout(() => spawnChefTarget(0), Math.max(0, delayMs));
-    }
-
-    function spawnChefTarget(extraDelay = 0) {
-      if (extraDelay > 0) {
-        chefGame.startTimer = window.setTimeout(() => spawnChefTarget(0), extraDelay);
-        return;
-      }
-
-      if (viewMode.value !== 'USER' || !chefGameCardVisible.value || !chefGame.active || !chefGameAvailable.value) return;
-
-      const streak = Number(chefGameState.value?.streak || 0);
-      const positions = ['side-left-high', 'side-left-mid', 'side-left-low', 'side-right-high', 'side-right-mid', 'side-right-low'];
-      const isBonusChef = chefGame.bonusPending && streak >= CHEF_BONUS_STREAK_INTERVAL;
-      const kind = isBonusChef ? 'chef' : chooseChefRoundKind(streak);
-
-      chefGame.kind = kind;
-      chefGame.trapKind = kind === 'chef' ? '' : kind.toUpperCase();
-      pushRecentChefKind(kind);
-      chefGame.position = positions[Math.floor(Math.random() * positions.length)];
-      chefGame.bonusMode = isBonusChef;
-      chefGame.bonusPending = false;
-      chefGame.visible = true;
-      chefGame.countdown = 0;
-      chefGame.message = '';
-      chefGame.starBursts = [];
-      chefGame.roundStartedAt = Date.now();
-      chefGame.roundToken += 1;
-      const currentRoundToken = chefGame.roundToken;
-      chefGame.roundDurationMs = isBonusChef
-        ? CHEF_BONUS_DURATION_MS
-        : kind === 'chef'
-        ? clampNumber(1200 - (streak * 55), 520, 1200)
-        : (kind === 'pan' ? 2400 : 2000);
-      maybeLaunchChefCake();
-
-      chefGame.roundTimer = window.setTimeout(() => {
-        if (currentRoundToken !== chefGame.roundToken) return;
-        if (chefGame.syncing) return;
-        if (!chefGame.visible) return;
-        if (chefGame.bonusMode) {
-          finishChefBonusRound();
-        } else if (chefGame.kind === 'chef') {
-          recordChefEvent('MISS');
-        } else {
-          recordChefEvent('TICK');
-        }
-      }, chefGame.roundDurationMs);
-    }
-
-    function finishChefBonusRound() {
-      if (chefGame.roundTimer) window.clearTimeout(chefGame.roundTimer);
-      chefGame.roundTimer = null;
-      chefGame.roundToken += 1;
-      chefGame.visible = false;
-      chefGame.bonusMode = false;
-      chefGame.starBursts = [];
-      chefGame.message = '';
-      if (!chefGame.active || !chefGameAvailable.value) return;
-      queueChefRound(120, false);
-    }
-
-    const getChefTargetLabel = () => {
-      if (chefGame.kind === 'chef' && chefGame.bonusMode) return 'Chef bonus';
-      if (chefGame.kind === 'chef') return 'Tocar chef';
-      if (chefGame.kind === 'pan') return 'Sarten quemado';
-      return 'Cebolla podrida';
-    };
-
-    const handleChefTargetTap = () => {
-      if (!chefGame.visible || chefGame.syncing) return;
-      if (chefGame.kind === 'chef' && chefGame.bonusMode) {
-        recordChefBonusTap();
-      } else if (chefGame.kind === 'chef') {
-        recordChefEvent('CHEF');
-      } else {
-        recordChefEvent('TRAP', chefGame.kind.toUpperCase());
-      }
-    };
-
-    const applyLocalChefEvent = (type, kind = '') => {
-      const current = { ...chefGameState.value };
-      const event = {
-        type,
-        delta: 0,
-        combo: '',
-        cooldownSeconds: 0,
-        capReached: !chefGameAvailable.value
-      };
-
-      if (type === 'CHEF') {
-        current.streak = Number(current.streak || 0) + 1;
-        current.hits = Number(current.hits || 0) + 1;
-        current.bestStreak = Math.max(Number(current.bestStreak || 0), current.streak);
-        current.penaltySeconds = Math.max(0, Number(current.penaltySeconds || 0) - 1);
-        event.delta = CHEF_SCORE_CHEF;
-
-        if (current.streak === 3) {
-          event.delta += CHEF_SCORE_COMBO_3;
-          event.combo = '3 chefs seguidos';
-        } else if (current.streak === 5) {
-          event.delta += CHEF_SCORE_COMBO_5;
-          event.combo = '5 chefs seguidos';
-        } else if (current.streak > 0 && current.streak % 10 === 0) {
-          event.delta += CHEF_SCORE_PERFECT;
-          event.combo = 'Racha perfecta';
-        }
-
-        if (current.streak > 0 && current.streak % CHEF_BONUS_STREAK_INTERVAL === 0) {
-          event.bonusNext = true;
-        }
-      } else if (type === 'TRAP') {
-        const trapPenalty = kind === 'PAN' ? 10 : 5;
-        current.streak = 0;
-        current.misses = Number(current.misses || 0) + 1;
-        current.penaltySeconds = Math.min(30, Number(current.penaltySeconds || 0) + trapPenalty);
-        event.delta = kind === 'PAN' ? CHEF_SCORE_PAN : CHEF_SCORE_ONION;
-        event.cooldownSeconds = current.penaltySeconds;
-      } else if (type === 'MISS') {
-        current.streak = 0;
-        current.misses = Number(current.misses || 0) + 1;
-        current.penaltySeconds = Math.min(30, Number(current.penaltySeconds || 0) + 1);
-        event.delta = CHEF_SCORE_MISS;
-        event.cooldownSeconds = current.penaltySeconds;
-      } else {
-        event.delta = 0;
-      }
-
-      if (event.delta !== 0) current.score = Math.max(0, Number(current.score || 0) + event.delta);
-      chefGameState.value = current;
-      markChefGameDirty();
-      return event;
-    };
-
-    function recordChefEvent(type, kind = '') {
-      if (chefGame.roundTimer) window.clearTimeout(chefGame.roundTimer);
-      chefGame.roundTimer = null;
-      chefGame.roundToken += 1;
-      chefGame.visible = false;
-
-      const event = applyLocalChefEvent(type, kind);
-      if (event.combo && event.delta > 0) {
-        chefGame.combo = event.combo;
-        chefGame.message = `+${event.delta} ${event.combo}`;
-      } else {
-        chefGame.combo = '';
-        if (event.delta > 0) {
-          chefGame.message = `+${event.delta} puntos`;
-        } else if (event.delta < 0) {
-          chefGame.message = `${event.delta} puntos`;
-        } else {
-          chefGame.message = '';
-        }
-      }
-
-      if (event.capReached || !chefGameAvailable.value) {
-        pauseChefGame();
-        chefGame.message = 'Tiempo diario agotado';
-        syncChefGame(true);
-        return;
-      }
-
-      if (event.bonusNext) {
-        chefGame.bonusPending = true;
-        chefGame.combo = chefGame.combo || 'Bonus listo';
-        chefGame.message = event.combo && event.delta > 0 ? chefGame.message : `${chefGame.message || 'Bonus listo'} / bonus listo`;
-      }
-
-      const penalized = Number(event.cooldownSeconds || 0) > 0;
-      const nextDelay = event.delta > 0 ? 55 : 150;
-      if (chefGame.feedbackTimer) window.clearTimeout(chefGame.feedbackTimer);
-      chefGame.feedbackTimer = window.setTimeout(() => {
-        chefGame.feedbackTimer = null;
-        chefGame.combo = '';
-        if (!penalized) chefGame.message = '';
-        queueChefRound(nextDelay, penalized);
-      }, event.combo ? 420 : 90);
-    }
-
-    const syncChefGame = (silent = false, onDone = null) => {
-      if (chefGame.syncing) {
-        if (typeof onDone === 'function') onDone(false);
-        return;
-      }
-      if (!chefGame.dirty) {
-        if (typeof onDone === 'function') onDone(true);
-        return;
-      }
-      chefGame.syncing = true;
-      almuerzo.run
-        .withSuccessHandler(res => {
-          chefGame.syncing = false;
-          if (res && res.ok) {
-            setChefGameState(res.state || chefGameState.value);
-            chefGame.message = silent ? chefGame.message : 'Puntos guardados';
-            chefRanking.loaded = false;
-            if (!silent) {
-              if (chefGame.feedbackTimer) window.clearTimeout(chefGame.feedbackTimer);
-              chefGame.feedbackTimer = window.setTimeout(() => {
-                chefGame.feedbackTimer = null;
-                if (!chefGame.active) chefGame.message = '';
-              }, 1000);
-            }
-            if (typeof onDone === 'function') onDone(true);
-          } else if (!silent) {
-            chefGame.message = (res && res.msg) || 'No se pudo guardar';
-            if (typeof onDone === 'function') onDone(false);
-          } else {
-            if (typeof onDone === 'function') onDone(false);
-          }
-        })
-        .withFailureHandler(() => {
-          chefGame.syncing = false;
-          if (!silent) chefGame.message = 'Conexion perdida';
-          if (typeof onDone === 'function') onDone(false);
-        })
-        .apiSyncChefGameState({
-          targetEmail: user.value?.email || '',
-          state: chefGameState.value
-        });
-    };
-
-    const openChefRanking = () => {
-      if (chefGameInCooldown.value) return;
-      stopChefGame();
-      viewMode.value = 'RANKING';
-      if (chefGame.dirty) {
-        chefRanking.loading = true;
-        syncChefGame(true, () => {
-          chefRanking.loading = false;
-          loadChefRanking(true);
-        });
-      } else {
-        loadChefRanking(true);
-      }
-    };
-
     const returnToOrders = () => {
       viewMode.value = 'USER';
       nextTick(() => scheduleChefGameStart(false));
@@ -1492,7 +925,7 @@ createApp({
                adminState.orders = res.orders;
                adminState.departments = res.departments || [];
                adminState.config = res.config || {};
-               adminState.configList = res.configList || [];
+               adminState.configList = (res.configList || []).filter(x => !x.key.startsWith('PROVIDER_'));
                adminState.configKeys = res.configKeys || [];
                adminState.holidays = res.holidays || [];
                adminState.menuCategories = res.menuCategories || [];
@@ -2086,7 +1519,8 @@ createApp({
     };
 
     const addDeptAdmin = (user) => {
-       if (user.rol === 'ADMIN_GEN') return showModal("No se puede asignar un Admin General como Admin de Departamento.");
+       if (['ADMIN_GEN', 'ADMIN_REG'].includes(user.rol)) return showModal("Selecciona un colaborador para asignarlo como responsable del departamento.");
+       if (user.directoryManaged && user.departamentoId !== adminState.deptModal.data.id) return showModal("El responsable debe pertenecer a este departamento según el AD.");
 
        const proceed = () => {
           let current = adminState.deptModal.data.admins ? adminState.deptModal.data.admins.split(',').map(e=>e.trim()).filter(e=>e) : [];
@@ -2248,6 +1682,7 @@ createApp({
 
     // Métodos de Valoración de Proveedor
     const openProviderRatingModal = () => {
+      if (activeUser.value.regionalId !== regionalId.value) return showModal('Vuelve a tu regional para enviar una valoración personal.');
       const existing = userProviderRating.value || {};
       providerRatingModal.value = {
         open: true,
@@ -2286,15 +1721,16 @@ createApp({
     const openProviderResetModal = () => {
       providerResetModal.value = {
         open: true,
-        providerName: providerInfo.value.name || '',
+        providerName: '',
+        price: '',
         saving: false,
         error: null
       };
     };
 
     const saveProviderReset = () => {
-      if (!providerResetModal.value.providerName.trim()) {
-        providerResetModal.value.error = "El nombre del proveedor es obligatorio.";
+      if (!providerResetModal.value.providerName.trim() || !(Number(providerResetModal.value.price) > 0)) {
+        providerResetModal.value.error = "El proveedor y su precio son obligatorios.";
         return;
       }
       providerResetModal.value.saving = true;
@@ -2304,6 +1740,7 @@ createApp({
           if (res.ok) {
             providerResetModal.value.open = false;
             providerInfo.value = res.providerInfo;
+            mealPricing.value = res.mealPricing; if (adminState.loaded) loadAdminData(true);
             userProviderRating.value = null;
             showModal("Período de evaluación del proveedor actualizado exitosamente.", "Éxito");
             loadRatingsSummary();
@@ -2316,7 +1753,7 @@ createApp({
           providerResetModal.value.error = err.message || "Error de conexión.";
         })
         .apiResetProviderPeriod({
-          providerName: providerResetModal.value.providerName
+          providerName: providerResetModal.value.providerName, price: providerResetModal.value.price
         });
     };
 
@@ -2473,7 +1910,7 @@ createApp({
         'Caldo': 'fa-mug-hot',
         'Opcion_Rapida': 'fa-burger'
       };
-      return 'fa-solid ' + (map[cat] || 'fa-circle');
+      return 'fa-solid ' + (map[categoryKey(cat)] || 'fa-circle');
     };
 
     const formatConfigValue = (key, value) => {
@@ -2530,6 +1967,7 @@ createApp({
       if (initialData && initialData.ok) {
         applyInitData(initialData);
         loading.value = false;
+        if (new URLSearchParams(window.location.search).get('admin') === '1' && isAdmin.value) { viewMode.value = 'ADMIN'; loadAdminData(true); }
       } else {
         loadData();
       }
@@ -2543,7 +1981,7 @@ createApp({
       chefGameState, chefGame, chefRanking,
 
       // Computed
-      isAdmin, isDeptAdmin, isAdminGen, isTestEmailMode, menuLoaded, categories, menuCategories, activeMenuCategories, adminMenuCategories,
+      isAdmin, isDeptAdmin, isAdminGen, canManageRegion, regions, regionalId, regionalName, regionalForm, regionalSaving, regionalError, saveRegion, editRegion, rush, startRush, finishRush, moveRush, isTestEmailMode, menuLoaded, categories, menuCategories, activeMenuCategories, adminMenuCategories,
       selectedCount, validationError, hasBlockingErrors, showGrainWarning,
       isDefaultSummary,
       displayDate, isCutoffPassed,
@@ -2572,7 +2010,7 @@ createApp({
 
       // Acciones Principales
       changeDate, submitOrder, cancelOrder, toggleReminders, changeProxyUser,
-      toggleAdminView, loadAdminData, openChefRanking, returnToOrders, loadChefRanking, handleChefTargetTap, handleChefCakeTap, getChefTargetLabel, toggleChefGamePlay, syncChefGame,
+      toggleAdminView, loadAdminData, openChefRanking, returnToOrders, loadChefRanking, syncChefGame,
 
       // Admin Actions
       directoryLinkSaving, resetDirectoryLink, openUserModal, saveUser, toggleUserStatus, adminCancelOrder,

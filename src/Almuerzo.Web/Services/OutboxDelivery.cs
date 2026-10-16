@@ -5,17 +5,25 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Almuerzo.Web.Services;
 
-public class OutboxDelivery(AppDbContext db, StoragePaths paths, MailDeliveryPolicy policy, IConfiguration config, ILogger<OutboxDelivery> logger)
+public class OutboxDelivery(AppDbContext db, StoragePaths paths, MailDeliveryPolicy policy, IConfiguration config, ILogger<OutboxDelivery> logger, SendGridDelivery sendGrid)
 {
     public async Task DeliverAsync(Dictionary<string, string> settings, CancellationToken ct)
     {
-        var records = await db.Outbox.Where(x => x.SentAt == null && x.Attempts < 5).OrderBy(x => x.Id).Take(30).ToListAsync(ct);
+        var now = DateTimeOffset.UtcNow.UtcTicks;
+        var records = await db.Outbox.Where(x => x.SentAt == null && x.Attempts < 5 && x.NextAttemptUtcTicks <= now).OrderBy(x => x.Id).Take(30).ToListAsync(ct);
         foreach (var record in records)
         {
             var route = policy.Resolve(settings, record.Recipient);
-            if (route == null) { logger.LogWarning("Cola de correo retenida: revisa modo SMTP, host y destino único de prueba."); break; }
+            if (route == null) { logger.LogWarning("Cola de correo retenida: revisa proveedor, credenciales, remitente y destino único de prueba."); break; }
             try
             {
+                var attachmentPaths = new[] { record.AttachmentPath }.Concat(System.Text.Json.JsonSerializer.Deserialize<string[]>(record.ExtraAttachmentsJson) ?? []).Where(x => x.Length > 0).Select(Path.GetFullPath).ToArray();
+                if (attachmentPaths.Any(x => !x.StartsWith(Path.GetFullPath(paths.Reports) + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))) throw new IOException("Ruta inválida.");
+                if (!route.Pickup && config["Mail:Mode"] == "SendGrid")
+                {
+                    await sendGrid.Send(record, route.Destination, settings, attachmentPaths, ct);
+                    record.SentAt = DateTimeOffset.UtcNow.ToString("O"); continue;
+                }
                 using var message = new MailMessage(config["Mail:From"] ?? "almuerzo@infotep.gob.do", route.Destination, record.Subject, record.Body);
                 message.From = new MailAddress(config["Mail:From"] ?? "almuerzo@infotep.gob.do", settings.GetValueOrDefault("MAIL_SENDER_NAME", "Comedor Institucional"));
                 message.SubjectEncoding = message.BodyEncoding = System.Text.Encoding.UTF8;
@@ -29,7 +37,12 @@ public class OutboxDelivery(AppDbContext db, StoragePaths paths, MailDeliveryPol
                 using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct); timeout.CancelAfter(TimeSpan.FromSeconds(30));
                 await smtp.SendMailAsync(message, timeout.Token); record.SentAt = DateTimeOffset.UtcNow.ToString("O");
             }
-            catch (Exception ex) when (ex is not OperationCanceledException || !ct.IsCancellationRequested) { record.Attempts++; logger.LogWarning("Correo {Id} pendiente tras intento {Attempts}: {Type}", record.Id, record.Attempts, ex.GetType().Name); }
+            catch (Exception ex) when (ex is not OperationCanceledException || !ct.IsCancellationRequested) {
+                record.Attempts++;
+                var delay = ex is MailDeliveryException { RetryAfter: { } retry } ? Math.Clamp(retry.TotalSeconds, 30, 3600) : Math.Min(3600, 30 * Math.Pow(2, record.Attempts));
+                record.NextAttemptUtcTicks = DateTimeOffset.UtcNow.AddSeconds(delay).UtcTicks;
+                logger.LogWarning("Correo {Id} pendiente tras intento {Attempts}: {Type}, HTTP {Status}", record.Id, record.Attempts, ex.GetType().Name, (ex as MailDeliveryException)?.Status);
+            }
         }
         await db.SaveChangesAsync(ct);
     }

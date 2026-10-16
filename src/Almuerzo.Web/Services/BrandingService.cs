@@ -32,14 +32,14 @@ public class BrandingService(AppDbContext db)
         await using var tx = await db.Database.BeginTransactionAsync(ct);
         async Task Set(string key, string value)
         {
-            var setting = await db.Settings.FindAsync([key], ct);
+            var setting = await db.Settings.FindAsync([db.RegionId, key], ct);
             if (setting == null) { setting = new Setting { Key = key }; db.Settings.Add(setting); }
             setting.Value = value;
         }
         async Task Replace(string key, byte[]? content, bool clear)
         {
             if (content == null && !clear) return;
-            var oldId = (await db.Settings.FindAsync([key], ct))?.Value;
+            var oldId = (await db.Settings.FindAsync([db.RegionId, key], ct))?.Value;
             var asset = content == null ? null : new BrandingAsset { Content = content };
             if (asset != null) db.BrandingAssets.Add(asset);
             await Set(key, clear ? DisabledFooterSignature : asset?.Id ?? "");

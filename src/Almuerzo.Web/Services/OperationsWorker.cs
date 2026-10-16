@@ -15,7 +15,14 @@ public class OperationsWorker(IServiceScopeFactory scopes, IConfiguration config
         using var timer = new PeriodicTimer(TimeSpan.FromSeconds(30));
         while (await timer.WaitForNextTickAsync(ct))
         {
-            try { using var scope = scopes.CreateScope(); await Tick(scope.ServiceProvider, ct); }
+            try {
+                using var catalog = scopes.CreateScope();
+                var regions = await catalog.ServiceProvider.GetRequiredService<AppDbContext>().Regions.Where(x => x.Status == "ACTIVO").Select(x => x.Id).ToListAsync(ct);
+                foreach (var region in regions) {
+                    try { using var scope = scopes.CreateScope(); scope.ServiceProvider.GetRequiredService<AppDbContext>().RegionId = region; await Tick(scope.ServiceProvider, ct); }
+                    catch (Exception ex) when (ex is not OperationCanceledException) { logger.LogError("Falló la operación de {Region}: {Type}", region, ex.GetType().Name); }
+                }
+            }
             catch (OperationCanceledException) when (ct.IsCancellationRequested) { break; }
             catch (Exception ex) { logger.LogError("Falló un ciclo de operaciones: {Type}", ex.GetType().Name); }
         }
@@ -30,7 +37,7 @@ public class OperationsWorker(IServiceScopeFactory scopes, IConfiguration config
             {
                 var time = cfg[kind == "close" ? "HORA_ENVIO" : "HORA_RECORDATORIO"];
                 if (!TimeOnly.TryParseExact(time, "HH:mm", out var due) || TimeOnly.FromDateTime(rules.Now.DateTime) < due) continue;
-                var key = $"{rules.Today}:{kind}"; if (await db.JobRuns.AnyAsync(x => x.Key == key, ct)) continue;
+                var key = $"{db.RegionId}:{rules.Today}:{kind}"; if (await db.JobRuns.AnyAsync(x => x.Key == key, ct)) continue;
                 await using var tx = await db.Database.BeginTransactionAsync(ct);
                 if (kind == "close")
                 {
@@ -48,10 +55,11 @@ public class OperationsWorker(IServiceScopeFactory scopes, IConfiguration config
                 db.JobRuns.Add(new JobRun { Key = key }); await db.SaveChangesAsync(ct); await tx.CommitAsync(ct);
             }
         }
-        if (config.GetValue<bool>("Operations:ScheduledJobsEnabled") && await db.JobRuns.AnyAsync(x => x.Key == $"{rules.Today}:close", ct) && !await db.JobRuns.AnyAsync(x => x.Key == $"{rules.Today}:backup", ct)) {
+        // SQL Server backups and retention are managed by TI, without backup privileges on the web account.
+        if (db.Database.IsSqlite() && config.GetValue<bool>("Operations:ScheduledJobsEnabled") && await db.JobRuns.AnyAsync(x => x.Key == $"{db.RegionId}:{rules.Today}:close", ct) && !await db.JobRuns.AnyAsync(x => x.Key == $"{db.RegionId}:{rules.Today}:backup", ct)) {
             Directory.CreateDirectory(paths.Backups); using var backup = new SqliteConnection($"Data Source={Path.Combine(paths.Backups, $"almuerzo-{rules.Today}.db")}"); backup.Open();
             await db.Database.OpenConnectionAsync(ct); ((SqliteConnection)db.Database.GetDbConnection()).BackupDatabase(backup);
-            db.JobRuns.Add(new JobRun { Key = $"{rules.Today}:backup" }); await db.SaveChangesAsync(ct);
+            db.JobRuns.Add(new JobRun { Key = $"{db.RegionId}:{rules.Today}:backup" }); await db.SaveChangesAsync(ct);
         }
         await services.GetRequiredService<OutboxDelivery>().DeliverAsync(cfg, ct);
     }

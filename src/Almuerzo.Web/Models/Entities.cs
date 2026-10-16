@@ -8,12 +8,24 @@ public class BrandingAsset
 
 public static class Roles
 {
-    public const string User = "USER", DepartmentAdmin = "ADMIN_DEP", GeneralAdmin = "ADMIN_GEN";
-    public static readonly string[] All = [User, DepartmentAdmin, GeneralAdmin];
+    public const string User = "USER", DepartmentAdmin = "ADMIN_DEP", RegionalAdmin = "ADMIN_REG", GeneralAdmin = "ADMIN_GEN";
+    public static readonly string[] All = [User, DepartmentAdmin, RegionalAdmin, GeneralAdmin];
 }
 
-public class Department
+public interface IRegionalEntity { string RegionId { get; set; } }
+public class Region
 {
+    public const string LegacyId = "central";
+    public string Id { get; set; } = Guid.NewGuid().ToString("N");
+    public string Name { get; set; } = "";
+    public string? DirectoryCode { get; set; }
+    public string Status { get; set; } = "ACTIVO";
+}
+
+public class Department : IRegionalEntity
+{
+    public string? DirectoryCode { get; set; }
+    public string RegionId { get; set; } = Region.LegacyId;
     public string Id { get; set; } = Guid.NewGuid().ToString();
     public string Name { get; set; } = "";
     public string Admins { get; set; } = "";
@@ -21,8 +33,10 @@ public class Department
     public string PreferencesJson { get; set; } = "{}";
 }
 
-public class AppUser
+public class AppUser : IRegionalEntity
 {
+    public bool DirectoryManaged { get; set; }
+    public string RegionId { get; set; } = Region.LegacyId;
     public string Email { get; set; } = "";
     public string Name { get; set; } = "";
     public string? DepartmentId { get; set; }
@@ -36,8 +50,9 @@ public class AppUser
     public string Revision { get; set; } = Guid.NewGuid().ToString();
 }
 
-public class MenuCategory
+public class MenuCategory : IRegionalEntity
 {
+    public string RegionId { get; set; } = Region.LegacyId;
     public string Id { get; set; } = Guid.NewGuid().ToString();
     public string Name { get; set; } = "";
     public int SortOrder { get; set; }
@@ -48,8 +63,9 @@ public class MenuCategory
     public string SelectionType { get; set; } = "UNICA";
 }
 
-public class MenuItem
+public class MenuItem : IRegionalEntity
 {
+    public string RegionId { get; set; } = Region.LegacyId;
     public string Id { get; set; } = Guid.NewGuid().ToString();
     public string Date { get; set; } = "";
     public string CategoryId { get; set; } = "";
@@ -59,8 +75,9 @@ public class MenuItem
     public bool Enabled { get; set; } = true;
 }
 
-public class Order
+public class Order : IRegionalEntity
 {
+    public string RegionId { get; set; } = Region.LegacyId;
     public string Id { get; set; } = Guid.NewGuid().ToString();
     public string RequestedAt { get; set; } = "";
     public string Date { get; set; } = "";
@@ -75,21 +92,24 @@ public class Order
     public string Revision { get; set; } = Guid.NewGuid().ToString();
 }
 
-public class Holiday
+public class Holiday : IRegionalEntity
 {
+    public string RegionId { get; set; } = Region.LegacyId;
     public string Date { get; set; } = "";
     public string Reason { get; set; } = "";
 }
 
-public class Setting
+public class Setting : IRegionalEntity
 {
+    public string RegionId { get; set; } = Region.LegacyId;
     public string Key { get; set; } = "";
     public string Value { get; set; } = "";
     public string Description { get; set; } = "";
 }
 
-public class Rating
+public class Rating : IRegionalEntity
 {
+    public string RegionId { get; set; } = Region.LegacyId;
     public string Id { get; set; } = Guid.NewGuid().ToString();
     public string Kind { get; set; } = "MEAL";
     public string Scope { get; set; } = "";
@@ -106,8 +126,9 @@ public class Rating
     public string UpdatedAt { get; set; } = "";
 }
 
-public class RatingHistory
+public class RatingHistory : IRegionalEntity
 {
+    public string RegionId { get; set; } = Region.LegacyId;
     public long Id { get; set; }
     public string VoteId { get; set; } = "";
     public string PeriodId { get; set; } = "";
@@ -120,8 +141,9 @@ public class RatingHistory
     public string Timestamp { get; set; } = "";
 }
 
-public class AuditEvent
+public class AuditEvent : IRegionalEntity
 {
+    public string RegionId { get; set; } = Region.LegacyId;
     public long Id { get; set; }
     public string Actor { get; set; } = "";
     public string Action { get; set; } = "";
@@ -129,8 +151,9 @@ public class AuditEvent
     public string Timestamp { get; set; } = DateTimeOffset.UtcNow.ToString("O");
 }
 
-public class MailMessageRecord
+public class MailMessageRecord : IRegionalEntity
 {
+    public string RegionId { get; set; } = Region.LegacyId;
     public long Id { get; set; }
     public string Recipient { get; set; } = "";
     public string Subject { get; set; } = "";
@@ -138,27 +161,31 @@ public class MailMessageRecord
     public string AttachmentPath { get; set; } = "";
     public string ExtraAttachmentsJson { get; set; } = "[]";
     public int Attempts { get; set; }
+    public long NextAttemptUtcTicks { get; set; }
     public string? SentAt { get; set; }
     public string CreatedAt { get; set; } = DateTimeOffset.UtcNow.ToString("O");
 }
 
-public class ImportRecord
+public class ImportRecord : IRegionalEntity
 {
+    public string RegionId { get; set; } = Region.LegacyId;
     public string Hash { get; set; } = "";
     public string ImportedAt { get; set; } = DateTimeOffset.UtcNow.ToString("O");
     public string SummaryJson { get; set; } = "{}";
 }
 
-public class SourceRecord
+public class SourceRecord : IRegionalEntity
 {
+    public string RegionId { get; set; } = Region.LegacyId;
     public long Id { get; set; }
     public string Sheet { get; set; } = "";
     public int Row { get; set; }
     public string Json { get; set; } = "{}";
 }
 
-public class JobRun
+public class JobRun : IRegionalEntity
 {
+    public string RegionId { get; set; } = Region.LegacyId;
     public string Key { get; set; } = "";
     public string CompletedAt { get; set; } = DateTimeOffset.UtcNow.ToString("O");
 }

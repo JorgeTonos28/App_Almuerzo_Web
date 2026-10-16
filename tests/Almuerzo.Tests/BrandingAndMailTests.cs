@@ -77,7 +77,7 @@ public class BrandingAndMailTests
         if (kind == "dimensions") bytes = Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAAgEAAAABCAYAAABHeX1IAAAAHUlEQVR4nGNUTX79n2EUjIJRMApGwSgYBQwjDQAApbkCdA6XT4QAAAAASUVORK5CYII=");
         if (kind == "raster") bytes = Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADElEQVR4nGNgoAMAAABlAAF/+ogNAAAAAElFTkSuQmCC");
         Assert.Equal(HttpStatusCode.BadRequest, (await Save(admin, Form("Should roll back", bytes))).StatusCode);
-        using var scope = app.Services.CreateScope(); var db = scope.ServiceProvider.GetRequiredService<AppDbContext>(); Assert.Equal("INFOTEP - DIAET © 2026", (await db.Settings.FindAsync("FOOTER_TEXT"))!.Value); Assert.Equal(0, await db.BrandingAssets.CountAsync());
+        using var scope = app.Services.CreateScope(); var db = scope.ServiceProvider.GetRequiredService<AppDbContext>(); Assert.Equal("INFOTEP - DIAET © 2026", (await db.Settings.FindAsync(db.RegionId, "FOOTER_TEXT"))!.Value); Assert.Equal(0, await db.BrandingAssets.CountAsync());
     }
     [Fact] public async Task AccessRequestUsesDirectoryCodeEvenIfFormIsForged()
     {

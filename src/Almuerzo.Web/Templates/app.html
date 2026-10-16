@@ -29,7 +29,7 @@
            </div>
            <div class="flex flex-col">
              <span class="font-bold text-gray-900 leading-none tracking-tight">Almuerzo</span>
-             <span class="text-[10px] text-gray-500 font-semibold uppercase tracking-wider mt-0.5">Pre-empacado</span>
+             <span class="text-[10px] text-gray-500 font-semibold uppercase tracking-wider mt-0.5">{{ regionalName }}</span>
            </div>
            <div v-if="bubbleVisible" class="speech-bubble animate-fade-in">
               {{ bubbleText }}
@@ -262,77 +262,32 @@
       </div>
 
       <!-- Order Confirmed / No Menu State (Receipt Style) -->
-      <div v-if="chefGameCardVisible" class="chef-game-stage mt-8">
-        <div class="chef-game-status">
-          <div>
-            <span class="chef-game-status-label">Mini chef</span>
-            <strong>{{ chefRemainingLabel }}</strong>
-          </div>
-          <div class="chef-game-progress" aria-hidden="true">
-            <span :style="{ width: chefDailyProgress + '%' }"></span>
-          </div>
-          <div class="chef-game-actions">
-            <span class="chef-game-streak">Racha {{ chefGameState.streak || 0 }}</span>
-            <button
-              @click="toggleChefGamePlay"
-              class="chef-game-control"
-              :title="chefGameInCooldown ? 'Espera a que vuelva el chef' : (chefGame.active ? 'Pausar juego' : 'Iniciar juego')"
-              :disabled="!chefGameAvailable || chefGameInCooldown">
-              <i :class="chefGame.active ? 'fa-solid fa-pause' : 'fa-solid fa-play'"></i>
-            </button>
-            <button @click="syncChefGame(false)" :class="['chef-game-control', chefGame.dirty ? 'is-dirty' : '']" title="Guardar puntos" :disabled="chefGame.syncing || !chefGame.dirty">
-              <i :class="chefGame.syncing ? 'fa-solid fa-circle-notch fa-spin' : 'fa-solid fa-cloud-arrow-up'"></i>
-            </button>
-            <button v-if="!chefGameAvailable" @click="openChefRanking" class="chef-game-ranking-link" title="Ver ranking mensual">
-              <i class="fa-solid fa-trophy"></i>
-              <span>Ranking</span>
-            </button>
-          </div>
+      <div v-if="chefGameCardVisible" class="lunch-rush-stage mt-8">
+        <div class="rush-toolbar">
+          <div><span class="rush-eyebrow">Pausa de cocina</span><h3>Bandeja Express</h3></div>
+          <div class="rush-time"><i class="fa-regular fa-clock" aria-hidden="true"></i> {{ chefRemainingLabel }} hoy</div>
+          <button v-if="!rush.active" @click="startRush" :disabled="rush.busy || rush.pending || !chefGameAvailable || !!impersonateEmail || activeUser.regionalId !== regionalId" class="rush-play"><i :class="rush.busy ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-play'"></i> {{ rush.busy ? 'Preparando…' : 'Jugar' }}</button>
+          <button v-else @click="finishRush" :disabled="rush.busy" class="rush-stop">Terminar</button>
         </div>
-
-        <button
-          v-if="chefGame.visible"
-          @click="handleChefTargetTap"
-          :class="['chef-game-target', 'chef-pos-' + chefGame.position, 'chef-target-' + chefGame.kind, { 'is-bonus': chefGame.bonusMode }]"
-          :aria-label="getChefTargetLabel()"
-          :title="getChefTargetLabel()">
-          <span v-if="chefGame.kind === 'chef'" class="chef-character" aria-hidden="true">
-            <span class="chef-hat"><i></i><i></i><i></i></span>
-            <span class="chef-face">
-              <i class="chef-eye chef-eye-left"></i>
-              <i class="chef-eye chef-eye-right"></i>
-              <i class="chef-mustache"></i>
-            </span>
-            <i v-for="star in chefGame.starBursts" :key="star.id" class="chef-bonus-star fa-solid fa-star" :style="star.style"></i>
-          </span>
-          <span v-else-if="chefGame.kind === 'onion'" class="chef-onion" aria-hidden="true">
-            <i></i>
-          </span>
-          <span v-else class="chef-pan" aria-hidden="true">
-            <i></i>
-          </span>
-        </button>
-
-        <button
-          v-if="chefGame.cakeVisible"
-          @click.stop="handleChefCakeTap"
-          class="chef-cake-bonus"
-          :style="chefGame.cakeStyle"
-          aria-label="Atrapar bizcocho bonus"
-          title="Atrapar bizcocho bonus">
-          <span class="chef-cake" aria-hidden="true"><i></i><b></b></span>
-        </button>
-
-        <div v-if="chefGame.countdown > 0" class="chef-game-countdown">
-          El chef vuelve en <span>{{ chefGame.countdown }}s</span>
-        </div>
-
-        <div v-if="chefGame.message && chefGame.countdown <= 0" class="chef-game-toast" :class="{ 'chef-game-toast-combo': chefGame.combo }">
-          {{ chefGame.message }}
-        </div>
+        <p v-if="rush.error" class="rush-error" role="alert">{{ rush.error }} <button v-if="rush.pending" @click="finishRush" :disabled="rush.busy">Reintentar guardado</button></p>
+        <p v-if="rush.message" class="rush-result" role="status">{{ rush.message }}</p>
+        <transition name="rush-expand">
+          <section v-if="rush.active" id="rush-board" tabindex="0" class="rush-board" aria-label="Bandeja Express: usa flechas izquierda y derecha o A y D para mover la bandeja">
+            <div class="rush-hud"><span>Nivel {{ rush.level }}</span><strong>{{ rush.points }} pts</strong><span>{{ rush.remaining }}s</span></div>
+            <div class="rush-kitchen" aria-hidden="true"><span>COCINA</span><i class="fa-solid fa-utensils"></i><span>EN SERVICIO</span></div>
+            <div class="rush-lanes" aria-hidden="true">
+              <div v-for="lane in 4" :key="lane" :class="['rush-lane', { selected: rush.lane === lane - 1 }]"></div>
+              <span v-for="drop in rush.drops" :key="drop.id" :class="['rush-food', { burnt: drop.burnt }]" :style="{ left: (drop.lane * 25 + 12.5) + '%', top: drop.y + '%' }">{{ drop.icon }}</span>
+              <div class="rush-tray" :style="{ left: (rush.lane * 25 + 12.5) + '%' }"><span>🍽️</span></div>
+            </div>
+            <div class="rush-feedback" aria-live="off">{{ rush.feedback }} <span v-if="rush.streak > 1"> · Racha {{ rush.streak }}</span></div>
+            <div class="rush-touch"><button @pointerdown.prevent="moveRush(rush.lane - 1)" aria-label="Mover a la izquierda">←</button><span>← → o A / D</span><button @pointerdown.prevent="moveRush(rush.lane + 1)" aria-label="Mover a la derecha">→</button></div>
+          </section>
+        </transition>
+        <p v-if="!rush.active" class="rush-instructions">Atrapa los ingredientes y esquiva el fuego. Flechas o A/D en computadora, botones en móvil. Partidas de hasta 45 segundos · 15 minutos diarios.</p>
 
         <transition name="receipt-swap" mode="out-in">
-        <div :key="chefGameCardKey" class="order-confirmation-card max-w-md mx-auto bg-white rounded-[2rem] shadow-xl shadow-green-900/5 overflow-hidden text-center relative border border-gray-100">
+        <div v-if="!rush.active" :key="chefGameCardKey" class="order-confirmation-card max-w-md mx-auto bg-white rounded-[2rem] shadow-xl shadow-green-900/5 overflow-hidden text-center relative border border-gray-100">
         <!-- Success Header -->
         <div :class="[myOrder ? 'from-green-400 to-green-600' : 'from-amber-300 to-orange-500', 'bg-linear-to-br p-10 text-white relative overflow-hidden']">
            <div class="w-24 h-24 bg-white/20 rounded-full absolute -top-10 -right-10 animate-pulse"></div>
@@ -364,7 +319,7 @@
               <div v-else class="text-left">
                  <label class="text-xs text-gray-400 uppercase font-bold tracking-wider mb-2 block">Estado del menu</label>
                  <div class="bg-amber-50 p-5 rounded-2xl text-sm text-amber-900 font-medium leading-relaxed border border-amber-100">
-                    Todavia no hay menu disponible para esta fecha. Mini chef queda abierto mientras llega el menu.
+                    Todavia no hay menu disponible para esta fecha. Bandeja Express queda abierto mientras llega el menu.
                  </div>
               </div>
            </div>
@@ -500,7 +455,7 @@
           </button>
           <div>
             <span class="chef-ranking-kicker">Ranking mensual</span>
-            <h2>Mini chef</h2>
+            <h2>Bandeja Express</h2>
             <p>{{ chefRanking.monthLabel || chefGameState.monthLabel || 'Mes actual' }}</p>
           </div>
           <div class="chef-ranking-score">
@@ -553,43 +508,43 @@
             <div class="chef-ranking-rule">
               <i class="fa-solid fa-utensils"></i>
               <div>
-                <strong>Chef</strong>
-                <p>Cada acierto suma 1 punto y fortalece tu racha.</p>
+                <strong>Atrapa el almuerzo</strong>
+                <p>Mueve la bandeja con ← → o A/D. Cada ingrediente recogido suma 10 puntos.</p>
               </div>
             </div>
             <div class="chef-ranking-rule">
               <i class="fa-solid fa-bowl-rice"></i>
               <div>
-                <strong>Trampas</strong>
-                <p>La cebolla y el sarten restan puntos y retrasan la siguiente aparicion.</p>
+                <strong>Esquiva el fuego</strong>
+                <p>Un plato quemado resta 8 puntos y rompe la racha. Dejar caer comida también rompe la racha.</p>
               </div>
             </div>
             <div class="chef-ranking-rule">
               <i class="fa-solid fa-clock"></i>
               <div>
                 <strong>Tiempo diario</strong>
-                <p>Cada usuario dispone de 15 minutos por dia para jugar.</p>
+                <p>15 minutos al día, reservados por el servidor en partidas de hasta 45 segundos. Salir antes no devuelve ese tiempo.</p>
               </div>
             </div>
             <div class="chef-ranking-rule">
               <i class="fa-solid fa-wand-magic-sparkles"></i>
               <div>
-                <strong>Chef bonus</strong>
-                <p>Cada 8 chefs seguidos activa un chef brillante de 3 segundos.</p>
+                <strong>Racha de servicio</strong>
+                <p>Cada 5 ingredientes consecutivos aumenta el bonus, hasta 5 puntos extra por ingrediente.</p>
               </div>
             </div>
             <div class="chef-ranking-rule">
               <i class="fa-solid fa-cake-candles"></i>
               <div>
-                <strong>Bizcocho</strong>
-                <p>Aparece pocas veces y vale 20 puntos si lo atrapas rapido.</p>
+                <strong>Dificultad progresiva</strong>
+                <p>Sube un nivel cada 300 puntos del mes, hasta nivel 7. La velocidad tiene un límite.</p>
               </div>
             </div>
             <div class="chef-ranking-rule">
               <i class="fa-solid fa-cloud-arrow-up"></i>
               <div>
                 <strong>Guardado</strong>
-                <p>Puedes guardar tu progreso manualmente y tambien al agotarse el tiempo.</p>
+                <p>Los puntos se calculan en el servidor al terminar la partida. El ranking corresponde a tu regional.</p>
               </div>
             </div>
           </div>
@@ -655,7 +610,22 @@
             </div>
          </div>
 
-         <!-- Navigation -->
+                   <div class="regional-header">
+            <div><span class="rush-eyebrow">Contexto de administración</span><h2>{{ regionalName }}</h2></div>
+            <form v-if="isAdminGen" action="/regions/select" method="post" class="regional-selector">
+              <input type="hidden" name="__RequestVerificationToken" :value="csrfToken">
+              <label for="regional-select">Regional</label><select id="regional-select" name="regionId" :value="regionalId" @change="$event.target.form.requestSubmit()"><option v-for="region in regions.filter(r => r.estado === 'ACTIVO')" :key="region.id" :value="region.id">{{ region.nombre }}</option></select>
+            </form>
+          </div>
+          <details v-if="isAdminGen" class="regional-catalog"><summary>Administrar regionales y códigos AD</summary>
+            <div class="regional-list"><button v-for="region in regions" :key="region.id" @click="editRegion(region)">{{ region.nombre }} · {{ region.estado }}</button></div>
+            <form @submit.prevent="saveRegion" class="regional-form">
+              <label>Nombre<input v-model="regionalForm.nombre" maxlength="150" required></label><label>Código regional AD<input v-model="regionalForm.directoryCode" maxlength="64"></label>
+              <label>Estado<select v-model="regionalForm.estado"><option>ACTIVO</option><option>INACTIVO</option></select></label>
+              <button type="submit" :disabled="regionalSaving">{{ regionalSaving ? 'Guardando…' : 'Guardar regional' }}</button><button type="button" @click="Object.assign(regionalForm, {id:'',nombre:'',directoryCode:'',estado:'ACTIVO'})">Nueva</button>
+            </form><p v-if="regionalError" role="alert">{{ regionalError }}</p>
+          </details>
+<!-- Navigation -->
          <div class="flex gap-1 border-b border-gray-200 mb-6 overflow-x-auto no-scrollbar pb-1">
             <button v-for="tab in ['USUARIOS', 'PEDIDOS', 'VALORACIONES']" :key="tab"
                @click="adminState.tab = tab; if (tab === 'VALORACIONES') loadRatingsSummary();"
@@ -663,7 +633,7 @@
                <i v-if="tab === 'VALORACIONES'" class="fa-solid fa-star text-amber-500 text-[10px]"></i>
                <span>{{ tab }}</span>
             </button>
-            <template v-if="isAdminGen">
+            <template v-if="canManageRegion">
                <button v-for="tab in ['DEPTOS', 'CONFIG', 'MENU', 'DIAS_LIBRES']" :key="tab"
                   @click="adminState.tab = tab"
                   :class="['px-4 py-2 font-bold text-xs rounded-t-lg border-b-2 transition-all whitespace-nowrap', adminState.tab === tab ? 'border-blue-600 text-blue-600 bg-blue-50/50' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50']">
@@ -921,7 +891,7 @@
                   <tbody class="divide-y divide-gray-100">
                      <tr v-for="d in adminState.departments" :key="d.id" class="hover:bg-gray-50">
                         <td class="p-3 font-medium text-gray-900">{{ d.nombre }}</td>
-                        <td class="p-3 text-gray-500 text-xs truncate max-w-xs">{{ d.admins }}</td>
+                        <td class="p-3 text-gray-500 text-xs truncate max-w-xs"><span :class="!d.admins ? 'text-amber-700 font-semibold' : ''">{{ d.admins || 'Sin responsable asignado' }}</span></td>
                         <td class="p-3"><span :class="['px-2 py-1 rounded-full text-xs font-bold', d.estado === 'ACTIVO' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700']">{{ d.estado }}</span></td>
                         <td class="p-3 flex gap-2">
                            <button @click="openDeptModal(d)" class="text-blue-600 hover:bg-blue-50 p-1.5 rounded" title="Editar"><i class="fa-solid fa-pen"></i></button>
@@ -935,7 +905,7 @@
 
          <!-- Config Module -->
          <div v-if="adminState.tab === 'CONFIG'" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <div v-if="!isAdminGen" class="text-center py-10 text-gray-400">
+            <div v-if="!canManageRegion" class="text-center py-10 text-gray-400">
                <i class="fa-solid fa-lock text-3xl mb-3"></i>
                <p>Solo el Administrador General puede editar la configuración.</p>
             </div>
@@ -986,13 +956,13 @@
                            Actual: <span class="font-bold">{{ providerInfo.name }}</span>
                         </div>
                      </div>
-                     <button @click="openProviderResetModal" type="button" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold transition-colors shrink-0 shadow-sm shadow-amber-600/20">
+                     <button v-if="isAdminGen" @click="openProviderResetModal" type="button" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold transition-colors shrink-0 shadow-sm shadow-amber-600/20">
                         Gestionar
                      </button>
                   </div>
                </div>
 
-               <section class="mb-6 p-5 bg-blue-50/50 border border-blue-100 rounded-xl" aria-labelledby="branding-heading">
+                <section v-if="canManageRegion" class="mb-6 p-5 bg-blue-50/50 border border-blue-100 rounded-xl" aria-labelledby="branding-heading">
                   <h3 id="branding-heading" class="font-bold text-sm text-gray-900 mb-4"><i class="fa-solid fa-palette text-blue-600 mr-2" aria-hidden="true"></i>Identidad visual y pie de página</h3>
                   <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
                      <div class="md:col-span-2"><label for="branding-footer" class="block text-xs font-semibold text-gray-600 mb-2">Texto del pie de página</label><textarea id="branding-footer" v-model="brandingForm.footerText" maxlength="200" rows="2" :disabled="brandingSaving" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white"></textarea></div>
@@ -1015,7 +985,7 @@
                      </div>
                      <div v-else>
                         <input v-if="item.key === 'HORA_ENVIO' || item.key === 'HORA_RECORDATORIO'" type="time" v-model="adminState.config[item.key]" class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
-                        <input v-else-if="item.key === 'MEAL_PRICE_CURRENT'" type="number" min="0" step="0.01" v-model="adminState.config[item.key]" class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                        <input v-else-if="item.key === 'MEAL_PRICE_CURRENT'" :disabled="!isAdminGen" type="number" min="0" step="0.01" v-model="adminState.config[item.key]" class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
                         <input v-else-if="item.key.includes('LIMIT') || item.key.includes('MINUTOS')" type="number" v-model="adminState.config[item.key]" class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
                         <input v-else type="text" v-model="adminState.config[item.key]" class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
                      </div>
@@ -1172,17 +1142,18 @@
              </div>
              <div>
                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Departamento</label>
-                <select v-if="isAdminGen" v-model="adminState.userModal.data.departamento" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <select v-if="canManageRegion" :disabled="adminState.userModal.data.directoryManaged" v-model="adminState.userModal.data.departamento" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                    <option v-for="d in adminState.departments" :key="d.id" :value="d.id">{{ d.nombre }}</option>
                 </select>
                 <input v-else v-model="adminState.userModal.data.departamento" disabled type="text" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none opacity-50">
              </div>
-             <div v-if="isAdminGen">
+              <div v-if="canManageRegion">
                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Rol</label>
                 <select v-model="adminState.userModal.data.rol" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                    <option value="USER">Usuario</option>
                    <option value="ADMIN_DEP">Admin Depto</option>
-                   <option value="ADMIN_GEN">Admin General</option>
+                   <option v-if="isAdminGen" value="ADMIN_REG">Admin Regional</option>
+                    <option v-if="isAdminGen" value="ADMIN_GEN">Admin General</option>
                 </select>
              </div>
           </div>
@@ -1207,7 +1178,11 @@
           <div class="p-6 space-y-4">
              <div>
                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Nombre</label>
-                <input v-model="adminState.deptModal.data.nombre" type="text" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                 <input v-model="adminState.deptModal.data.nombre" type="text" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              </div>
+              <div>
+                 <label for="dept-directory-code" class="block text-xs font-bold text-gray-500 uppercase mb-1">Código de departamento AD</label>
+                 <input id="dept-directory-code" v-model="adminState.deptModal.data.directoryCode" maxlength="64" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm">
              </div>
              <div>
                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Admins</label>
@@ -1709,6 +1684,7 @@
             <input v-model="providerResetModal.providerName" type="text" maxlength="100" placeholder="Ej. Delicias Gourmet SRL" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
           </div>
 
+          <div><label for="new-provider-price" class="block text-xs font-bold text-gray-500 uppercase mb-2">Precio del almuerzo (RD$) · obligatorio</label><input id="new-provider-price" v-model="providerResetModal.price" type="number" min="0.01" max="100000" step="0.01" required class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm"><p class="text-xs text-gray-500 mt-2">Confirma el importe aunque coincida con el anterior. Proveedor y precio se guardan juntos para esta regional.</p></div>
           <div v-if="providerResetModal.error" class="p-3 bg-red-50 text-red-600 text-xs font-bold rounded-xl border border-red-100 flex items-center gap-2">
             <i class="fa-solid fa-circle-exclamation"></i>
             <span>{{ providerResetModal.error }}</span>

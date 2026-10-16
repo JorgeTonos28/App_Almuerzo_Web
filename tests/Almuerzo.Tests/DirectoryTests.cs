@@ -54,6 +54,17 @@ public class DirectoryTests
         var provider = Provider(new Handler((_, _) => { calls++; return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("<boolean>false</boolean>") }); }));
         Assert.Null(await provider.AuthenticateAsync("colaborador", "invalid", default)); Assert.Equal(1, calls);
     }
+    [Fact] public async Task ConfiguredOrganizationColumnsMustBelongToTheVerifiedProfileRow()
+    {
+        var profile = "<Table><NombreCompleto>Persona</NombreCompleto><Codigo>7</Codigo><RegionalId>E</RegionalId><DepartamentoId>D1</DepartamentoId><DepartamentoNombre>Cocina</DepartamentoNombre></Table>";
+        var provider = Provider(new Handler((request, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(request.RequestUri!.Segments.Last() == "Autenticacion" ? "<boolean>true</boolean>" : profile) })), new() {
+            ["Ad:AutoProvisioningEnabled"] = "true", ["Ad:RegionCodeColumn"] = "RegionalId", ["Ad:DepartmentCodeColumn"] = "DepartamentoId", ["Ad:DepartmentNameColumn"] = "DepartamentoNombre"
+        });
+        var identity = await provider.AuthenticateAsync("persona", "test-only", default);
+        Assert.Equal("E", identity!.RegionCode); Assert.Equal("D1", identity.DepartmentCode); Assert.Equal("Cocina", identity.DepartmentName);
+        profile = "<root>" + profile.Replace("<RegionalId>E</RegionalId>", "") + "<Other><RegionalId>E</RegionalId></Other></root>";
+        await Assert.ThrowsAsync<BusinessException>(() => provider.AuthenticateAsync("persona", "test-only", default));
+    }
     [Theory]
     [InlineData("colaborador@external.test")]
     [InlineData("OTHER\\colaborador")]

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Almuerzo.Web.Services;
 
-public record DirectoryIdentity(string Email, string Name, string EmployeeCode);
+public record DirectoryIdentity(string Email, string Name, string EmployeeCode, string? RegionCode = null, string? DepartmentCode = null, string? DepartmentName = null);
 public interface IDirectoryIdentityProvider { Task<DirectoryIdentity?> AuthenticateAsync(string username, string password, CancellationToken ct); }
 
 // ASMX HTTP POST contract from ExtraHub PR #15. Credentials never enter our database or logs.
@@ -42,7 +42,19 @@ public class DirectoryIdentityProvider(HttpClient http, IConfiguration config, I
             if (nameColumn.Parent != codeColumn.Parent) throw InvalidResponse();
             var name = nameColumn.Value.Trim(); var code = codeColumn.Value.Trim();
             if (name.Length is 0 or > 150 || name.Any(char.IsControl) || !Regex.IsMatch(code, "^[0-9]{1,4}$", RegexOptions.CultureInvariant)) throw InvalidResponse();
-            return new DirectoryIdentity(LunchService.Email(account + "@infotep.gob.do"), name, code.PadLeft(4, '0'));
+            string? OrganizationColumn(string key)
+            {
+                var column = config["Ad:" + key];
+                if (string.IsNullOrWhiteSpace(column)) return null;
+                var element = ReadColumn(profile, column, []);
+                if (element.Parent != codeColumn.Parent || element.Value.Trim().Length is 0 or > 150 || element.Value.Any(char.IsControl)) throw InvalidResponse();
+                return element.Value.Trim();
+            }
+            var region = OrganizationColumn("RegionCodeColumn");
+            var department = OrganizationColumn("DepartmentCodeColumn");
+            var departmentName = OrganizationColumn("DepartmentNameColumn");
+            if (config.GetValue<bool>("Ad:AutoProvisioningEnabled") && (region == null || department == null || departmentName == null)) throw InvalidResponse();
+            return new DirectoryIdentity(LunchService.Email(account + "@infotep.gob.do"), name, code.PadLeft(4, '0'), region, department, departmentName);
         }
         catch (Exception ex) when (ex is XmlException or InvalidOperationException or IOException)
         { throw InvalidResponse(); }

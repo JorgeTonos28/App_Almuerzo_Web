@@ -19,15 +19,22 @@ namespace Almuerzo.Web.Data.Migrations
             modelBuilder.Entity("Almuerzo.Web.Models.AppUser", b =>
                 {
                     b.Property<string>("Email")
+                        .HasMaxLength(254)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("DepartmentId")
+                        .HasMaxLength(64)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("DirectoryAccount")
+                        .HasMaxLength(254)
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("DirectoryManaged")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("EmployeeCode")
+                        .HasMaxLength(64)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("GameJson")
@@ -41,6 +48,13 @@ namespace Almuerzo.Web.Data.Migrations
                     b.Property<string>("PreferencesJson")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<string>("RegionId")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("central");
 
                     b.Property<string>("Revision")
                         .IsConcurrencyToken()
@@ -67,6 +81,8 @@ namespace Almuerzo.Web.Data.Migrations
                         .IsUnique()
                         .HasFilter("EmployeeCode IS NOT NULL");
 
+                    b.HasIndex("RegionId");
+
                     b.ToTable("Users");
                 });
 
@@ -88,11 +104,20 @@ namespace Almuerzo.Web.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("RegionId")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("central");
+
                     b.Property<string>("Timestamp")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("RegionId");
 
                     b.ToTable("Audit");
                 });
@@ -100,6 +125,7 @@ namespace Almuerzo.Web.Data.Migrations
             modelBuilder.Entity("Almuerzo.Web.Models.BrandingAsset", b =>
                 {
                     b.Property<string>("Id")
+                        .HasMaxLength(64)
                         .HasColumnType("TEXT");
 
                     b.Property<byte[]>("Content")
@@ -114,19 +140,32 @@ namespace Almuerzo.Web.Data.Migrations
             modelBuilder.Entity("Almuerzo.Web.Models.Department", b =>
                 {
                     b.Property<string>("Id")
+                        .HasMaxLength(64)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Admins")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("DirectoryCode")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasMaxLength(150)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PreferencesJson")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<string>("RegionId")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("central");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -134,7 +173,13 @@ namespace Almuerzo.Web.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
+                    b.HasIndex("RegionId");
+
+                    b.HasIndex("RegionId", "DirectoryCode")
+                        .IsUnique()
+                        .HasFilter("DirectoryCode IS NOT NULL");
+
+                    b.HasIndex("RegionId", "Name")
                         .IsUnique();
 
                     b.ToTable("Departments");
@@ -142,14 +187,23 @@ namespace Almuerzo.Web.Data.Migrations
 
             modelBuilder.Entity("Almuerzo.Web.Models.Holiday", b =>
                 {
+                    b.Property<string>("RegionId")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("central");
+
                     b.Property<string>("Date")
+                        .HasMaxLength(10)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Reason")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Date");
+                    b.HasKey("RegionId", "Date");
+
+                    b.HasIndex("RegionId");
 
                     b.ToTable("Holidays");
                 });
@@ -157,11 +211,19 @@ namespace Almuerzo.Web.Data.Migrations
             modelBuilder.Entity("Almuerzo.Web.Models.ImportRecord", b =>
                 {
                     b.Property<string>("Hash")
+                        .HasMaxLength(64)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ImportedAt")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<string>("RegionId")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("central");
 
                     b.Property<string>("SummaryJson")
                         .IsRequired()
@@ -169,19 +231,31 @@ namespace Almuerzo.Web.Data.Migrations
 
                     b.HasKey("Hash");
 
+                    b.HasIndex("RegionId");
+
                     b.ToTable("Imports");
                 });
 
             modelBuilder.Entity("Almuerzo.Web.Models.JobRun", b =>
                 {
                     b.Property<string>("Key")
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("CompletedAt")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("RegionId")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("central");
+
                     b.HasKey("Key");
+
+                    b.HasIndex("RegionId");
 
                     b.ToTable("JobRuns");
                 });
@@ -211,11 +285,22 @@ namespace Almuerzo.Web.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<long>("NextAttemptUtcTicks")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Recipient")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("RegionId")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("central");
+
                     b.Property<string>("SentAt")
+                        .HasMaxLength(64)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Subject")
@@ -223,6 +308,8 @@ namespace Almuerzo.Web.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("RegionId");
 
                     b.HasIndex("SentAt", "Attempts");
 
@@ -232,6 +319,7 @@ namespace Almuerzo.Web.Data.Migrations
             modelBuilder.Entity("Almuerzo.Web.Models.MenuCategory", b =>
                 {
                     b.Property<string>("Id")
+                        .HasMaxLength(64)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Aliases")
@@ -247,7 +335,15 @@ namespace Almuerzo.Web.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasMaxLength(150)
                         .HasColumnType("TEXT");
+
+                    b.Property<string>("RegionId")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("central");
 
                     b.Property<string>("SelectionType")
                         .IsRequired()
@@ -262,7 +358,9 @@ namespace Almuerzo.Web.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
+                    b.HasIndex("RegionId");
+
+                    b.HasIndex("RegionId", "Name")
                         .IsUnique();
 
                     b.ToTable("Categories");
@@ -271,14 +369,17 @@ namespace Almuerzo.Web.Data.Migrations
             modelBuilder.Entity("Almuerzo.Web.Models.MenuItem", b =>
                 {
                     b.Property<string>("Id")
+                        .HasMaxLength(64)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("CategoryId")
                         .IsRequired()
+                        .HasMaxLength(64)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Date")
                         .IsRequired()
+                        .HasMaxLength(10)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
@@ -292,9 +393,18 @@ namespace Almuerzo.Web.Data.Migrations
                     b.Property<bool>("Enabled")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("RegionId")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("central");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("RegionId");
 
                     b.HasIndex("Date", "Enabled");
 
@@ -304,6 +414,7 @@ namespace Almuerzo.Web.Data.Migrations
             modelBuilder.Entity("Almuerzo.Web.Models.Order", b =>
                 {
                     b.Property<string>("Id")
+                        .HasMaxLength(64)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("CreatedBy")
@@ -312,10 +423,12 @@ namespace Almuerzo.Web.Data.Migrations
 
                     b.Property<string>("Date")
                         .IsRequired()
+                        .HasMaxLength(10)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("DepartmentId")
                         .IsRequired()
+                        .HasMaxLength(64)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("DetailJson")
@@ -324,6 +437,7 @@ namespace Almuerzo.Web.Data.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
+                        .HasMaxLength(254)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ModifiedAt")
@@ -333,6 +447,13 @@ namespace Almuerzo.Web.Data.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<string>("RegionId")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("central");
 
                     b.Property<string>("RequestedAt")
                         .IsRequired()
@@ -345,6 +466,7 @@ namespace Almuerzo.Web.Data.Migrations
 
                     b.Property<string>("Status")
                         .IsRequired()
+                        .HasMaxLength(64)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Summary")
@@ -352,6 +474,8 @@ namespace Almuerzo.Web.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("RegionId");
 
                     b.HasIndex("Email", "Date")
                         .IsUnique()
@@ -365,6 +489,7 @@ namespace Almuerzo.Web.Data.Migrations
             modelBuilder.Entity("Almuerzo.Web.Models.Rating", b =>
                 {
                     b.Property<string>("Id")
+                        .HasMaxLength(64)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Comment")
@@ -385,10 +510,12 @@ namespace Almuerzo.Web.Data.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
+                        .HasMaxLength(254)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Kind")
                         .IsRequired()
+                        .HasMaxLength(16)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
@@ -403,8 +530,16 @@ namespace Almuerzo.Web.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("RegionId")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("central");
+
                     b.Property<string>("Scope")
                         .IsRequired()
+                        .HasMaxLength(64)
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Score")
@@ -419,7 +554,9 @@ namespace Almuerzo.Web.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Kind", "Email", "Scope")
+                    b.HasIndex("RegionId");
+
+                    b.HasIndex("RegionId", "Kind", "Email", "Scope")
                         .IsUnique();
 
                     b.ToTable("Ratings", t =>
@@ -444,6 +581,7 @@ namespace Almuerzo.Web.Data.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
+                        .HasMaxLength(254)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
@@ -452,11 +590,19 @@ namespace Almuerzo.Web.Data.Migrations
 
                     b.Property<string>("PeriodId")
                         .IsRequired()
+                        .HasMaxLength(64)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ProviderName")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<string>("RegionId")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("central");
 
                     b.Property<int>("Score")
                         .HasColumnType("INTEGER");
@@ -471,14 +617,54 @@ namespace Almuerzo.Web.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("RegionId");
+
                     b.HasIndex("PeriodId", "Email");
 
                     b.ToTable("RatingHistory");
                 });
 
+            modelBuilder.Entity("Almuerzo.Web.Models.Region", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DirectoryCode")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DirectoryCode")
+                        .IsUnique()
+                        .HasFilter("DirectoryCode IS NOT NULL");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Regions");
+                });
+
             modelBuilder.Entity("Almuerzo.Web.Models.Setting", b =>
                 {
+                    b.Property<string>("RegionId")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("central");
+
                     b.Property<string>("Key")
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
@@ -489,7 +675,9 @@ namespace Almuerzo.Web.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Key");
+                    b.HasKey("RegionId", "Key");
+
+                    b.HasIndex("RegionId");
 
                     b.ToTable("Settings");
                 });
@@ -504,16 +692,26 @@ namespace Almuerzo.Web.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("RegionId")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("central");
+
                     b.Property<int>("Row")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Sheet")
                         .IsRequired()
+                        .HasMaxLength(64)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Sheet", "Row")
+                    b.HasIndex("RegionId");
+
+                    b.HasIndex("RegionId", "Sheet", "Row")
                         .IsUnique();
 
                     b.ToTable("SourceRecords");

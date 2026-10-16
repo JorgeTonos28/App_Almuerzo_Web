@@ -44,7 +44,7 @@ public class ImportAndReportTests
         var user = await db.Users.FindAsync("sample@infotep.gob.do"); Assert.Null(user!.DepartmentId); Assert.Equal("0007", user.EmployeeCode); Assert.Equal(Roles.User, user.Role); Assert.Contains("\"custom\":42", user.PreferencesJson);
         Assert.Equal(1, await db.Orders.CountAsync()); Assert.Equal(0, await db.Ratings.CountAsync());
         Assert.DoesNotContain("synthetic-sensitive-token", string.Join("", await db.SourceRecords.Select(x => x.Json).ToListAsync()));
-        Assert.Equal("TRUE", (await db.Settings.FindAsync("TEST_EMAIL_MODE"))!.Value); Assert.Null(await db.Settings.FindAsync("MENU_DAY_ENDPOINT_TOKEN"));
+        Assert.Equal("TRUE", (await db.Settings.FindAsync(db.RegionId, "TEST_EMAIL_MODE"))!.Value); Assert.Null(await db.Settings.FindAsync(db.RegionId, "MENU_DAY_ENDPOINT_TOKEN"));
         Assert.Equal("{\"alreadyImported\":true}", JsonSerializer.Serialize(await importer.ImportAsync(path))); Assert.Equal(1, await db.Imports.CountAsync());
     }
     [Fact] public async Task InvalidForeignKeyRollsBackEntireImport()

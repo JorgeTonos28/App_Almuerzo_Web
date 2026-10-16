@@ -52,7 +52,7 @@ public class SecurityAndBusinessTests
         using (var scope = app.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            (await db.Settings.FindAsync("MINUTOS_PREV_CIERRE"))!.Value = "30.0";
+            (await db.Settings.FindAsync(db.RegionId, "MINUTOS_PREV_CIERRE"))!.Value = "30.0";
             await db.SaveChangesAsync();
         }
         using var user = app.Client(); await app.Login(user, "user@infotep.gob.do");
@@ -105,7 +105,7 @@ public class SecurityAndBusinessTests
         Assert.True((await app.Rpc(user, "apiSetUserPreference", "custom", 42))["ok"]!.GetValue<bool>()); Assert.True((await app.Rpc(user, "apiSetUserPreference", "reminders", false))["ok"]!.GetValue<bool>());
         var saved = await app.Rpc(admin, "apiSaveConfig", new Dictionary<string, string> { ["MEAL_PRICE_CURRENT"] = "60", ["MEAL_PRICE_HISTORY_JSON"] = "[]", ["ANNOUNCEMENT_PAYLOAD_JSON"] = "{\"slides\":[]}" }); Assert.True(saved["ok"]!.GetValue<bool>(), saved["msg"]?.ToString());
         using var scope = app.Services.CreateScope(); var db = scope.ServiceProvider.GetRequiredService<AppDbContext>(); var prefs = LunchService.Obj((await db.Users.FindAsync("user@infotep.gob.do"))!.PreferencesJson); Assert.Equal(42, prefs["custom"]!.GetValue<int>()); Assert.False(prefs["reminders"]!.GetValue<bool>());
-        var history = JsonNode.Parse((await db.Settings.FindAsync("MEAL_PRICE_HISTORY_JSON"))!.Value)!.AsArray(); Assert.Equal(2, history.Count); Assert.Equal("2026-10-09", history[1]!["from"]!.ToString());
+        var history = JsonNode.Parse((await db.Settings.FindAsync(db.RegionId, "MEAL_PRICE_HISTORY_JSON"))!.Value)!.AsArray(); Assert.Equal(2, history.Count); Assert.Equal("2026-10-09", history[1]!["from"]!.ToString());
     }
     [Fact] public void MailContentIsEncodedAndUnsafeLinksAreOmitted()
     {

@@ -7,6 +7,7 @@ using Almuerzo.Web.Models;
 using Almuerzo.Web.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -18,20 +19,27 @@ public class FixedClock : TimeProvider
     public DateTimeOffset Current = new(2026, 10, 9, 16, 0, 0, TimeSpan.Zero);
     public override DateTimeOffset GetUtcNow() => Current;
 }
-public class TestDirectory : IDirectoryIdentityProvider
+public class TestDirectory(Dictionary<string, DirectoryIdentity> profiles) : IDirectoryIdentityProvider
 {
     public Task<DirectoryIdentity?> AuthenticateAsync(string username, string password, CancellationToken ct)
-        => Task.FromResult<DirectoryIdentity?>(password == "test-only" && username.EndsWith("@infotep.gob.do") ? new DirectoryIdentity(username, "Colaborador de prueba", username.Split('@')[0] switch { "general" or "alias" => "1000", "admin" => "1001", "user" => "1002", "other" => "1003", _ => "1004" }) : null);
+        => Task.FromResult<DirectoryIdentity?>(password == "test-only" && username.EndsWith("@infotep.gob.do") ? profiles.GetValueOrDefault(username) ?? new DirectoryIdentity(username, "Colaborador de prueba", username.Split('@')[0] switch { "general" or "alias" => "1000", "admin" => "1001", "user" => "1002", "other" => "1003", _ => "1004" }) : null);
 }
 public class AppFactory : WebApplicationFactory<Program>
 {
     public readonly FixedClock Clock = new();
+    public readonly Dictionary<string, DirectoryIdentity> Profiles = new(StringComparer.OrdinalIgnoreCase);
+    public readonly Dictionary<string, string?> ExtraConfiguration = new();
+    public readonly string SqlDatabase = "AlmuerzoTest_" + Guid.NewGuid().ToString("N");
+    public bool UseSqlServer => Environment.GetEnvironmentVariable("ALMUERZO_TEST_SQLSERVER") == "1";
     public readonly string Storage = Path.Combine(Path.GetTempPath(), "almuerzo-tests", Guid.NewGuid().ToString("N"));
+    private bool configured;
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        configured = true;
         builder.UseEnvironment("Development");
-        builder.ConfigureAppConfiguration((_, c) => c.AddInMemoryCollection(new Dictionary<string, string?> { ["Storage:Path"] = Storage, ["Operations:Enabled"] = "false", ["Logging:LogLevel:Default"] = "Warning", ["AllowedHosts"] = "localhost" }));
-        builder.ConfigureServices(s => { s.RemoveAll<IDirectoryIdentityProvider>(); s.AddSingleton<IDirectoryIdentityProvider, TestDirectory>(); s.RemoveAll<TimeProvider>(); s.AddSingleton<TimeProvider>(Clock); });
+        builder.ConfigureAppConfiguration((_, c) => c.AddInMemoryCollection(new Dictionary<string, string?> { ["Database:Provider"] = "Sqlite", ["ConnectionStrings:DefaultConnection"] = "Data Source=" + Path.Combine(Storage, "almuerzo.db"), ["Storage:Path"] = Storage, ["Operations:Enabled"] = "false", ["Logging:LogLevel:Default"] = "Warning", ["AllowedHosts"] = "localhost" }));
+        builder.ConfigureAppConfiguration((_, c) => { if (UseSqlServer) c.AddInMemoryCollection(new Dictionary<string, string?> { ["Database:Provider"] = "SqlServer", ["ConnectionStrings:DefaultConnection"] = $"Server=(localdb)\\MSSQLLocalDB;Database={SqlDatabase};Integrated Security=true;Encrypt=true;TrustServerCertificate=false" }); c.AddInMemoryCollection(ExtraConfiguration); });
+        builder.ConfigureServices(s => { s.RemoveAll<IDirectoryIdentityProvider>(); s.AddSingleton<IDirectoryIdentityProvider>(new TestDirectory(Profiles)); s.RemoveAll<TimeProvider>(); s.AddSingleton<TimeProvider>(Clock); });
     }
     public async Task Seed()
     {
@@ -61,5 +69,13 @@ public class AppFactory : WebApplicationFactory<Program>
         using var request = new HttpRequestMessage(HttpMethod.Post, "/api/rpc") { Content = JsonContent.Create(new { method, args }) };
         request.Headers.Add("X-CSRF-TOKEN", token); var response = await client.SendAsync(request); Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         return (await response.Content.ReadFromJsonAsync<JsonObject>())!;
+    }
+    public override async ValueTask DisposeAsync()
+    {
+        await base.DisposeAsync();
+        if (configured && UseSqlServer && SqlDatabase.StartsWith("AlmuerzoTest_", StringComparison.Ordinal) && Guid.TryParseExact(SqlDatabase[13..], "N", out _)) {
+            var options = new Microsoft.EntityFrameworkCore.DbContextOptionsBuilder<SqlServerAppDbContext>().UseSqlServer($"Server=(localdb)\\MSSQLLocalDB;Database={SqlDatabase};Integrated Security=true;Encrypt=true;TrustServerCertificate=false").Options;
+            await using var db = new SqlServerAppDbContext(options); await db.Database.EnsureDeletedAsync();
+        }
     }
 }
