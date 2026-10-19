@@ -56,6 +56,9 @@ namespace Almuerzo.Web.Data.Migrations
                         .HasColumnType("TEXT")
                         .HasDefaultValue("central");
 
+                    b.Property<bool>("RegionalBlocked")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Revision")
                         .IsConcurrencyToken()
                         .IsRequired()
@@ -150,6 +153,9 @@ namespace Almuerzo.Web.Data.Migrations
                     b.Property<string>("DirectoryCode")
                         .HasMaxLength(64)
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("DirectoryManaged")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -633,6 +639,9 @@ namespace Almuerzo.Web.Data.Migrations
                     b.Property<string>("DirectoryCode")
                         .HasMaxLength(64)
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("DirectoryManaged")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()

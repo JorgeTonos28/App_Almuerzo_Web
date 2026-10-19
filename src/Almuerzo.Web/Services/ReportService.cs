@@ -35,12 +35,12 @@ public class ReportService(AppDbContext db, StoragePaths paths)
     {
         var file = await GenerateAsync(date); var pdf = await GenerateAsync(date, format: "pdf"); var cfg = await db.Settings.ToDictionaryAsync(x => x.Key, x => x.Value); var count = 0;
         var regionalName = (await db.Regions.FindAsync(db.RegionId))?.Name ?? db.RegionId;
-        var recipients = testRecipient == null ? (await db.Users.IgnoreQueryFilters().Where(x => (x.Role == Roles.GeneralAdmin || x.RegionId == db.RegionId && x.Role == Roles.RegionalAdmin) && x.Status == "ACTIVO" && x.Department!.Status == "ACTIVO").Select(x => x.Email).ToListAsync()).Concat(LunchService.Split(cfg.GetValueOrDefault("ADMIN_EMAILS", ""))).Distinct().ToList() : [testRecipient];
+        var recipients = testRecipient == null ? (await db.Users.IgnoreQueryFilters().Where(x => (x.Role == Roles.GeneralAdmin || x.RegionId == db.RegionId && x.Role == Roles.RegionalAdmin) && x.Status == "ACTIVO" && !x.RegionalBlocked && x.Department!.Status == "ACTIVO").Select(x => x.Email).ToListAsync()).Concat(LunchService.Split(cfg.GetValueOrDefault("ADMIN_EMAILS", ""))).Distinct().ToList() : [testRecipient];
         if (testRecipient == null && System.Text.Json.Nodes.JsonNode.Parse(cfg.GetValueOrDefault("RESPONSIBLES_EMAILS_JSON", "[]")) is System.Text.Json.Nodes.JsonArray copies)
             recipients.AddRange(copies.Select(x => x is System.Text.Json.Nodes.JsonObject ? LunchService.Str(x, "email") : x?.ToString() ?? "").Where(x => System.Net.Mail.MailAddress.TryCreate(x, out _)));
         void Queue(string recipient, string subject, string attachment, string extra) { db.Outbox.Add(new MailMessageRecord { Recipient = recipient, Subject = subject, Body = $"{regionalName}: adjuntos el Excel y PDF del pedido de almuerzo para el {date}.", AttachmentPath = attachment, ExtraAttachmentsJson = JsonSerializer.Serialize(new[] { extra }) }); count++; }
         foreach (var email in recipients.Distinct()) Queue(email, $"{regionalName} · Reporte general de almuerzo {date}", file, pdf);
-        var admins = await db.Users.Where(x => x.Role == Roles.DepartmentAdmin && x.Status == "ACTIVO" && x.Department!.Status == "ACTIVO").ToListAsync();
+        var admins = await db.Users.Where(x => x.Role == Roles.DepartmentAdmin && x.Status == "ACTIVO" && !x.RegionalBlocked && x.Department!.Status == "ACTIVO").ToListAsync();
         foreach (var group in admins.GroupBy(x => x.DepartmentId)) { if (group.Key == null) continue; var deptFile = await GenerateAsync(date, group.Key); var deptPdf = await GenerateAsync(date, group.Key, "pdf"); foreach (var admin in group) Queue(testRecipient ?? admin.Email, $"{regionalName} · Reporte de almuerzo del departamento {date}", deptFile, deptPdf); }
         return count;
     }

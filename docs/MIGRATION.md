@@ -1,6 +1,6 @@
 # Análisis y avance de la migración
 
-> Registro histórico de las versiones 0.1.x. Para la arquitectura y operación vigentes de v0.2.0 —SQL Server, regionales, ADMIN_REG, SendGrid y el nuevo juego— seguir [DEPLOYMENT-NATIONAL.md](DEPLOYMENT-NATIONAL.md) y README. Las limitaciones antiguas de SQLite/SMTP/puntuación del cliente que siguen abajo describen el estado de esas versiones.
+> Registro histórico de las versiones 0.1.x. Para la arquitectura y operación vigentes de v0.2.1 —SQL Server, regionales, ADMIN_REG, SendGrid y el nuevo juego— seguir [DEPLOYMENT-NATIONAL.md](DEPLOYMENT-NATIONAL.md) y README. Las limitaciones antiguas de SQLite/SMTP/puntuación del cliente que siguen abajo describen el estado de esas versiones.
 
 ## Referencias verificadas
 

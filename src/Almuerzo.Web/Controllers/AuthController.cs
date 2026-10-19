@@ -65,13 +65,14 @@ public class AuthController(IDirectoryIdentityProvider directory, AppDbContext d
         var user = await db.Users.IgnoreQueryFilters().Include(x => x.Department).SingleOrDefaultAsync(x => x.Email == User.FindFirstValue(ClaimTypes.Email));
         var activeRegion = await db.Regions.AnyAsync(x => x.Id == db.RegionId && x.Status == "ACTIVO");
         if (LunchService.Enabled(user) && activeRegion) return RedirectToAction("Index", "Home");
-        ViewBag.Pending = user?.Status == "PENDIENTE"; ViewBag.Inactive = user?.Status == "INACTIVO" || !activeRegion; ViewBag.Departments = await db.Departments.Where(x => x.Status == "ACTIVO").OrderBy(x => x.Name).ToListAsync(); return View(new AccessModel { Code = User.FindFirstValue("directory_code") ?? "", SuggestedDepartment = user?.Department?.Name ?? "" });
+        ViewBag.RegionalBlocked = user?.RegionalBlocked == true; ViewBag.Pending = user?.Status == "PENDIENTE"; ViewBag.Inactive = user?.Status == "INACTIVO" || !activeRegion; ViewBag.Departments = await db.Departments.Where(x => x.Status == "ACTIVO").OrderBy(x => x.Name).ToListAsync(); return View(new AccessModel { Code = User.FindFirstValue("directory_code") ?? "", SuggestedDepartment = user?.Department?.Name ?? "" });
     }
     [Authorize, HttpPost, EnableRateLimiting("login")] public async Task<IActionResult> RequestAccess(AccessModel model)
     {
         model.Code = User.FindFirstValue("directory_code") ?? "";
         if (!ModelState.IsValid || !System.Text.RegularExpressions.Regex.IsMatch(model.Code, "^[0-9]{4}$")) { TempData["Message"] = "La identidad o el departamento requieren revisión. Inicia sesión nuevamente."; return RedirectToAction(nameof(Denied)); }
         var email = User.FindFirstValue(ClaimTypes.Email)!; var existing = await db.Users.FindAsync(email);
+        if (existing?.Status == "INACTIVO" || existing?.RegionalBlocked == true) { TempData["Message"] = "Tu acceso está suspendido. Contacta a la administración; una solicitud no puede retirar el bloqueo."; return RedirectToAction(nameof(Denied)); }
         if (existing?.Status == "PENDIENTE") { TempData["Message"] = "Tu solicitud está pendiente de revisión."; return RedirectToAction(nameof(Denied)); }
         if (existing != null && LunchService.Enabled(await db.Users.Include(x => x.Department).SingleAsync(x => x.Email == email))) return RedirectToAction("Index", "Home");
         if (await db.Users.IgnoreQueryFilters().AnyAsync(x => x.EmployeeCode == model.Code && x.Email != email)) { TempData["Message"] = "Ese código de empleado ya está registrado."; return RedirectToAction(nameof(Denied)); }

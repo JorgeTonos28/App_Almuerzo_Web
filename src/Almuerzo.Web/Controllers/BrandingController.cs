@@ -18,7 +18,7 @@ public class BrandingController(BrandingService branding, AppDbContext db) : Con
         var bytes = await db.BrandingAssets.AsNoTracking().Where(x => x.Id == id).Select(x => x.Content).SingleOrDefaultAsync(ct);
         return bytes == null ? NotFound() : File(bytes, "image/png");
     }
-    [Authorize(Policy = "RegionalManagement"), HttpPost, EnableRateLimiting("rpc"), RequestSizeLimit(3_000_000), RequestFormLimits(MultipartBodyLengthLimit = 3_000_000)]
+    [Authorize(Policy = "GeneralAdmin"), HttpPost, EnableRateLimiting("rpc"), RequestSizeLimit(3_000_000), RequestFormLimits(MultipartBodyLengthLimit = 3_000_000)]
     public async Task<IActionResult> Save([FromForm] string? footerText, IFormFile? favicon, IFormFile? stamp, [FromForm] bool resetFavicon, [FromForm] bool removeStamp, CancellationToken ct)
     {
         if (!ModelState.IsValid) return BadRequest(new { ok = false, msg = "Texto inválido." });

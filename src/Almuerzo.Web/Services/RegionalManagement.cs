@@ -13,6 +13,8 @@ public static class RegionManagement
         var id = LunchService.Str(payload, "id");
         var region = id.Length == 0 ? new Region() : await db.Regions.FindAsync(id) ?? throw new BusinessException("Regional inexistente.");
         var name = LunchService.Bounded(LunchService.Str(payload, "nombre"), 150, "Nombre");
+        if (id.Length > 0 && LunchService.Str(payload, "directoryCode") != (region.DirectoryCode ?? "") && (region.DirectoryManaged || await db.Users.IgnoreQueryFilters().AnyAsync(x => x.RegionId == region.Id && x.DirectoryManaged)))
+            throw new BusinessException("El código de una regional vinculada requiere reconciliación con TI.");
         var status = LunchService.Str(payload, "estado", "ACTIVO");
         LunchService.Require(status is "ACTIVO" or "INACTIVO", "Estado inválido.");
         LunchService.Require(!await db.Regions.AnyAsync(x => x.Name == name && x.Id != region.Id), "Nombre de regional duplicado.");

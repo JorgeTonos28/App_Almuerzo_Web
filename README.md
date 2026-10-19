@@ -1,4 +1,4 @@
-# App Almuerzo Web · 0.2.0
+# App Almuerzo Web · 0.2.1
 
 ASP.NET Core 10 MVC, EF Core y **SQL Server**, con la interfaz de App_Almuerzo v7.36 adaptada a operación nacional. Cada regional tiene departamentos, menú, proveedor, precio, pedidos, valoraciones, configuración y reportes. La autorización se verifica en el servidor en cada petición.
 
@@ -6,8 +6,10 @@ Guía vigente para TI: [Despliegue nacional, SQL Server, AD y SendGrid](docs/DEP
 
 ## Cambios de esta versión
 
+La [matriz de autoridad y permisos](docs/ACCESS-CONTROL.md) define quién puede modificar cada dato y las reglas de transición del AD. Nombre/código y organización verificada son de solo lectura incluso para ADMIN_GEN; no se crean identidades manuales. El bloqueo regional es independiente de la deshabilitación general y se comprueba en cada petición.
+
 - `ADMIN_GEN`: administración nacional con selector de regional en el encabezado; crea regionales, vincula códigos AD y asigna `ADMIN_REG`.
-- `ADMIN_REG`: administra usuarios USER/ADMIN_DEP, responsables, menú, calendario, avisos, identidad visual y reportes de su regional. Proveedor y precios quedan reservados a ADMIN_GEN.
+- `ADMIN_REG`: gestiona menú, calendario, pedidos, reportes, avisos y suspensiones regionales de USER/ADMIN_DEP. Consulta identidades y departamentos. Roles, responsables, organización, categorías/reglas, configuración, correos, branding y proveedor/precios quedan reservados a ADMIN_GEN.
 - Cambiar proveedor requiere escribir un precio válido, aunque coincida con el anterior. Ambos valores y la vigencia se guardan juntos, preservando los históricos.
 - AD preparado para recibir regional y departamento verificados. La provisión automática USER está desactivada hasta que TI entregue y confirme el contrato actualizado. Los ADMIN_DEP se asignan expresamente desde Departamentos; reciben el resumen de su departamento y coordinan el retiro.
 - SendGrid por API HTTPS, con adjuntos Excel/PDF, cola transaccional y reintentos. Pickup sigue siendo el modo inicial seguro; SMTP se conserva por compatibilidad.
@@ -57,7 +59,7 @@ La importación reconoce el mismo libro por SHA-256, conserva históricos y pref
 
 AD utiliza ASMX HTTPS POST: `Autenticacion` y `DatosUsuarioAD`, con `Token`, `NombreUsuario` y `Password` según el método. Se verifica el perfil del mismo usuario, sin XML DTD/entidades externas, con límites de tamaño y plazo. El código institucional único vincula la cuenta AD conservando correo e históricos importados; solo ADMIN_GEN puede restablecer un vínculo, con auditoría y revocación de sesión.
 
-Con el contrato antiguo, las cuentas nuevas solicitan acceso y un administrador asigna departamento/rol. Con `Ad:AutoProvisioningEnabled=true`, se exige organización verificada: regional previamente mapeada y departamento activo. Se crea/sincroniza USER automáticamente; nunca se reactivan cuentas INACTIVO ni se conceden privilegios administrativos. Los cambios organizativos retiran ADMIN_DEP al cambiar departamento y ADMIN_REG al cambiar regional. No se infiere el departamento por texto escrito por el usuario.
+Con el contrato antiguo, las cuentas nuevas solicitan acceso y un administrador asigna departamento/rol. Con `Ad:AutoProvisioningEnabled=true`, se exige organización verificada: regional previamente mapeada y departamento activo. Se crea/sincroniza USER automáticamente; nunca se reactivan cuentas INACTIVO ni se conceden privilegios administrativos. Los cambios organizativos retiran ADMIN_DEP al cambiar departamento y ADMIN_REG al cambiar regional. Un traslado verificado retira únicamente la suspensión de la regional anterior, con auditoría; una deshabilitación general se conserva. No se infiere el departamento por texto escrito por el usuario.
 
 En Development el envío externo exige opt-in, `TEST_EMAIL_MODE=TRUE` y un único destinatario de prueba. Los trabajos y la cola comienzan desactivados. Cada regional tiene horario, calendario y destinatarios; ADMIN_GEN recibe consolidados regionales y ADMIN_REG el de su ámbito. HTTP 202 de SendGrid significa aceptación por el proveedor; entrega y rebotes se comprueban en SendGrid.
 

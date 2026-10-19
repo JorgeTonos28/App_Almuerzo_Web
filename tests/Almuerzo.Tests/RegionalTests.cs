@@ -42,9 +42,9 @@ public class RegionalTests
         Assert.False((await app.Rpc(c, "apiSaveConfig", new Dictionary<string,string> { ["MEAL_PRICE_CURRENT"] = "5" }))["ok"]!.GetValue<bool>());
         Assert.False((await app.Rpc(c, "apiResetProviderPeriod", new { providerName = "Intruso", price = 5 }))["ok"]!.GetValue<bool>());
         Assert.False((await app.Rpc(c, "apiAdminSaveUser", new { email = "east-user@infotep.gob.do", codigo = "1006", nombre = "Este", departamento = "east-a", rol = "ADMIN_GEN", estado = "ACTIVO" }))["ok"]!.GetValue<bool>());
-        Assert.True((await app.Rpc(c, "apiAdminSaveUser", new { email = "east-user@infotep.gob.do", codigo = "1006", nombre = "Este", departamento = "east-a", rol = "ADMIN_DEP", estado = "ACTIVO" }))["ok"]!.GetValue<bool>());
-        var updated = await app.Rpc(c, "apiSaveConfig", new Dictionary<string,string> { ["HORA_ENVIO"] = "14:00" }); Assert.True(updated["ok"]!.GetValue<bool>(), updated.ToJsonString());
-        Assert.True((await app.Rpc(c, "apiSaveConfig", new Dictionary<string,string> { ["MINUTOS_PREV_CIERRE"] = "30.0" }))["ok"]!.GetValue<bool>());
+        Assert.False((await app.Rpc(c, "apiAdminSaveUser", new { email = "east-user@infotep.gob.do", codigo = "1006", nombre = "Este", departamento = "east-a", rol = "ADMIN_DEP", estado = "ACTIVO" }))["ok"]!.GetValue<bool>());
+        Assert.False((await app.Rpc(c, "apiSaveConfig", new Dictionary<string,string> { ["HORA_ENVIO"] = "14:00" }))["ok"]!.GetValue<bool>());
+        Assert.False((await app.Rpc(c, "apiSaveConfig", new Dictionary<string,string> { ["MINUTOS_PREV_CIERRE"] = "30.0" }))["ok"]!.GetValue<bool>());
         Assert.False((await app.Rpc(c, "apiDeleteMenuItem", "rice"))["ok"]!.GetValue<bool>());
     }
     [Fact] public async Task OnlyGeneralAdminCanSelectAnotherRegionAndProviderRequiresExplicitPrice()

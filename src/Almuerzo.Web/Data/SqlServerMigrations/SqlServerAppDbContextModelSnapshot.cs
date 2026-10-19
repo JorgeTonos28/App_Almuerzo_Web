@@ -61,6 +61,9 @@ namespace Almuerzo.Web.Data.SqlServerMigrations
                         .HasColumnType("nvarchar(32)")
                         .HasDefaultValue("central");
 
+                    b.Property<bool>("RegionalBlocked")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Revision")
                         .IsConcurrencyToken()
                         .IsRequired()
@@ -157,6 +160,9 @@ namespace Almuerzo.Web.Data.SqlServerMigrations
                     b.Property<string>("DirectoryCode")
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");
+
+                    b.Property<bool>("DirectoryManaged")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -644,6 +650,9 @@ namespace Almuerzo.Web.Data.SqlServerMigrations
                     b.Property<string>("DirectoryCode")
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");
+
+                    b.Property<bool>("DirectoryManaged")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()

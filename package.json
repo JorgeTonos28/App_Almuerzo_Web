@@ -1,7 +1,7 @@
 {
   "name": "almuerzo-web-assets",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.2.1",
   "scripts": {
     "build:css": "tailwindcss -c tailwind.config.cjs -i frontend/tailwind.css -o src/Almuerzo.Web/wwwroot/assets/tailwind.css --minify",
     "build": "node tools/vendor-assets.mjs && node tools/compile-frontend.mjs && npm run build:css"

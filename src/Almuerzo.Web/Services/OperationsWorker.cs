@@ -48,7 +48,7 @@ public class OperationsWorker(IServiceScopeFactory scopes, IConfiguration config
                     if (await db.Menu.AnyAsync(x => x.Date == targetDate && x.Enabled, ct))
                     {
                         var ordered = await db.Orders.Where(x => x.Date == targetDate && x.Status == "ACTIVO").Select(x => x.Email).ToListAsync(ct);
-                        var users = await db.Users.Where(x => x.Status == "ACTIVO" && x.Department!.Status == "ACTIVO" && !ordered.Contains(x.Email)).ToListAsync(ct);
+                        var users = await db.Users.Where(x => x.Status == "ACTIVO" && !x.RegionalBlocked && x.Department!.Status == "ACTIVO" && !ordered.Contains(x.Email)).ToListAsync(ct);
                         foreach (var u in users) if (LunchService.Str(LunchService.Obj(u.PreferencesJson), "reminders", "true") != "false") lunch.Queue(u.Email, "Recordatorio de almuerzo", $"Recuerda seleccionar tu almuerzo para el {targetDate} antes del cierre.");
                     }
                 }

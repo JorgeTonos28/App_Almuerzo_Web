@@ -87,17 +87,17 @@ public class SecurityAndBusinessTests
         await app.Login(newcomer, "new@infotep.gob.do"); var html = await newcomer.GetStringAsync("/Auth/Denied");
         await newcomer.PostAsync("/Auth/RequestAccess", new FormUrlEncodedContent(new Dictionary<string, string> { ["Code"] = "1004", ["__RequestVerificationToken"] = AppFactory.Token(html) }));
         await app.Login(admin, "general@infotep.gob.do");
-        var approved = await app.Rpc(admin, "apiAdminSaveUser", new { email = "new@infotep.gob.do", nombre = "Nueva cuenta", codigo = "1004", departamento = "a", rol = "USER", estado = "ACTIVO" }); Assert.True(approved["ok"]!.GetValue<bool>());
+        var approved = await app.Rpc(admin, "apiAdminSaveUser", new { email = "new@infotep.gob.do", departamento = "a", rol = "USER", estado = "ACTIVO" }); Assert.True(approved["ok"]!.GetValue<bool>());
         Assert.Equal(HttpStatusCode.OK, (await newcomer.GetAsync("/")).StatusCode);
         using var scope = app.Services.CreateScope(); var db = scope.ServiceProvider.GetRequiredService<AppDbContext>(); Assert.Equal(3, await db.Outbox.CountAsync());
     }
-    [Fact] public async Task InactiveAccountCanRequestReviewWithoutGainingAccess()
+    [Fact] public async Task InactiveAccountCannotConvertItsBlockIntoAPendingRequest()
     {
         await using var app = new AppFactory(); await app.Seed();
         using (var scope = app.Services.CreateScope()) { var db = scope.ServiceProvider.GetRequiredService<AppDbContext>(); (await db.Users.FindAsync("user@infotep.gob.do"))!.Status = "INACTIVO"; await db.SaveChangesAsync(); }
-        using var user = app.Client(); Assert.Equal("/Auth/Denied", await app.Login(user, "user@infotep.gob.do")); var html = await user.GetStringAsync("/Auth/Denied"); Assert.Contains("Solicitar acceso", html);
+        using var user = app.Client(); Assert.Equal("/Auth/Denied", await app.Login(user, "user@infotep.gob.do")); var html = await user.GetStringAsync("/Auth/Denied"); Assert.DoesNotContain("Solicitar acceso", html);
         await user.PostAsync("/Auth/RequestAccess", new FormUrlEncodedContent(new Dictionary<string, string> { ["Code"] = "1002", ["__RequestVerificationToken"] = AppFactory.Token(html) }));
-        using var check = app.Services.CreateScope(); var dbCheck = check.ServiceProvider.GetRequiredService<AppDbContext>(); Assert.Equal("PENDIENTE", (await dbCheck.Users.FindAsync("user@infotep.gob.do"))!.Status); Assert.Equal(2, await dbCheck.Outbox.CountAsync()); Assert.Equal(HttpStatusCode.Redirect, (await user.GetAsync("/")).StatusCode);
+        using var check = app.Services.CreateScope(); var dbCheck = check.ServiceProvider.GetRequiredService<AppDbContext>(); Assert.Equal("INACTIVO", (await dbCheck.Users.FindAsync("user@infotep.gob.do"))!.Status); Assert.Equal(0, await dbCheck.Outbox.CountAsync()); Assert.Equal(HttpStatusCode.Redirect, (await user.GetAsync("/")).StatusCode);
     }
     [Fact] public async Task PreferencesMergeAndPriceHistoryCannotBeOverwrittenByClient()
     {

@@ -23,6 +23,12 @@ public class DirectoryOrganization(AppDbContext db, IConfiguration config)
             db.Departments.Add(department);
         }
         if (department.Status != "ACTIVO") throw new BusinessException("El departamento institucional está inactivo.");
+        region.DirectoryManaged = true; department.DirectoryManaged = true;
+        if (department.Name != identity.DepartmentName) {
+            if (await db.Departments.IgnoreQueryFilters().AnyAsync(x => x.RegionId == region.Id && x.Id != department.Id && x.Name == identity.DepartmentName, ct)) throw new BusinessException("El nombre institucional requiere reconciliación con TI.");
+            department.Name = LunchService.Bounded(identity.DepartmentName, 150, "Departamento");
+            db.Audit.Add(new AuditEvent { RegionId = region.Id, Actor = identity.Email, Action = "DirectoryDepartmentRenamed", EntityId = department.Id });
+        }
         var action = user == null ? "DirectoryProvisionUser" : "DirectorySyncOrganization";
         if (user == null) { user = new AppUser { Email = identity.Email, Role = Roles.User }; db.Users.Add(user); }
         else if (user.Role == Roles.DepartmentAdmin && user.DepartmentId != department.Id || user.Role == Roles.RegionalAdmin && user.RegionId != region.Id) {
@@ -33,6 +39,10 @@ public class DirectoryOrganization(AppDbContext db, IConfiguration config)
             user.Role = Roles.User;
         }
         var changed = !user.DirectoryManaged || user.DepartmentId != department.Id || user.RegionId != region.Id;
+        if (user.RegionId != region.Id && user.RegionalBlocked) {
+            user.RegionalBlocked = false;
+            db.Audit.Add(new AuditEvent { RegionId = region.Id, Actor = identity.Email, Action = "DirectoryTransferClearedRegionalBlock", EntityId = user.Email });
+        }
         user.RegionId = region.Id; user.Department = department; user.DepartmentId = department.Id;
         user.DirectoryManaged = true; user.Status = "ACTIVO";
         if (changed) db.Audit.Add(new AuditEvent { RegionId = region.Id, Actor = user.Email, Action = action, EntityId = user.Email });

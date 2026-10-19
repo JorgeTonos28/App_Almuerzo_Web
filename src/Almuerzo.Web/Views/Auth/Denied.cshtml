@@ -6,9 +6,10 @@
 <div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-600 text-2xl flex items-center justify-center mb-6"><i class="fa-solid fa-lock" aria-hidden="true"></i></div>
 <h1 class="text-2xl font-bold text-gray-900">Acceso denegado</h1><p class="text-sm text-gray-500 mt-3">Hola, @User.Identity?.Name. Tu identidad fue validada, pero aún no tienes acceso habilitado a Almuerzo.</p>
 @if (TempData["Message"] is string message) { <p class="bg-blue-50 text-blue-700 p-3 rounded-xl mt-5" role="status">@message</p> }
-@if (ViewBag.Pending == true) { <p class="bg-amber-50 text-amber-700 p-4 rounded-xl mt-6">Tu solicitud está pendiente. Un administrador debe asignarte un rol y un departamento.</p> }
+@if (ViewBag.RegionalBlocked == true) { <p class="bg-amber-50 text-amber-700 p-4 rounded-xl mt-6">Tu acceso está suspendido en esta regional. Contacta a la administración regional o general para su revisión.</p> }
+else if (ViewBag.Inactive == true) { <p class="mt-6 text-sm">El acceso está deshabilitado. Contacta al administrador general; una solicitud no puede reactivar tu cuenta.</p> }
+else if (ViewBag.Pending == true) { <p class="bg-amber-50 text-amber-700 p-4 rounded-xl mt-6">Tu solicitud está pendiente de revisión por un administrador general.</p> }
 else {
-  @if (ViewBag.Inactive == true) { <p class="mt-6 text-sm">Tu cuenta está inactiva. Puedes solicitar su revisión; el administrador deberá habilitarla.</p> }
   <form asp-action="RequestAccess" method="post" class="space-y-5 mt-7">
     <div><span class="block text-sm font-semibold mb-2">Código de empleado</span><p class="rounded-xl bg-gray-50 border border-gray-200 p-3">@Model.Code <span class="text-xs text-gray-500">· Verificado por INFOTEP</span></p></div>
     <div><label asp-for="SuggestedDepartment" class="block text-sm font-semibold mb-2">Departamento al que perteneces</label><select asp-for="SuggestedDepartment" class="w-full rounded-xl border border-gray-200 p-3"><option value="">Selecciona un departamento</option>@foreach (Almuerzo.Web.Models.Department d in ViewBag.Departments) { <option value="@d.Name">@d.Name</option> }</select></div>

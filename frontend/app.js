@@ -45,6 +45,9 @@ createApp({
     // Datos del usuario y app
     const user = ref({});
     const activeUser = ref({});
+    const organizationManaged = ref(false);
+    const regionalBlockSaving = ref('');
+    const userStatusSaving = ref('');
     const deptUsers = ref([]);
     const impersonateEmail = ref('');
     const menu = ref({});
@@ -214,7 +217,7 @@ createApp({
     const regions = ref(window.__INITIAL_DATA__?.regions || []);
     const regionalId = ref(window.__INITIAL_DATA__?.regionalId || 'central');
     const regionalName = ref(window.__INITIAL_DATA__?.regionalName || '');
-    const regionalForm = reactive({ id: '', nombre: '', directoryCode: '', estado: 'ACTIVO' });
+    const regionalForm = reactive({ id: '', nombre: '', directoryCode: '', directoryManaged: false, estado: 'ACTIVO' });
     const regionalSaving = ref(false);
     const regionalError = ref('');
     const saveRegion = () => {
@@ -223,6 +226,8 @@ createApp({
     };
     const editRegion = region => Object.assign(regionalForm, { ...region });
     const isAdminGen = computed(() => activeUser.value.rol === 'ADMIN_GEN');
+    const adminTabs = computed(() => isAdminGen.value ? ['USUARIOS','PEDIDOS','VALORACIONES','DEPTOS','CONFIG','MENU','DIAS_LIBRES'] : (canManageRegion.value ? ['USUARIOS','PEDIDOS','VALORACIONES','DEPTOS','AVISOS','MENU','DIAS_LIBRES'] : ['USUARIOS','PEDIDOS','VALORACIONES']));
+    const canBlockUser = u => canManageRegion.value && ['USER','ADMIN_DEP'].includes(u.rol) && u.email !== activeUser.value.email;
     const isTestEmailMode = computed(() => String(adminState.config['TEST_EMAIL_MODE'] || '').trim().toUpperCase() === 'TRUE');
     const chefScore = computed(() => Number(chefGameState.value?.score || 0));
     const chefRemainingSeconds = computed(() => Math.max(0, Number(chefGameState.value?.remainingSeconds || 0)));
@@ -269,26 +274,8 @@ createApp({
     const filteredAdminUsers = computed(() => {
        const q = deptAdminSearch.value.toLowerCase();
        if (!q) return [];
-       return adminState.users.filter(u =>
-          u.nombre.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)
-       );
-    });
-
-    const deptMoveHint = computed(() => {
-       if (!adminState.deptModal.data.admins) return [];
-       const emails = adminState.deptModal.data.admins.split(',').map(e=>e.trim().toLowerCase());
-       const moved = [];
-       const targetId = adminState.deptModal.data.id;
-
-       emails.forEach(e => {
-          const u = adminState.users.find(x => x.email.toLowerCase() === e);
-          if (u && u.rol === 'ADMIN_DEP' && (!targetId || u.departamentoId !== targetId)) {
-             const oldName = adminState.deptMap[u.departamentoId] || 'Otro';
-             moved.push(`${u.nombre} se moverá de ${oldName}`);
-          }
-       });
-       return moved;
-    });
+        return adminState.users.filter(u => u.departamentoId === adminState.deptModal.data.id && u.estado === 'ACTIVO' && !u.regionalBlocked && ['USER','ADMIN_DEP'].includes(u.rol) && (u.nombre.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)));
+     });
 
     const filteredOrders = computed(() => {
        const f = adminState.filters.orders;
@@ -615,6 +602,7 @@ createApp({
 
       user.value = res.user;
       activeUser.value = res.activeUser || {};
+      organizationManaged.value = !!res.organizationManaged;
       deptUsers.value = res.deptUsers || [];
       menu.value = res.menu || {};
       myOrder.value = res.myOrder || null;
@@ -968,6 +956,7 @@ createApp({
       });
     };
     const openUserModal = (u = null) => {
+       if (!isAdminGen.value || !u) return;
        adminState.userModal.isNew = !u;
 
        // CORRECCIÓN: Usamos departamentoId si existe (u), o el ID del usuario activo si es nuevo
@@ -979,8 +968,7 @@ createApp({
     };
 
     const saveUser = () => {
-       if(!adminState.userModal.data.email || !adminState.userModal.data.nombre || !adminState.userModal.data.codigo) return showModal("Faltan datos requeridos (Email, Nombre y Código).");
-       if(!/^\d{4}$/.test(adminState.userModal.data.codigo)) return showModal("El código debe ser de 4 dígitos numéricos.");
+       if (!isAdminGen.value) return;
 
        adminState.loading = true;
        almuerzo.run
@@ -1001,28 +989,25 @@ createApp({
     };
 
     const toggleUserStatus = (u) => {
-       showModal(`¿${u.estado === 'ACTIVO' ? 'Desactivar' : 'Activar'} a ${u.nombre}?`, "Confirmar Cambio", "CONFIRM", () => {
-          const newState = u.estado === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO';
+       if (!isAdminGen.value || userStatusSaving.value) return;
+       const nextState = u.estado === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO';
+       showModal(`¿Cambiar el estado general de ${u.nombre} a ${nextState}? El bloqueo regional se conserva.`, 'Habilitación general', 'CONFIRM', () => {
+          userStatusSaving.value = u.email;
+          almuerzo.run.withSuccessHandler(res => { userStatusSaving.value = ''; if (res.ok) loadAdminData(true); else showModal(res.msg, 'Error'); })
+            .withFailureHandler(err => { userStatusSaving.value = ''; showModal(err.message || 'No se pudo cambiar el estado.', 'Error'); })
+            .apiAdminSetUserStatus({email:u.email,estado:nextState});
+       });
+    };
 
-          // CORRECCIÓN: Sobrescribimos 'departamento' con el ID antes de enviar
-          const payload = { ...u, estado: newState, departamento: u.departamentoId };
-
-          adminState.loading = true;
-          almuerzo.run
-            .withSuccessHandler(res => {
-               if(res && res.ok) {
-                  reloadAdminDataAfterAction();
-               } else {
-                  adminState.loading = false;
-                  showModal((res && res.msg) || "No se pudo cambiar el estado del usuario.", "Error");
-               }
-            })
-            .withFailureHandler(err => {
-               adminState.loading = false;
-               showModal(err.message || "Error cambiando el estado del usuario.", "Error");
-            })
-            .apiAdminSaveUser(payload);
-        });
+    const toggleRegionalBlock = (u) => {
+       if (!canBlockUser(u) || regionalBlockSaving.value) return;
+       const blocked = !u.regionalBlocked;
+       showModal(`${blocked ? 'Suspender el acceso regional' : 'Retirar la suspensión regional'} de ${u.nombre}. El estado general, los roles, la identidad y los pedidos se conservan.`, 'Acceso regional', 'CONFIRM', () => {
+          regionalBlockSaving.value = u.email;
+          almuerzo.run.withSuccessHandler(res => { regionalBlockSaving.value = ''; if (res.ok) loadAdminData(true); else showModal(res.msg, 'Error'); })
+            .withFailureHandler(err => { regionalBlockSaving.value = ''; showModal(err.message || 'No se pudo gestionar el bloqueo.', 'Error'); })
+            .apiSetRegionalUserBlock({email:u.email,blocked});
+       });
     };
 
     const adminCancelOrder = (orderId) => {
@@ -1518,23 +1503,11 @@ createApp({
        adminState.responsiblesList.splice(idx, 1);
     };
 
-    const addDeptAdmin = (user) => {
-       if (['ADMIN_GEN', 'ADMIN_REG'].includes(user.rol)) return showModal("Selecciona un colaborador para asignarlo como responsable del departamento.");
-       if (user.directoryManaged && user.departamentoId !== adminState.deptModal.data.id) return showModal("El responsable debe pertenecer a este departamento según el AD.");
-
-       const proceed = () => {
-          let current = adminState.deptModal.data.admins ? adminState.deptModal.data.admins.split(',').map(e=>e.trim()).filter(e=>e) : [];
-          if (!current.includes(user.email)) {
-             current.push(user.email);
-             adminState.deptModal.data.admins = current.join(', ');
-          }
-       };
-
-       if (user.rol === 'ADMIN_DEP') {
-          showModal(`Advertencia: ${user.nombre} dejará de ser admin de su departamento actual. ¿Continuar?`, "Cambio de Depto", "CONFIRM", proceed);
-       } else {
-          proceed();
-       }
+    const addDeptAdmin = (u) => {
+       if (!isAdminGen.value || !['USER','ADMIN_DEP'].includes(u.rol) || u.regionalBlocked || u.estado !== 'ACTIVO' || u.departamentoId !== adminState.deptModal.data.id) return showModal('El responsable debe ser un colaborador habilitado de este departamento.');
+       const emails = (adminState.deptModal.data.admins || '').split(',').map(e=>e.trim()).filter(Boolean);
+       if (!emails.includes(u.email)) emails.push(u.email);
+       adminState.deptModal.data.admins = emails.join(', ');
     };
 
     const removeDeptAdmin = (email) => {
@@ -1992,7 +1965,7 @@ createApp({
 
       // Estado
       savingReminders, remindersEnabled, shouldScrollSummaryCards,
-      activeUser, deptUsers, impersonateEmail,
+      activeUser, organizationManaged, adminTabs, canBlockUser, toggleRegionalBlock, regionalBlockSaving, userStatusSaving, deptUsers, impersonateEmail,
       viewMode, adminState,
 
       // Aviso General
@@ -2017,7 +1990,7 @@ createApp({
       openDeptModal, saveDept, deleteDept, saveConfig, runTestDailyCloseEmails, clearFilters,
 
       // Dept Helpers
-      addDeptAdmin, removeDeptAdmin, deptAdminSearch, filteredAdminUsers, deptMoveHint,
+      addDeptAdmin, removeDeptAdmin, deptAdminSearch, filteredAdminUsers,
 
       // Menu/Holiday
       checkMenuDate, loadMenuDay, openMenuModal, saveMenuItem, deleteMenuItem, openCategoryManager, openCategoryModal, saveMenuCategory,

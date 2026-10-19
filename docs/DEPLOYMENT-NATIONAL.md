@@ -1,4 +1,4 @@
-# Entrega a TI · App Almuerzo Web 0.2.0
+# Entrega a TI · App Almuerzo Web 0.2.1
 
 Esta es la guía vigente. Todos los comandos son para **CMD**. El código incluye SQL Server, separación regional, ADMIN_REG y SendGrid. Falta validar contra el servidor SQL institucional, el nuevo contrato del AD y un envío real con las credenciales/remitente de SendGrid que entregue TI.
 
@@ -23,7 +23,7 @@ npm run build
 dotnet restore Almuerzo.sln
 dotnet build Almuerzo.sln -c Release --no-restore
 dotnet test Almuerzo.sln -c Release --no-build
-dotnet publish src\Almuerzo.Web -c Release --no-build -o artifacts\publish-v020
+dotnet publish src\Almuerzo.Web -c Release --no-build -o artifacts\publish-v021
 ```
 
 El paquete publicado no incluye la base ni el Excel. Para ensayar sin datos reales, usar la demo descrita en README. No usar `--demo` en producción.
@@ -118,16 +118,18 @@ dotnet run --project src\Almuerzo.Web -c Release --no-build --no-launch-profile 
 1. Entrar por AD con una cuenta ADMIN_GEN importada. El login permanece en la misma pestaña.
 2. Abrir administración y **Administrar regionales y códigos AD**. Renombrar Sede inicial y registrar su código institucional. Crear las demás regionales y sus códigos exactos; no inventar códigos.
 3. Usar el selector del encabezado para trabajar en cada regional. Cada una recibe catálogos y valores iniciales seguros, con modo de correo de prueba. Revisar proveedor/precio, horarios, menú, calendario, destinatarios e identidad visual de cada una.
-4. En Usuarios, asignar ADMIN_REG a la persona autorizada de esa regional. Solo ADMIN_GEN puede conceder o modificar ADMIN_REG/ADMIN_GEN.
-5. En Departamentos, vincular el código AD de los departamentos ya existentes. Asignar uno o varios responsables activos como ADMIN_DEP. Esos responsables reciben el Excel/PDF departamental y coordinan el retiro; ADMIN_REG recibe el consolidado de su regional, y ADMIN_GEN los consolidados regionales.
+4. En Usuarios, ADMIN_GEN asigna roles y estado general a cuentas ya incorporadas por AD/importación. Nombre y código son de solo lectura. El departamento verificado también queda protegido. No existe creación manual de identidades. ADMIN_REG no modifica roles ni habilitación general.
+5. Como ADMIN_GEN, en Departamentos, vincular el código AD de los departamentos ya existentes antes de activar la sincronización. Asignar uno o varios responsables habilitados como ADMIN_DEP; deben pertenecer ya al departamento, sin suspensión regional. Esta operación nunca los traslada. Esos responsables reciben el Excel/PDF departamental y coordinan el retiro; ADMIN_REG recibe el consolidado de su regional, y ADMIN_GEN los consolidados regionales.
 6. Si un departamento nuevo llega desde AD, se crea sin responsables; un administrador debe asignarlos. El acceso USER no depende de esa asignación. Revisar los departamentos sin responsable antes de operar.
 
 | Rol | Ámbito y permisos |
 |---|---|
 | USER | Pedidos, preferencias, juego y valoraciones propios en su regional |
-| ADMIN_DEP | Colaboradores USER, pedidos y reporte de su departamento; sin asignar administradores |
-| ADMIN_REG | Gestión de su regional; asignación ADMIN_DEP; sin proveedor/precios ni ADMIN_REG/ADMIN_GEN |
-| ADMIN_GEN | Gestión nacional mediante selector; proveedor/precios, regionales y roles administrativos |
+| ADMIN_DEP | Consulta de colaboradores y gestión de pedidos/reportes de su departamento; no modifica cuentas |
+| ADMIN_REG | Menú, calendario, pedidos, reportes, avisos y suspensión regional USER/ADMIN_DEP; identidades/departamentos de consulta |
+| ADMIN_GEN | Gestión nacional mediante selector; permisos, responsables, catálogos, reglas, configuración y proveedor/precios; respeta datos verificados de AD |
+
+Consultar la [matriz detallada de permisos](ACCESS-CONTROL.md) antes de asignar roles. La suspensión regional no modifica el estado general: retirarla no reactiva INACTIVO ni aprueba PENDIENTE. Nombre/código y organización verificada se corrigen en AD. ADMIN_REG publica AVISOS, sin editor de configuración general, correos de prueba o identidad visual.
 
 El selector cambia el contexto administrativo, no traslada al administrador ni sus pedidos personales a otra regional. Para pedir o jugar debe volver a su regional. Los reportes y valoraciones no se combinan entre regionales.
 
@@ -191,7 +193,7 @@ API oficial utilizada: [SendGrid Mail Send v3](https://www.twilio.com/docs/sendg
 
 ## 8. Publicar en IIS y configurar producción
 
-1. Detener el sitio/Application Pool. Respaldar SQL y almacenamiento privado y desplegar el contenido de `artifacts\publish-v020` en la carpeta del sitio. No sobrescribir el almacén privado con un paquete vacío.
+1. Detener el sitio/Application Pool. Respaldar SQL y almacenamiento privado y desplegar el contenido de `artifacts\publish-v021` en la carpeta del sitio. No sobrescribir el almacén privado con un paquete vacío.
 2. Configurar en el gestor de secretos o entorno de la cuenta de servicio las mismas claves, sustituyendo `:` por `__` en variables: `ConnectionStrings__DefaultConnection`, `Database__Provider=SqlServer`, `Storage__Path`, `Ad__Enabled`, `Ad__Endpoint`, `Ad__Token`, `Mail__Mode=SendGrid`, `Mail__From`, `SendGrid__ApiKey`, `SendGrid__DataResidency`, `Operations__Enabled`, `Operations__ScheduledJobsEnabled` y `AllowedHosts=dominio.institucional`.
 3. Establecer `ASPNETCORE_ENVIRONMENT=Production`. Aplicar los valores AD nuevos solo al completar el punto 6. No guardar secretos en appsettings del repositorio, archivos publicados compartidos ni web.config versionado.
 4. Configurar binding HTTPS y certificado válido. Si existe proxy, configurar de forma explícita sus hosts/redes de confianza y HTTPS antes de operar; la app no confía indiscriminadamente en cabeceras reenviadas.
@@ -205,7 +207,7 @@ La API de menú existente acepta `GET /api/menu-day/yyyy-MM-dd?regionalId=ID` co
 Antes de dar acceso nacional, verificar en homologación:
 
 - Dos regionales con menú/proveedor/precio/valoraciones diferentes; USER/ADMIN_DEP/ADMIN_REG no pueden leer ni modificar otra regional, aunque manipulen IDs/cookies. ADMIN_GEN puede alternar contexto.
-- ADMIN_REG no modifica proveedor, precios ni roles superiores. ADMIN_DEP recibe solo su reporte y conserva su ámbito departamental. Un departamento sin responsable se detecta y asigna explícitamente.
+- ADMIN_REG no modifica identidades, roles, departamentos, categorías/reglas, configuración, correos, branding ni proveedor/precios. ADMIN_DEP consulta cuentas y recibe solo su reporte. Verificar también que una suspensión regional no puede retirar una deshabilitación general y que AD/solicitudes manipuladas no reactivan cuentas bloqueadas. Un departamento sin responsable se detecta y asigna explícitamente.
 - Cambiar proveedor sin precio falla; con precio se guardan ambos y los históricos previos se conservan.
 - AD actual funciona; al activar el nuevo contrato, USER nuevo entra en la organización verificada sin solicitud, y los casos negativos del punto 6 permanecen bloqueados.
 - Reportes Excel/PDF, recordatorio y cierre usan la regional correcta; SendGrid entrega únicamente al buzón de prueba hasta autorizar producción.
@@ -221,7 +223,7 @@ dotnet ef migrations has-pending-model-changes --project src\Almuerzo.Web --cont
 
 Al crear nuevas migraciones, usar `--context AppDbContext --output-dir Data/Migrations` para SQLite y `--context SqlServerAppDbContext --output-dir Data/SqlServerMigrations` para SQL Server. Publicar de nuevo ASP.NET después de cualquier cambio web. Mantener seguimiento de dependencias, cuotas de correo, agotados de la cola, crecimiento de Reports, auditoría, respaldos y restauraciones.
 
-## Verificación realizada el 16 de octubre de 2026
+## Verificación histórica de v0.2.0 · 16 de octubre de 2026
 
 - Assets compilados y publicación Release generada sin errores; 74 pruebas correctas en SQLite y las mismas 74 en SQL Server LocalDB, sin pruebas omitidas.
 - Snapshots de ambos contextos sin cambios de modelo pendientes. La copia local de la base existente se transfirió a SQL Server, reconciliando todas las tablas y preservando el SQLite original. Se comprobó el arranque del paquete con esa base.
@@ -230,3 +232,11 @@ Al crear nuevas migraciones, usar `--context AppDbContext --output-dir Data/Migr
 - Paquete revisado sin bases, Excel, correos, almacenes privados ni secretos privados conocidos. Las pruebas automatizadas de SendGrid usan un handler simulado; no se enviaron correos externos.
 
 Estos resultados no validan las credenciales de SendGrid, la recepción real de mensajes, el contrato AD ampliado aún no entregado ni el servidor SQL de TI. Esos pasos requieren homologación institucional antes de habilitar producción.
+
+## Actualización v0.2.1
+
+Las migraciones añaden `RegionalBlocked=false` y marcadores persistentes de autoridad AD en regionales/departamentos, en ambos proveedores; conservan los estados generales y todos los históricos. Se aplican automáticamente al arrancar. Los INACTIVO existentes no se reclasifican ni se retiran. Aplicar la matriz [ACCESS-CONTROL.md](ACCESS-CONTROL.md) al homologar esta actualización, incluyendo rechazo de payloads manipulados, revalidación de sesión, independencia de los dos bloqueos y responsables sin cambios implícitos de departamento.
+
+La aplicación local del usuario permanece detenida después de este cambio; las comprobaciones visuales se realizan con datos sintéticos en un host temporal independiente. El contrato nuevo del AD y la entrega real de SendGrid siguen requiriendo homologación institucional.
+
+Verificación del 19 de octubre de 2026: 85 pruebas correctas en SQLite y las mismas 85 en SQL Server LocalDB; ambos snapshots sin cambios pendientes, assets compilados y publicación Release generada. La demo aislada respondió HTTP 200. Se intentó la captura visual, pero el visor integrado no logró conectar su webview; no se afirma una nueva validación visual completa de esta versión. Se cerraron ambos hosts al finalizar. Las pruebas usan datos sintéticos y no envían correos externos.

@@ -620,29 +620,18 @@
           <details v-if="isAdminGen" class="regional-catalog"><summary>Administrar regionales y códigos AD</summary>
             <div class="regional-list"><button v-for="region in regions" :key="region.id" @click="editRegion(region)">{{ region.nombre }} · {{ region.estado }}</button></div>
             <form @submit.prevent="saveRegion" class="regional-form">
-              <label>Nombre<input v-model="regionalForm.nombre" maxlength="150" required></label><label>Código regional AD<input v-model="regionalForm.directoryCode" maxlength="64"></label>
+              <label>Nombre<input v-model="regionalForm.nombre" maxlength="150" required></label><label>Código regional AD<input v-model="regionalForm.directoryCode" :readonly="regionalForm.directoryManaged" maxlength="64"></label>
               <label>Estado<select v-model="regionalForm.estado"><option>ACTIVO</option><option>INACTIVO</option></select></label>
-              <button type="submit" :disabled="regionalSaving">{{ regionalSaving ? 'Guardando…' : 'Guardar regional' }}</button><button type="button" @click="Object.assign(regionalForm, {id:'',nombre:'',directoryCode:'',estado:'ACTIVO'})">Nueva</button>
+              <button type="submit" :disabled="regionalSaving">{{ regionalSaving ? 'Guardando…' : 'Guardar regional' }}</button><button type="button" @click="Object.assign(regionalForm, {id:'',nombre:'',directoryCode:'',directoryManaged:false,estado:'ACTIVO'})">Nueva</button>
             </form><p v-if="regionalError" role="alert">{{ regionalError }}</p>
           </details>
 <!-- Navigation -->
-         <div class="flex gap-1 border-b border-gray-200 mb-6 overflow-x-auto no-scrollbar pb-1">
-            <button v-for="tab in ['USUARIOS', 'PEDIDOS', 'VALORACIONES']" :key="tab"
-               @click="adminState.tab = tab; if (tab === 'VALORACIONES') loadRatingsSummary();"
-               :class="['px-4 py-2 font-bold text-xs rounded-t-lg border-b-2 transition-all whitespace-nowrap flex items-center gap-1.5', adminState.tab === tab ? 'border-blue-600 text-blue-600 bg-blue-50/50' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50']">
-               <i v-if="tab === 'VALORACIONES'" class="fa-solid fa-star text-amber-500 text-[10px]"></i>
-               <span>{{ tab }}</span>
-            </button>
-            <template v-if="canManageRegion">
-               <button v-for="tab in ['DEPTOS', 'CONFIG', 'MENU', 'DIAS_LIBRES']" :key="tab"
-                  @click="adminState.tab = tab"
-                  :class="['px-4 py-2 font-bold text-xs rounded-t-lg border-b-2 transition-all whitespace-nowrap', adminState.tab === tab ? 'border-blue-600 text-blue-600 bg-blue-50/50' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50']">
-                  {{ tab === 'DIAS_LIBRES' ? 'CALENDARIO' : tab }}
-               </button>
-            </template>
-         </div>
+          <p v-if="!isAdminGen" class="text-xs text-gray-500 mb-4">{{ canManageRegion ? 'Gestión operativa de tu regional. Identidades, roles, departamentos y configuración institucional son de solo lectura.' : 'Consulta y gestión de pedidos de tu departamento. La identidad y los accesos los administra ADMIN_GEN.' }}</p>
+          <div class="flex gap-1 border-b border-gray-200 mb-6 overflow-x-auto no-scrollbar pb-1">
+             <button v-for="tab in adminTabs" :key="tab" @click="adminState.tab = tab; if (tab === 'VALORACIONES') loadRatingsSummary();" :class="['px-4 py-2 font-bold text-xs rounded-t-lg border-b-2 transition-all whitespace-nowrap', adminState.tab === tab ? 'border-blue-600 text-blue-600 bg-blue-50/50' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50']">{{ tab === 'DIAS_LIBRES' ? 'CALENDARIO' : tab }}</button>
+          </div>
 
-         <!-- Users Module -->
+<!-- Users Module -->
          <div v-if="adminState.tab === 'USUARIOS'" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
             <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-4">
                <div class="flex items-center gap-2 w-full md:w-auto">
@@ -652,14 +641,12 @@
                     <button v-if="adminState.filters.users.search" @click="clearFilters('users')" class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
                  </div>
                </div>
-               <button @click="openUserModal()" class="bg-gray-900 hover:bg-gray-800 text-white text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-2 shrink-0">
-                 <i class="fa-solid fa-plus"></i> Usuario
-               </button>
-            </div>
+                <p class="text-xs text-gray-500">Cuentas incorporadas por AD o importación. Los datos de identidad son de solo lectura.</p>
+             </div>
             <div class="overflow-x-auto">
                <table class="w-full text-sm text-left">
                   <thead class="bg-gray-50 text-gray-500 font-bold uppercase text-xs">
-                     <tr><th class="p-3 rounded-l">Nombre</th><th class="p-3">Código</th><th class="p-3">Correo</th><th class="p-3">Depto</th><th class="p-3">Rol</th><th class="p-3">Estado</th><th class="p-3 rounded-r">Acciones</th></tr>
+                     <tr><th class="p-3 rounded-l">Nombre</th><th class="p-3">Código</th><th class="p-3">Correo</th><th class="p-3">Depto</th><th class="p-3">Rol</th><th class="p-3">Estado</th><th v-if="canManageRegion" class="p-3 rounded-r">Acciones</th></tr>
                   </thead>
                   <tbody class="divide-y divide-gray-100">
                      <tr v-for="u in filteredUsers" :key="u.email" class="hover:bg-gray-50">
@@ -669,13 +656,14 @@
                         <td class="p-3"><span class="bg-gray-100 px-2 py-1 rounded text-xs font-semibold text-gray-600">{{ u.departamento }}</span></td>
                         <td class="p-3"><span class="bg-blue-50 text-blue-600 px-2 py-1 rounded text-xs font-bold">{{ u.rol }}</span></td>
                         <td class="p-3">
-                           <span :class="['px-2 py-1 rounded-full text-xs font-bold', u.estado === 'ACTIVO' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700']">{{ u.estado }}</span>
+                           <span :class="['px-2 py-1 rounded-full text-xs font-bold', u.estado === 'ACTIVO' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700']">{{ u.estado }}</span><span v-if="u.regionalBlocked" class="block text-[10px] font-bold text-amber-700 mt-1">SUSPENDIDO EN LA REGIONAL</span>
                         </td>
-                        <td class="p-3 flex gap-2">
-                           <button @click="openUserModal(u)" class="text-blue-600 hover:bg-blue-50 p-1.5 rounded" title="Editar"><i class="fa-solid fa-pen"></i></button>
-                           <button @click="toggleUserStatus(u)" :class="[u.estado==='ACTIVO'?'text-red-500 hover:bg-red-50':'text-green-600 hover:bg-green-50', 'p-1.5 rounded']" :title="u.estado==='ACTIVO'?'Desactivar':'Activar'">
-                              <i :class="['fa-solid', u.estado==='ACTIVO' ? 'fa-ban' : 'fa-check']"></i>
-                           </button>
+                        <td v-if="canManageRegion" class="p-3">
+                           <div class="flex gap-2 items-center">
+                             <button v-if="isAdminGen" @click="openUserModal(u)" class="text-blue-600 hover:bg-blue-50 p-1.5 rounded" title="Gestionar acceso"><i class="fa-solid fa-user-shield"></i></button>
+                             <button v-if="isAdminGen" @click="toggleUserStatus(u)" :disabled="!!userStatusSaving" class="p-1.5 rounded text-red-600 disabled:opacity-50" :title="u.estado==='ACTIVO'?'Deshabilitar acceso general':'Habilitar acceso general'"><i :class="userStatusSaving===u.email ? 'fa-solid fa-spinner fa-spin' : (u.estado==='ACTIVO'?'fa-solid fa-ban':'fa-solid fa-check')"></i></button>
+                             <button v-if="canBlockUser(u)" @click="toggleRegionalBlock(u)" :disabled="!!regionalBlockSaving" class="p-1.5 rounded text-amber-700 hover:bg-amber-50 disabled:opacity-50" :title="u.regionalBlocked?'Retirar suspensión regional':'Suspender acceso regional'"><i :class="regionalBlockSaving===u.email ? 'fa-solid fa-spinner fa-spin' : (u.regionalBlocked?'fa-solid fa-unlock':'fa-solid fa-lock')"></i></button>
+                           </div>
                         </td>
                      </tr>
                   </tbody>
@@ -879,14 +867,14 @@
          <div v-if="adminState.tab === 'DEPTOS'" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
             <div class="flex justify-between items-center mb-4">
                <h2 class="text-xl font-bold text-gray-900">Departamentos</h2>
-               <button @click="openDeptModal()" class="bg-gray-900 hover:bg-gray-800 text-white text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-2">
+               <button v-if="isAdminGen" @click="openDeptModal()" class="bg-gray-900 hover:bg-gray-800 text-white text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-2">
                  <i class="fa-solid fa-plus"></i> Depto
                </button>
             </div>
             <div class="overflow-x-auto">
                <table class="w-full text-sm text-left">
                   <thead class="bg-gray-50 text-gray-500 font-bold uppercase text-xs">
-                     <tr><th class="p-3 rounded-l">Nombre</th><th class="p-3">Admins (Emails)</th><th class="p-3">Estado</th><th class="p-3 rounded-r">Acciones</th></tr>
+                     <tr><th class="p-3 rounded-l">Nombre</th><th class="p-3">Admins (Emails)</th><th class="p-3">Estado</th><th v-if="canManageRegion" class="p-3 rounded-r">Acciones</th></tr>
                   </thead>
                   <tbody class="divide-y divide-gray-100">
                      <tr v-for="d in adminState.departments" :key="d.id" class="hover:bg-gray-50">
@@ -894,8 +882,8 @@
                         <td class="p-3 text-gray-500 text-xs truncate max-w-xs"><span :class="!d.admins ? 'text-amber-700 font-semibold' : ''">{{ d.admins || 'Sin responsable asignado' }}</span></td>
                         <td class="p-3"><span :class="['px-2 py-1 rounded-full text-xs font-bold', d.estado === 'ACTIVO' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700']">{{ d.estado }}</span></td>
                         <td class="p-3 flex gap-2">
-                           <button @click="openDeptModal(d)" class="text-blue-600 hover:bg-blue-50 p-1.5 rounded" title="Editar"><i class="fa-solid fa-pen"></i></button>
-                           <button @click="deleteDept(d.id)" class="text-red-500 hover:bg-red-50 p-1.5 rounded" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                           <button v-if="isAdminGen" @click="openDeptModal(d)" class="text-blue-600 hover:bg-blue-50 p-1.5 rounded" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                           <button v-if="isAdminGen" @click="deleteDept(d.id)" class="text-red-500 hover:bg-red-50 p-1.5 rounded" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
                         </td>
                      </tr>
                   </tbody>
@@ -904,13 +892,13 @@
          </div>
 
          <!-- Config Module -->
-         <div v-if="adminState.tab === 'CONFIG'" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+         <div v-if="canManageRegion && ['CONFIG','AVISOS'].includes(adminState.tab)" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
             <div v-if="!canManageRegion" class="text-center py-10 text-gray-400">
                <i class="fa-solid fa-lock text-3xl mb-3"></i>
                <p>Solo el Administrador General puede editar la configuración.</p>
             </div>
             <div v-else>
-               <div class="flex justify-between items-center mb-6">
+               <div v-if="isAdminGen" class="flex justify-between items-center mb-6">
                   <h2 class="text-xl font-bold text-gray-900">Variables del Sistema</h2>
                   <div class="flex gap-2">
                      <button v-if="adminState.configEdit" @click="adminState.configEdit = false" class="text-gray-500 hover:bg-gray-100 text-xs font-bold py-2 px-4 rounded-lg" :disabled="adminState.loading">Cancelar</button>
@@ -921,7 +909,7 @@
                   </div>
                </div>
 
-               <div v-if="isTestEmailMode" class="mb-6 border border-amber-200 bg-amber-50 rounded-xl p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+               <div v-if="isAdminGen && isTestEmailMode" class="mb-6 border border-amber-200 bg-amber-50 rounded-xl p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                   <div>
                      <div class="text-xs font-black text-amber-700 uppercase tracking-wide">Modo prueba activo</div>
                      <div class="text-sm text-amber-900 font-semibold break-all">Destino: {{ adminState.config['TEST_EMAIL_DEST'] || 'Sin configurar' }}</div>
@@ -936,7 +924,7 @@
                   <div class="p-4 bg-indigo-50/70 border border-indigo-100 rounded-xl flex items-center justify-between gap-3">
                      <div>
                         <div class="text-xs font-bold text-indigo-900 flex items-center gap-1.5">
-                           <i class="fa-solid fa-bullhorn text-indigo-600"></i> Aviso General Unificado
+                           <i class="fa-solid fa-bullhorn text-indigo-600"></i> Aviso de la regional
                         </div>
                         <div class="text-[11px] text-indigo-700 mt-0.5">
                            Estado: <span class="font-bold">{{ announcementConfig.enabled ? 'Activo' : 'Inactivo' }}</span> ({{ (announcementConfig.slides || []).length }} slides)
@@ -947,7 +935,7 @@
                      </button>
                   </div>
 
-                  <div class="p-4 bg-amber-50/70 border border-amber-100 rounded-xl flex items-center justify-between gap-3">
+                  <div v-if="isAdminGen" class="p-4 bg-amber-50/70 border border-amber-100 rounded-xl flex items-center justify-between gap-3">
                      <div>
                         <div class="text-xs font-bold text-amber-900 flex items-center gap-1.5">
                            <i class="fa-solid fa-award text-amber-600"></i> Proveedor de Alimentos
@@ -962,7 +950,7 @@
                   </div>
                </div>
 
-                <section v-if="canManageRegion" class="mb-6 p-5 bg-blue-50/50 border border-blue-100 rounded-xl" aria-labelledby="branding-heading">
+                <section v-if="isAdminGen" class="mb-6 p-5 bg-blue-50/50 border border-blue-100 rounded-xl" aria-labelledby="branding-heading">
                   <h3 id="branding-heading" class="font-bold text-sm text-gray-900 mb-4"><i class="fa-solid fa-palette text-blue-600 mr-2" aria-hidden="true"></i>Identidad visual y pie de página</h3>
                   <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
                      <div class="md:col-span-2"><label for="branding-footer" class="block text-xs font-semibold text-gray-600 mb-2">Texto del pie de página</label><textarea id="branding-footer" v-model="brandingForm.footerText" maxlength="200" rows="2" :disabled="brandingSaving" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white"></textarea></div>
@@ -973,7 +961,7 @@
                </section>
 
                <!-- Customized Inputs for specific keys -->
-               <div class="grid gap-4 md:grid-cols-2">
+               <div v-if="isAdminGen" class="grid gap-4 md:grid-cols-2">
                   <div v-for="item in adminState.configList" :key="item.key" v-show="item.key !== 'RESPONSIBLES_EMAILS_JSON' && item.key !== 'MEAL_PRICE_HISTORY_JSON'" class="bg-gray-50 p-4 rounded-xl border border-gray-200">
                      <div class="flex justify-between items-start mb-2">
                         <div class="text-xs font-bold text-gray-500 uppercase tracking-wider">{{ item.key }}</div>
@@ -993,7 +981,7 @@
                </div>
 
                <!-- Responsibles Editor -->
-               <div class="mt-8">
+               <div v-if="isAdminGen" class="mt-8">
                   <h3 class="font-bold text-sm text-gray-900 mb-4 flex items-center gap-2">
                      <i class="fa-solid fa-envelope-circle-check text-gray-400"></i> Responsables (Resumen Diario)
                   </h3>
@@ -1033,7 +1021,7 @@
                   </div>
                </div>
                <div class="flex flex-wrap gap-2">
-                  <button @click="openCategoryManager" class="bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-2 shadow-sm transition-colors">
+                  <button v-if="isAdminGen" @click="openCategoryManager" class="bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-2 shadow-sm transition-colors">
                      <i class="fa-solid fa-sliders"></i> Configurar categorías
                   </button>
                   <button @click="openMenuImportModal" class="bg-green-600 hover:bg-green-700 text-white text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-2 shadow-sm transition-colors">
@@ -1092,7 +1080,7 @@
             <div class="overflow-x-auto">
                <table class="w-full text-sm text-left">
                   <thead class="bg-gray-50 text-gray-500 font-bold uppercase text-xs">
-                     <tr><th class="p-3 rounded-l">Fecha</th><th class="p-3">Motivo</th><th class="p-3 rounded-r">Acciones</th></tr>
+                     <tr><th class="p-3 rounded-l">Fecha</th><th class="p-3">Motivo</th><th v-if="canManageRegion" class="p-3 rounded-r">Acciones</th></tr>
                   </thead>
                   <tbody class="divide-y divide-gray-100">
                      <tr v-for="h in adminState.holidays" :key="h.date" class="hover:bg-gray-50">
@@ -1116,17 +1104,20 @@
     </main>
 
     <!-- Admin User Modal -->
-    <div v-if="adminState.userModal.open" class="fixed inset-0 z-[70] flex items-center justify-center p-4">
+    <div v-if="isAdminGen && adminState.userModal.open" class="fixed inset-0 z-[70] flex items-center justify-center p-4">
        <div class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm" @click="adminState.userModal.open = false"></div>
        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md relative overflow-hidden animate-fade-in-up flex flex-col max-h-[90dvh]">
           <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 shrink-0">
-             <h3 class="font-bold text-lg text-gray-800">{{ adminState.userModal.isNew ? 'Nuevo Usuario' : 'Editar Usuario' }}</h3>
+             <h3 class="font-bold text-lg text-gray-800">Gestionar acceso</h3>
              <button @click="adminState.userModal.open = false" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
           </div>
           <div class="p-6 space-y-4 min-h-0 overflow-y-auto">
+             <p class="text-xs text-blue-800 bg-blue-50 rounded-lg p-3">Nombre y código se actualizan desde AD. El departamento verificado tampoco puede modificarse aquí. Solo se administran los permisos y la habilitación local.</p>
+             <p v-if="adminState.userModal.data.regionalBlocked" class="text-xs text-amber-800">Existe una suspensión regional. Habilitar el estado general no la retira.</p>
+             <label class="block text-xs font-bold text-gray-500 uppercase">Estado general<select v-model="adminState.userModal.data.estado" class="mt-1 w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm"><option>ACTIVO</option><option>PENDIENTE</option><option>INACTIVO</option></select></label>
              <div>
                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Correo</label>
-                <input v-model="adminState.userModal.data.email" :disabled="!adminState.userModal.isNew" type="email" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none disabled:opacity-50">
+                <input v-model="adminState.userModal.data.email" readonly type="email" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none disabled:opacity-50">
              </div>
              <div v-if="adminState.userModal.data.directoryAccount" class="bg-blue-50 border border-blue-100 rounded-lg p-3">
                 <p class="text-xs font-semibold text-blue-800">Cuenta AD vinculada</p><p class="text-xs text-blue-700 break-all mt-1">{{ adminState.userModal.data.directoryAccount }}</p>
@@ -1134,20 +1125,20 @@
              </div>
              <div>
                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Nombre</label>
-                <input v-model="adminState.userModal.data.nombre" :readonly="!!adminState.userModal.data.directoryAccount" type="text" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <input v-model="adminState.userModal.data.nombre" readonly type="text" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
              </div>
              <div>
                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Código de Empleado</label>
-                <input v-model="adminState.userModal.data.codigo" :readonly="!!adminState.userModal.data.directoryAccount" type="text" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="4 dígitos (ej. 5445)" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <input v-model="adminState.userModal.data.codigo" readonly type="text" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="4 dígitos (ej. 5445)" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
              </div>
              <div>
                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Departamento</label>
-                <select v-if="canManageRegion" :disabled="adminState.userModal.data.directoryManaged" v-model="adminState.userModal.data.departamento" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <select v-if="isAdminGen" :disabled="organizationManaged || adminState.userModal.data.directoryManaged" v-model="adminState.userModal.data.departamento" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                    <option v-for="d in adminState.departments" :key="d.id" :value="d.id">{{ d.nombre }}</option>
                 </select>
                 <input v-else v-model="adminState.userModal.data.departamento" disabled type="text" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none opacity-50">
              </div>
-              <div v-if="canManageRegion">
+              <div v-if="isAdminGen">
                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Rol</label>
                 <select v-model="adminState.userModal.data.rol" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                    <option value="USER">Usuario</option>
@@ -1168,7 +1159,7 @@
     </div>
 
     <!-- Dept Modal -->
-    <div v-if="adminState.deptModal.open" class="fixed inset-0 z-[70] flex items-center justify-center p-4">
+    <div v-if="isAdminGen && adminState.deptModal.open" class="fixed inset-0 z-[70] flex items-center justify-center p-4">
        <div class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm" @click="adminState.deptModal.open = false"></div>
        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md relative overflow-hidden animate-fade-in-up">
           <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
@@ -1178,11 +1169,11 @@
           <div class="p-6 space-y-4">
              <div>
                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Nombre</label>
-                 <input v-model="adminState.deptModal.data.nombre" type="text" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                 <input :readonly="adminState.deptModal.data.directoryManaged" v-model="adminState.deptModal.data.nombre" type="text" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
               </div>
               <div>
                  <label for="dept-directory-code" class="block text-xs font-bold text-gray-500 uppercase mb-1">Código de departamento AD</label>
-                 <input id="dept-directory-code" v-model="adminState.deptModal.data.directoryCode" maxlength="64" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm">
+                 <input :readonly="adminState.deptModal.data.directoryManaged" id="dept-directory-code" v-model="adminState.deptModal.data.directoryCode" maxlength="64" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm">
              </div>
              <div>
                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Admins</label>
@@ -1203,12 +1194,7 @@
                    </div>
                 </div>
 
-                <div v-if="deptMoveHint.length > 0" class="mt-2 p-2 bg-amber-50 border border-amber-100 rounded-lg animate-fade-in">
-                   <p class="text-[10px] font-bold text-amber-700 mb-1 flex items-center gap-1"><i class="fa-solid fa-triangle-exclamation"></i> Atención: Usuarios que cambiarán de depto</p>
-                   <ul class="text-[10px] text-amber-600 list-disc list-inside">
-                      <li v-for="msg in deptMoveHint" :key="msg">{{ msg }}</li>
-                   </ul>
-                </div>
+                <p class="mt-2 text-xs text-gray-500">Solo colaboradores habilitados de este departamento. Asignar un responsable no cambia su adscripción. Los datos organizativos verificados se corrigen en AD.</p>
              </div>
              <div>
                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Estado</label>

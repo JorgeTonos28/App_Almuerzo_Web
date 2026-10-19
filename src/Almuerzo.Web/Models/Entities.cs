@@ -15,6 +15,7 @@ public static class Roles
 public interface IRegionalEntity { string RegionId { get; set; } }
 public class Region
 {
+    public bool DirectoryManaged { get; set; }
     public const string LegacyId = "central";
     public string Id { get; set; } = Guid.NewGuid().ToString("N");
     public string Name { get; set; } = "";
@@ -24,6 +25,7 @@ public class Region
 
 public class Department : IRegionalEntity
 {
+    public bool DirectoryManaged { get; set; }
     public string? DirectoryCode { get; set; }
     public string RegionId { get; set; } = Region.LegacyId;
     public string Id { get; set; } = Guid.NewGuid().ToString();
@@ -36,6 +38,7 @@ public class Department : IRegionalEntity
 public class AppUser : IRegionalEntity
 {
     public bool DirectoryManaged { get; set; }
+    public bool RegionalBlocked { get; set; }
     public string RegionId { get; set; } = Region.LegacyId;
     public string Email { get; set; } = "";
     public string Name { get; set; } = "";
