@@ -284,808 +284,815 @@ const _hoisted_154 = {
 const _hoisted_155 = { class: "regional-list" }
 const _hoisted_156 = ["onClick"]
 const _hoisted_157 = ["onSubmit"]
-const _hoisted_158 = ["onUpdate:modelValue"]
-const _hoisted_159 = ["onUpdate:modelValue", "readonly"]
-const _hoisted_160 = ["onUpdate:modelValue"]
-const _hoisted_161 = ["disabled"]
-const _hoisted_162 = ["onClick"]
-const _hoisted_163 = {
+const _hoisted_158 = ["onUpdate:modelValue", "readonly"]
+const _hoisted_159 = ["onUpdate:modelValue"]
+const _hoisted_160 = { key: 0 }
+const _hoisted_161 = ["onUpdate:modelValue", "readonly"]
+const _hoisted_162 = ["onUpdate:modelValue"]
+const _hoisted_163 = ["disabled"]
+const _hoisted_164 = ["onClick"]
+const _hoisted_165 = {
   key: 0,
   role: "alert"
 }
-const _hoisted_164 = {
+const _hoisted_166 = {
   key: 2,
   class: "text-xs text-gray-500 mb-4"
 }
-const _hoisted_165 = { class: "flex gap-1 border-b border-gray-200 mb-6 overflow-x-auto no-scrollbar pb-1" }
-const _hoisted_166 = ["onClick"]
-const _hoisted_167 = {
+const _hoisted_167 = { class: "flex gap-1 border-b border-gray-200 mb-6 overflow-x-auto no-scrollbar pb-1" }
+const _hoisted_168 = ["onClick"]
+const _hoisted_169 = {
   key: 3,
   class: "bg-white rounded-2xl shadow-sm border border-gray-100 p-6"
 }
-const _hoisted_168 = { class: "flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-4" }
-const _hoisted_169 = { class: "flex items-center gap-2 w-full md:w-auto" }
-const _hoisted_170 = { class: "relative w-full md:w-64" }
-const _hoisted_171 = ["onUpdate:modelValue"]
-const _hoisted_172 = ["onClick"]
-const _hoisted_173 = { class: "overflow-x-auto" }
-const _hoisted_174 = { class: "w-full text-sm text-left" }
-const _hoisted_175 = { class: "bg-gray-50 text-gray-500 font-bold uppercase text-xs" }
-const _hoisted_176 = {
+const _hoisted_170 = { class: "flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-4" }
+const _hoisted_171 = { class: "flex items-center gap-2 w-full md:w-auto" }
+const _hoisted_172 = { class: "relative w-full md:w-64" }
+const _hoisted_173 = ["onUpdate:modelValue"]
+const _hoisted_174 = ["onClick"]
+const _hoisted_175 = { class: "overflow-x-auto" }
+const _hoisted_176 = { class: "w-full text-sm text-left" }
+const _hoisted_177 = { class: "bg-gray-50 text-gray-500 font-bold uppercase text-xs" }
+const _hoisted_178 = {
   key: 0,
   class: "p-3 rounded-r"
 }
-const _hoisted_177 = { class: "divide-y divide-gray-100" }
-const _hoisted_178 = { class: "p-3 font-medium text-gray-900" }
-const _hoisted_179 = { class: "p-3 text-gray-600 font-mono text-xs" }
-const _hoisted_180 = { class: "p-3 text-gray-500" }
-const _hoisted_181 = { class: "p-3" }
-const _hoisted_182 = { class: "bg-gray-100 px-2 py-1 rounded text-xs font-semibold text-gray-600" }
+const _hoisted_179 = { class: "divide-y divide-gray-100" }
+const _hoisted_180 = { class: "p-3 font-medium text-gray-900" }
+const _hoisted_181 = { class: "p-3 text-gray-600 font-mono text-xs" }
+const _hoisted_182 = { class: "p-3 text-gray-500" }
 const _hoisted_183 = { class: "p-3" }
-const _hoisted_184 = { class: "bg-blue-50 text-blue-600 px-2 py-1 rounded text-xs font-bold" }
+const _hoisted_184 = { class: "bg-gray-100 px-2 py-1 rounded text-xs font-semibold text-gray-600" }
 const _hoisted_185 = { class: "p-3" }
-const _hoisted_186 = {
+const _hoisted_186 = { class: "bg-blue-50 text-blue-600 px-2 py-1 rounded text-xs font-bold" }
+const _hoisted_187 = { class: "p-3" }
+const _hoisted_188 = {
   key: 0,
   class: "block text-[10px] font-bold text-amber-700 mt-1"
 }
-const _hoisted_187 = {
+const _hoisted_189 = {
   key: 0,
   class: "p-3"
 }
-const _hoisted_188 = { class: "flex gap-2 items-center" }
-const _hoisted_189 = ["onClick"]
-const _hoisted_190 = ["onClick", "disabled", "title"]
-const _hoisted_191 = ["onClick", "disabled", "title"]
-const _hoisted_192 = {
+const _hoisted_190 = { class: "flex gap-2 items-center" }
+const _hoisted_191 = ["onClick"]
+const _hoisted_192 = ["onClick", "disabled", "title"]
+const _hoisted_193 = ["onClick", "disabled", "title"]
+const _hoisted_194 = {
   key: 4,
   class: "bg-white rounded-2xl shadow-sm border border-gray-100 p-6"
 }
-const _hoisted_193 = { class: "flex justify-between items-center mb-4" }
-const _hoisted_194 = { class: "flex gap-2" }
-const _hoisted_195 = ["onClick"]
-const _hoisted_196 = ["onClick"]
-const _hoisted_197 = {
+const _hoisted_195 = { class: "flex justify-between items-center mb-4" }
+const _hoisted_196 = { class: "flex gap-2" }
+const _hoisted_197 = ["onClick"]
+const _hoisted_198 = ["onClick"]
+const _hoisted_199 = {
   key: 0,
   class: "bg-gray-50 p-4 rounded-xl border border-gray-200 mb-4 grid grid-cols-1 md:grid-cols-4 gap-3 animate-fade-in"
 }
-const _hoisted_198 = ["onUpdate:modelValue"]
-const _hoisted_199 = ["onUpdate:modelValue"]
 const _hoisted_200 = ["onUpdate:modelValue"]
 const _hoisted_201 = ["onUpdate:modelValue"]
-const _hoisted_202 = { class: "overflow-x-auto" }
-const _hoisted_203 = { class: "w-full text-sm text-left" }
-const _hoisted_204 = { class: "p-3 whitespace-nowrap font-medium text-gray-900" }
-const _hoisted_205 = { class: "p-3" }
-const _hoisted_206 = { class: "font-bold text-gray-900" }
-const _hoisted_207 = { class: "text-xs text-gray-400" }
-const _hoisted_208 = { class: "p-3 text-gray-600 text-xs font-medium" }
-const _hoisted_209 = { class: "p-3 text-gray-600" }
-const _hoisted_210 = { class: "p-3 text-xs text-gray-400" }
-const _hoisted_211 = { class: "p-3" }
-const _hoisted_212 = { class: "bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs font-bold" }
+const _hoisted_202 = ["onUpdate:modelValue"]
+const _hoisted_203 = ["onUpdate:modelValue"]
+const _hoisted_204 = { class: "overflow-x-auto" }
+const _hoisted_205 = { class: "w-full text-sm text-left" }
+const _hoisted_206 = { class: "p-3 whitespace-nowrap font-medium text-gray-900" }
+const _hoisted_207 = { class: "p-3" }
+const _hoisted_208 = { class: "font-bold text-gray-900" }
+const _hoisted_209 = { class: "text-xs text-gray-400" }
+const _hoisted_210 = { class: "p-3 text-gray-600 text-xs font-medium" }
+const _hoisted_211 = { class: "p-3 text-gray-600" }
+const _hoisted_212 = { class: "p-3 text-xs text-gray-400" }
 const _hoisted_213 = { class: "p-3" }
-const _hoisted_214 = ["onClick"]
-const _hoisted_215 = {
+const _hoisted_214 = { class: "bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs font-bold" }
+const _hoisted_215 = { class: "p-3" }
+const _hoisted_216 = ["onClick"]
+const _hoisted_217 = {
   key: 5,
   class: "space-y-6"
 }
-const _hoisted_216 = { class: "flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm" }
-const _hoisted_217 = { class: "flex items-center gap-2" }
-const _hoisted_218 = ["onClick", "disabled"]
-const _hoisted_219 = ["onClick"]
-const _hoisted_220 = { class: "grid grid-cols-1 lg:grid-cols-2 gap-6" }
-const _hoisted_221 = { class: "bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4" }
-const _hoisted_222 = { class: "flex items-start justify-between" }
-const _hoisted_223 = { class: "text-lg font-bold text-gray-900 mt-2" }
-const _hoisted_224 = { class: "text-xs text-gray-400" }
-const _hoisted_225 = { class: "text-right" }
-const _hoisted_226 = { class: "text-3xl font-black text-gray-900 flex items-center justify-end gap-1" }
-const _hoisted_227 = { class: "text-xs text-gray-500 font-medium" }
-const _hoisted_228 = { class: "space-y-1.5 pt-2 border-t border-gray-50" }
-const _hoisted_229 = { class: "w-7 font-bold text-gray-600" }
-const _hoisted_230 = { class: "flex-1 bg-gray-100 h-2 rounded-full overflow-hidden" }
-const _hoisted_231 = { class: "w-8 text-right font-medium text-gray-400" }
-const _hoisted_232 = { class: "bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4" }
-const _hoisted_233 = { class: "flex items-start justify-between" }
-const _hoisted_234 = { class: "text-right" }
-const _hoisted_235 = { class: "text-3xl font-black text-gray-900 flex items-center justify-end gap-1" }
-const _hoisted_236 = { class: "text-xs text-gray-500 font-medium" }
-const _hoisted_237 = { class: "space-y-1.5 pt-2 border-t border-gray-50" }
-const _hoisted_238 = { class: "w-7 font-bold text-gray-600" }
-const _hoisted_239 = { class: "flex-1 bg-gray-100 h-2 rounded-full overflow-hidden" }
-const _hoisted_240 = { class: "w-8 text-right font-medium text-gray-400" }
-const _hoisted_241 = { class: "grid grid-cols-1 lg:grid-cols-2 gap-6" }
-const _hoisted_242 = { class: "bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4" }
-const _hoisted_243 = {
+const _hoisted_218 = { class: "flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm" }
+const _hoisted_219 = { class: "flex items-center gap-2" }
+const _hoisted_220 = ["onClick", "disabled"]
+const _hoisted_221 = ["onClick"]
+const _hoisted_222 = { class: "grid grid-cols-1 lg:grid-cols-2 gap-6" }
+const _hoisted_223 = { class: "bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4" }
+const _hoisted_224 = { class: "flex items-start justify-between" }
+const _hoisted_225 = { class: "text-lg font-bold text-gray-900 mt-2" }
+const _hoisted_226 = { class: "text-xs text-gray-400" }
+const _hoisted_227 = { class: "text-right" }
+const _hoisted_228 = { class: "text-3xl font-black text-gray-900 flex items-center justify-end gap-1" }
+const _hoisted_229 = { class: "text-xs text-gray-500 font-medium" }
+const _hoisted_230 = { class: "space-y-1.5 pt-2 border-t border-gray-50" }
+const _hoisted_231 = { class: "w-7 font-bold text-gray-600" }
+const _hoisted_232 = { class: "flex-1 bg-gray-100 h-2 rounded-full overflow-hidden" }
+const _hoisted_233 = { class: "w-8 text-right font-medium text-gray-400" }
+const _hoisted_234 = { class: "bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4" }
+const _hoisted_235 = { class: "flex items-start justify-between" }
+const _hoisted_236 = { class: "text-right" }
+const _hoisted_237 = { class: "text-3xl font-black text-gray-900 flex items-center justify-end gap-1" }
+const _hoisted_238 = { class: "text-xs text-gray-500 font-medium" }
+const _hoisted_239 = { class: "space-y-1.5 pt-2 border-t border-gray-50" }
+const _hoisted_240 = { class: "w-7 font-bold text-gray-600" }
+const _hoisted_241 = { class: "flex-1 bg-gray-100 h-2 rounded-full overflow-hidden" }
+const _hoisted_242 = { class: "w-8 text-right font-medium text-gray-400" }
+const _hoisted_243 = { class: "grid grid-cols-1 lg:grid-cols-2 gap-6" }
+const _hoisted_244 = { class: "bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4" }
+const _hoisted_245 = {
   key: 0,
   class: "text-center py-8 text-gray-400 text-xs"
 }
-const _hoisted_244 = {
+const _hoisted_246 = {
   key: 1,
   class: "space-y-3 max-h-96 overflow-y-auto pr-1"
 }
-const _hoisted_245 = { class: "flex justify-between items-center" }
-const _hoisted_246 = { class: "font-bold text-gray-800 flex items-center gap-2" }
-const _hoisted_247 = {
+const _hoisted_247 = { class: "flex justify-between items-center" }
+const _hoisted_248 = { class: "font-bold text-gray-800 flex items-center gap-2" }
+const _hoisted_249 = {
   key: 0,
   class: "text-[10px] text-gray-400 font-normal"
 }
-const _hoisted_248 = { class: "flex text-amber-400 text-xs" }
-const _hoisted_249 = {
+const _hoisted_250 = { class: "flex text-amber-400 text-xs" }
+const _hoisted_251 = {
   key: 0,
   class: "text-gray-600 italic font-normal whitespace-pre-line"
 }
-const _hoisted_250 = { class: "text-[10px] text-gray-400 flex justify-between" }
-const _hoisted_251 = { class: "bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4" }
-const _hoisted_252 = {
+const _hoisted_252 = { class: "text-[10px] text-gray-400 flex justify-between" }
+const _hoisted_253 = { class: "bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4" }
+const _hoisted_254 = {
   key: 0,
   class: "text-center py-8 text-gray-400 text-xs"
 }
-const _hoisted_253 = {
+const _hoisted_255 = {
   key: 1,
   class: "space-y-3 max-h-96 overflow-y-auto pr-1"
 }
-const _hoisted_254 = { class: "flex justify-between items-center" }
-const _hoisted_255 = { class: "font-bold text-gray-800 flex items-center gap-2" }
-const _hoisted_256 = { class: "text-[10px] text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded font-bold" }
-const _hoisted_257 = { class: "flex text-amber-400 text-xs" }
-const _hoisted_258 = {
+const _hoisted_256 = { class: "flex justify-between items-center" }
+const _hoisted_257 = { class: "font-bold text-gray-800 flex items-center gap-2" }
+const _hoisted_258 = { class: "text-[10px] text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded font-bold" }
+const _hoisted_259 = { class: "flex text-amber-400 text-xs" }
+const _hoisted_260 = {
   key: 0,
   class: "text-[11px] text-gray-500"
 }
-const _hoisted_259 = {
+const _hoisted_261 = {
   key: 1,
   class: "text-gray-600 italic font-normal whitespace-pre-line"
 }
-const _hoisted_260 = {
+const _hoisted_262 = {
   key: 6,
   class: "bg-white rounded-2xl shadow-sm border border-gray-100 p-6"
 }
-const _hoisted_261 = { class: "flex justify-between items-center mb-4" }
-const _hoisted_262 = ["onClick"]
-const _hoisted_263 = { class: "overflow-x-auto" }
-const _hoisted_264 = { class: "w-full text-sm text-left" }
-const _hoisted_265 = { class: "bg-gray-50 text-gray-500 font-bold uppercase text-xs" }
-const _hoisted_266 = {
+const _hoisted_263 = { class: "flex justify-between items-center mb-4" }
+const _hoisted_264 = ["onClick"]
+const _hoisted_265 = { class: "overflow-x-auto" }
+const _hoisted_266 = { class: "w-full text-sm text-left" }
+const _hoisted_267 = { class: "bg-gray-50 text-gray-500 font-bold uppercase text-xs" }
+const _hoisted_268 = {
   key: 0,
   class: "p-3 rounded-r"
 }
-const _hoisted_267 = { class: "divide-y divide-gray-100" }
-const _hoisted_268 = { class: "p-3 font-medium text-gray-900" }
-const _hoisted_269 = { class: "p-3 text-gray-500 text-xs truncate max-w-xs" }
-const _hoisted_270 = { class: "p-3" }
-const _hoisted_271 = { class: "p-3 flex gap-2" }
-const _hoisted_272 = ["onClick"]
-const _hoisted_273 = ["onClick"]
-const _hoisted_274 = {
+const _hoisted_269 = { class: "divide-y divide-gray-100" }
+const _hoisted_270 = { class: "p-3 font-medium text-gray-900" }
+const _hoisted_271 = {
+  key: 0,
+  class: "block text-xs font-normal text-gray-500"
+}
+const _hoisted_272 = { class: "p-3 text-gray-500 text-xs truncate max-w-xs" }
+const _hoisted_273 = { class: "p-3" }
+const _hoisted_274 = { class: "p-3 flex gap-2" }
+const _hoisted_275 = ["onClick"]
+const _hoisted_276 = ["onClick"]
+const _hoisted_277 = {
   key: 7,
   class: "bg-white rounded-2xl shadow-sm border border-gray-100 p-6"
 }
-const _hoisted_275 = {
+const _hoisted_278 = {
   key: 0,
   class: "text-center py-10 text-gray-400"
 }
-const _hoisted_276 = { key: 1 }
-const _hoisted_277 = {
+const _hoisted_279 = { key: 1 }
+const _hoisted_280 = {
   key: 0,
   class: "flex justify-between items-center mb-6"
 }
-const _hoisted_278 = { class: "flex gap-2" }
-const _hoisted_279 = ["onClick", "disabled"]
-const _hoisted_280 = ["onClick", "disabled"]
-const _hoisted_281 = {
+const _hoisted_281 = { class: "flex gap-2" }
+const _hoisted_282 = ["onClick", "disabled"]
+const _hoisted_283 = ["onClick", "disabled"]
+const _hoisted_284 = {
   key: 0,
   class: "fa-solid fa-circle-notch fa-spin"
 }
-const _hoisted_282 = ["onClick"]
-const _hoisted_283 = {
+const _hoisted_285 = ["onClick"]
+const _hoisted_286 = {
   key: 1,
   class: "mb-6 border border-amber-200 bg-amber-50 rounded-xl p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3"
 }
-const _hoisted_284 = { class: "text-sm text-amber-900 font-semibold break-all" }
-const _hoisted_285 = ["onClick", "disabled"]
-const _hoisted_286 = { class: "mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4" }
-const _hoisted_287 = { class: "p-4 bg-indigo-50/70 border border-indigo-100 rounded-xl flex items-center justify-between gap-3" }
-const _hoisted_288 = { class: "text-[11px] text-indigo-700 mt-0.5" }
-const _hoisted_289 = { class: "font-bold" }
-const _hoisted_290 = ["onClick"]
-const _hoisted_291 = {
+const _hoisted_287 = { class: "text-sm text-amber-900 font-semibold break-all" }
+const _hoisted_288 = ["onClick", "disabled"]
+const _hoisted_289 = { class: "mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4" }
+const _hoisted_290 = { class: "p-4 bg-indigo-50/70 border border-indigo-100 rounded-xl flex items-center justify-between gap-3" }
+const _hoisted_291 = { class: "text-[11px] text-indigo-700 mt-0.5" }
+const _hoisted_292 = { class: "font-bold" }
+const _hoisted_293 = ["onClick"]
+const _hoisted_294 = {
   key: 0,
   class: "p-4 bg-amber-50/70 border border-amber-100 rounded-xl flex items-center justify-between gap-3"
 }
-const _hoisted_292 = { class: "text-[11px] text-amber-700 mt-0.5 truncate max-w-[180px]" }
-const _hoisted_293 = { class: "font-bold" }
-const _hoisted_294 = ["onClick"]
-const _hoisted_295 = {
+const _hoisted_295 = { class: "text-[11px] text-amber-700 mt-0.5 truncate max-w-[180px]" }
+const _hoisted_296 = { class: "font-bold" }
+const _hoisted_297 = ["onClick"]
+const _hoisted_298 = {
   key: 2,
   class: "mb-6 p-5 bg-blue-50/50 border border-blue-100 rounded-xl",
   "aria-labelledby": "branding-heading"
 }
-const _hoisted_296 = { class: "grid grid-cols-1 gap-5 md:grid-cols-2" }
-const _hoisted_297 = { class: "md:col-span-2" }
-const _hoisted_298 = ["onUpdate:modelValue", "disabled"]
-const _hoisted_299 = { class: "flex items-center gap-3 mb-3" }
-const _hoisted_300 = ["src"]
-const _hoisted_301 = ["onChange", "disabled"]
-const _hoisted_302 = { class: "flex items-center gap-2 text-xs text-gray-600 mt-3" }
-const _hoisted_303 = ["onUpdate:modelValue", "onChange", "disabled"]
-const _hoisted_304 = { class: "flex items-center gap-3 mb-3" }
-const _hoisted_305 = ["src"]
-const _hoisted_306 = ["onChange", "disabled"]
-const _hoisted_307 = { class: "flex items-center gap-2 text-xs text-gray-600 mt-3" }
-const _hoisted_308 = ["onUpdate:modelValue", "onChange", "disabled"]
-const _hoisted_309 = { class: "mt-4 flex flex-wrap gap-3 items-center" }
-const _hoisted_310 = ["onClick", "disabled"]
-const _hoisted_311 = {
+const _hoisted_299 = { class: "grid grid-cols-1 gap-5 md:grid-cols-2" }
+const _hoisted_300 = { class: "md:col-span-2" }
+const _hoisted_301 = ["onUpdate:modelValue", "disabled"]
+const _hoisted_302 = { class: "flex items-center gap-3 mb-3" }
+const _hoisted_303 = ["src"]
+const _hoisted_304 = ["onChange", "disabled"]
+const _hoisted_305 = { class: "flex items-center gap-2 text-xs text-gray-600 mt-3" }
+const _hoisted_306 = ["onUpdate:modelValue", "onChange", "disabled"]
+const _hoisted_307 = { class: "flex items-center gap-3 mb-3" }
+const _hoisted_308 = ["src"]
+const _hoisted_309 = ["onChange", "disabled"]
+const _hoisted_310 = { class: "flex items-center gap-2 text-xs text-gray-600 mt-3" }
+const _hoisted_311 = ["onUpdate:modelValue", "onChange", "disabled"]
+const _hoisted_312 = { class: "mt-4 flex flex-wrap gap-3 items-center" }
+const _hoisted_313 = ["onClick", "disabled"]
+const _hoisted_314 = {
   key: 0,
   role: "status",
   class: "text-xs text-gray-700"
 }
-const _hoisted_312 = {
+const _hoisted_315 = {
   key: 3,
   class: "grid gap-4 md:grid-cols-2"
 }
-const _hoisted_313 = { class: "flex justify-between items-start mb-2" }
-const _hoisted_314 = { class: "text-xs font-bold text-gray-500 uppercase tracking-wider" }
-const _hoisted_315 = { class: "text-[10px] text-gray-400 max-w-[50%] text-right leading-tight" }
-const _hoisted_316 = {
+const _hoisted_316 = { class: "flex justify-between items-start mb-2" }
+const _hoisted_317 = { class: "text-xs font-bold text-gray-500 uppercase tracking-wider" }
+const _hoisted_318 = { class: "text-[10px] text-gray-400 max-w-[50%] text-right leading-tight" }
+const _hoisted_319 = {
   key: 0,
   class: "font-mono text-sm text-gray-900 font-medium break-all bg-white px-3 py-2 rounded-lg border border-transparent"
 }
-const _hoisted_317 = { key: 1 }
-const _hoisted_318 = ["onUpdate:modelValue"]
-const _hoisted_319 = ["disabled", "onUpdate:modelValue"]
-const _hoisted_320 = ["onUpdate:modelValue"]
+const _hoisted_320 = { key: 1 }
 const _hoisted_321 = ["onUpdate:modelValue"]
-const _hoisted_322 = {
+const _hoisted_322 = ["disabled", "onUpdate:modelValue"]
+const _hoisted_323 = ["onUpdate:modelValue"]
+const _hoisted_324 = ["onUpdate:modelValue"]
+const _hoisted_325 = {
   key: 4,
   class: "mt-8"
 }
-const _hoisted_323 = { class: "bg-gray-50 border border-gray-200 rounded-xl overflow-hidden p-4" }
-const _hoisted_324 = { class: "space-y-3" }
-const _hoisted_325 = {
+const _hoisted_326 = { class: "bg-gray-50 border border-gray-200 rounded-xl overflow-hidden p-4" }
+const _hoisted_327 = { class: "space-y-3" }
+const _hoisted_328 = {
   key: 0,
   class: "text-xs text-gray-400 bg-white border border-dashed border-gray-200 rounded-lg px-3 py-3"
 }
-const _hoisted_326 = ["disabled", "onUpdate:modelValue"]
-const _hoisted_327 = ["onClick"]
-const _hoisted_328 = ["onClick"]
-const _hoisted_329 = {
+const _hoisted_329 = ["disabled", "onUpdate:modelValue"]
+const _hoisted_330 = ["onClick"]
+const _hoisted_331 = ["onClick"]
+const _hoisted_332 = {
   key: 8,
   class: "bg-white rounded-2xl shadow-sm border border-gray-100 p-6"
 }
-const _hoisted_330 = { class: "flex flex-col md:flex-row gap-4 mb-6 md:items-end justify-between" }
-const _hoisted_331 = { class: "flex gap-4 items-end" }
-const _hoisted_332 = ["onUpdate:modelValue", "onChange", "min"]
-const _hoisted_333 = {
+const _hoisted_333 = { class: "flex flex-col md:flex-row gap-4 mb-6 md:items-end justify-between" }
+const _hoisted_334 = { class: "flex gap-4 items-end" }
+const _hoisted_335 = ["onUpdate:modelValue", "onChange", "min"]
+const _hoisted_336 = {
   key: 0,
   class: "text-sm text-gray-500 pb-2"
 }
-const _hoisted_334 = { class: "flex flex-wrap gap-2" }
-const _hoisted_335 = ["onClick"]
-const _hoisted_336 = ["onClick"]
-const _hoisted_337 = {
+const _hoisted_337 = { class: "flex flex-wrap gap-2" }
+const _hoisted_338 = ["onClick"]
+const _hoisted_339 = ["onClick"]
+const _hoisted_340 = {
   key: 0,
   class: "text-center py-10 text-gray-400 bg-gray-50 rounded-xl border border-dashed border-gray-200"
 }
-const _hoisted_338 = {
+const _hoisted_341 = {
   key: 1,
   class: "space-y-6"
 }
-const _hoisted_339 = { class: "bg-gray-50 px-4 py-3 flex justify-between items-center" }
-const _hoisted_340 = { class: "font-bold text-sm text-gray-800 flex items-center gap-2" }
-const _hoisted_341 = {
+const _hoisted_342 = { class: "bg-gray-50 px-4 py-3 flex justify-between items-center" }
+const _hoisted_343 = { class: "font-bold text-sm text-gray-800 flex items-center gap-2" }
+const _hoisted_344 = {
   key: 0,
   class: "text-xs font-bold text-gray-400"
 }
-const _hoisted_342 = ["onClick"]
-const _hoisted_343 = { class: "divide-y divide-gray-100" }
-const _hoisted_344 = { class: "font-bold text-sm text-gray-900" }
-const _hoisted_345 = { class: "text-xs text-gray-500" }
-const _hoisted_346 = { class: "flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity" }
-const _hoisted_347 = ["onClick"]
-const _hoisted_348 = ["onClick"]
-const _hoisted_349 = {
+const _hoisted_345 = ["onClick"]
+const _hoisted_346 = { class: "divide-y divide-gray-100" }
+const _hoisted_347 = { class: "font-bold text-sm text-gray-900" }
+const _hoisted_348 = { class: "text-xs text-gray-500" }
+const _hoisted_349 = { class: "flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity" }
+const _hoisted_350 = ["onClick"]
+const _hoisted_351 = ["onClick"]
+const _hoisted_352 = {
   key: 0,
   class: "p-4 text-xs text-gray-400 italic"
 }
-const _hoisted_350 = {
+const _hoisted_353 = {
   key: 9,
   class: "bg-white rounded-2xl shadow-sm border border-gray-100 p-6"
 }
-const _hoisted_351 = { class: "flex flex-col md:flex-row gap-4 mb-6 bg-gray-50 p-4 rounded-xl border border-gray-200" }
-const _hoisted_352 = ["onUpdate:modelValue"]
-const _hoisted_353 = ["onUpdate:modelValue"]
-const _hoisted_354 = ["onClick", "disabled"]
-const _hoisted_355 = {
+const _hoisted_354 = { class: "flex flex-col md:flex-row gap-4 mb-6 bg-gray-50 p-4 rounded-xl border border-gray-200" }
+const _hoisted_355 = ["onUpdate:modelValue"]
+const _hoisted_356 = ["onUpdate:modelValue"]
+const _hoisted_357 = ["onClick", "disabled"]
+const _hoisted_358 = {
   key: 0,
   class: "fa-solid fa-circle-notch fa-spin"
 }
-const _hoisted_356 = { class: "overflow-x-auto" }
-const _hoisted_357 = { class: "w-full text-sm text-left" }
-const _hoisted_358 = { class: "bg-gray-50 text-gray-500 font-bold uppercase text-xs" }
-const _hoisted_359 = {
+const _hoisted_359 = { class: "overflow-x-auto" }
+const _hoisted_360 = { class: "w-full text-sm text-left" }
+const _hoisted_361 = { class: "bg-gray-50 text-gray-500 font-bold uppercase text-xs" }
+const _hoisted_362 = {
   key: 0,
   class: "p-3 rounded-r"
 }
-const _hoisted_360 = { class: "divide-y divide-gray-100" }
-const _hoisted_361 = { class: "p-3 font-medium text-gray-900" }
-const _hoisted_362 = { class: "p-3 text-gray-600" }
-const _hoisted_363 = { class: "p-3" }
-const _hoisted_364 = ["onClick"]
-const _hoisted_365 = { key: 0 }
-const _hoisted_366 = {
+const _hoisted_363 = { class: "divide-y divide-gray-100" }
+const _hoisted_364 = { class: "p-3 font-medium text-gray-900" }
+const _hoisted_365 = { class: "p-3 text-gray-600" }
+const _hoisted_366 = { class: "p-3" }
+const _hoisted_367 = ["onClick"]
+const _hoisted_368 = { key: 0 }
+const _hoisted_369 = {
   key: 1,
   class: "fixed inset-0 z-[70] flex items-center justify-center p-4"
 }
-const _hoisted_367 = ["onClick"]
-const _hoisted_368 = { class: "bg-white rounded-2xl shadow-xl w-full max-w-md relative overflow-hidden animate-fade-in-up flex flex-col max-h-[90dvh]" }
-const _hoisted_369 = { class: "px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 shrink-0" }
 const _hoisted_370 = ["onClick"]
-const _hoisted_371 = { class: "p-6 space-y-4 min-h-0 overflow-y-auto" }
-const _hoisted_372 = {
+const _hoisted_371 = { class: "bg-white rounded-2xl shadow-xl w-full max-w-md relative overflow-hidden animate-fade-in-up flex flex-col max-h-[90dvh]" }
+const _hoisted_372 = { class: "px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 shrink-0" }
+const _hoisted_373 = ["onClick"]
+const _hoisted_374 = { class: "p-6 space-y-4 min-h-0 overflow-y-auto" }
+const _hoisted_375 = {
   key: 0,
   class: "text-xs text-amber-800"
 }
-const _hoisted_373 = { class: "block text-xs font-bold text-gray-500 uppercase" }
-const _hoisted_374 = ["onUpdate:modelValue"]
-const _hoisted_375 = ["onUpdate:modelValue"]
-const _hoisted_376 = {
+const _hoisted_376 = { class: "block text-xs font-bold text-gray-500 uppercase" }
+const _hoisted_377 = ["onUpdate:modelValue"]
+const _hoisted_378 = ["onUpdate:modelValue"]
+const _hoisted_379 = {
   key: 1,
   class: "bg-blue-50 border border-blue-100 rounded-lg p-3"
 }
-const _hoisted_377 = { class: "text-xs text-blue-700 break-all mt-1" }
-const _hoisted_378 = ["onClick", "disabled"]
-const _hoisted_379 = {
+const _hoisted_380 = { class: "text-xs text-blue-700 break-all mt-1" }
+const _hoisted_381 = ["onClick", "disabled"]
+const _hoisted_382 = {
   key: 0,
   class: "fa-solid fa-circle-notch fa-spin mr-1",
   "aria-hidden": "true"
 }
-const _hoisted_380 = ["onUpdate:modelValue"]
-const _hoisted_381 = ["onUpdate:modelValue"]
-const _hoisted_382 = ["disabled", "onUpdate:modelValue"]
-const _hoisted_383 = ["value"]
+const _hoisted_383 = ["onUpdate:modelValue"]
 const _hoisted_384 = ["onUpdate:modelValue"]
-const _hoisted_385 = { key: 2 }
-const _hoisted_386 = ["onUpdate:modelValue"]
-const _hoisted_387 = {
+const _hoisted_385 = ["disabled", "onUpdate:modelValue"]
+const _hoisted_386 = ["value"]
+const _hoisted_387 = ["onUpdate:modelValue"]
+const _hoisted_388 = { key: 2 }
+const _hoisted_389 = ["onUpdate:modelValue"]
+const _hoisted_390 = {
   key: 0,
   value: "ADMIN_REG"
 }
-const _hoisted_388 = {
+const _hoisted_391 = {
   key: 1,
   value: "ADMIN_GEN"
 }
-const _hoisted_389 = { class: "px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3" }
-const _hoisted_390 = ["onClick", "disabled"]
-const _hoisted_391 = ["onClick", "disabled"]
-const _hoisted_392 = {
+const _hoisted_392 = { class: "px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3" }
+const _hoisted_393 = ["onClick", "disabled"]
+const _hoisted_394 = ["onClick", "disabled"]
+const _hoisted_395 = {
   key: 0,
   class: "fa-solid fa-circle-notch fa-spin"
 }
-const _hoisted_393 = {
+const _hoisted_396 = {
   key: 2,
   class: "fixed inset-0 z-[70] flex items-center justify-center p-4"
 }
-const _hoisted_394 = ["onClick"]
-const _hoisted_395 = { class: "bg-white rounded-2xl shadow-xl w-full max-w-md relative overflow-hidden animate-fade-in-up" }
-const _hoisted_396 = { class: "px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50" }
-const _hoisted_397 = { class: "font-bold text-lg text-gray-800" }
-const _hoisted_398 = ["onClick"]
-const _hoisted_399 = { class: "p-6 space-y-4" }
-const _hoisted_400 = ["readonly", "onUpdate:modelValue"]
-const _hoisted_401 = ["readonly", "onUpdate:modelValue"]
-const _hoisted_402 = { class: "flex flex-wrap gap-2 mb-2 min-h-[30px] p-2 bg-gray-50 border border-gray-200 rounded-lg" }
-const _hoisted_403 = { class: "font-semibold" }
-const _hoisted_404 = ["onClick"]
-const _hoisted_405 = {
+const _hoisted_397 = ["onClick"]
+const _hoisted_398 = { class: "bg-white rounded-2xl shadow-xl w-full max-w-md relative overflow-hidden animate-fade-in-up flex flex-col max-h-[90dvh]" }
+const _hoisted_399 = { class: "px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50" }
+const _hoisted_400 = { class: "font-bold text-lg text-gray-800" }
+const _hoisted_401 = ["onClick"]
+const _hoisted_402 = { class: "p-6 space-y-4 overflow-y-auto min-h-0" }
+const _hoisted_403 = ["readonly", "onUpdate:modelValue"]
+const _hoisted_404 = ["readonly", "onUpdate:modelValue"]
+const _hoisted_405 = ["onUpdate:modelValue"]
+const _hoisted_406 = { class: "flex flex-wrap gap-2 mb-2 min-h-[30px] p-2 bg-gray-50 border border-gray-200 rounded-lg" }
+const _hoisted_407 = { class: "font-semibold" }
+const _hoisted_408 = ["onClick"]
+const _hoisted_409 = {
   key: 0,
   class: "text-gray-400 text-xs italic"
 }
-const _hoisted_406 = { class: "relative" }
-const _hoisted_407 = ["onUpdate:modelValue"]
-const _hoisted_408 = {
+const _hoisted_410 = { class: "relative" }
+const _hoisted_411 = ["onUpdate:modelValue"]
+const _hoisted_412 = {
   key: 0,
   class: "absolute top-full left-0 w-full bg-white border border-gray-100 rounded-lg shadow-lg z-10 max-h-40 overflow-y-auto mt-1"
 }
-const _hoisted_409 = ["onClick"]
-const _hoisted_410 = { class: "font-bold text-gray-800" }
-const _hoisted_411 = { class: "text-gray-400" }
-const _hoisted_412 = ["onUpdate:modelValue"]
-const _hoisted_413 = { class: "px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3" }
-const _hoisted_414 = ["onClick", "disabled"]
-const _hoisted_415 = ["onClick", "disabled"]
-const _hoisted_416 = {
+const _hoisted_413 = ["onClick"]
+const _hoisted_414 = { class: "font-bold text-gray-800" }
+const _hoisted_415 = { class: "text-gray-400" }
+const _hoisted_416 = ["onUpdate:modelValue"]
+const _hoisted_417 = { class: "px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3" }
+const _hoisted_418 = ["onClick", "disabled"]
+const _hoisted_419 = ["onClick", "disabled"]
+const _hoisted_420 = {
   key: 0,
   class: "fa-solid fa-circle-notch fa-spin"
 }
-const _hoisted_417 = {
+const _hoisted_421 = {
   key: 3,
   class: "fixed inset-0 z-[70] flex items-center justify-center p-4"
 }
-const _hoisted_418 = ["onClick"]
-const _hoisted_419 = { class: "bg-white rounded-2xl shadow-xl w-full max-w-2xl relative overflow-hidden animate-fade-in-up flex flex-col max-h-[90vh]" }
-const _hoisted_420 = { class: "px-5 sm:px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 shrink-0" }
-const _hoisted_421 = { class: "flex items-center gap-3 min-w-0" }
 const _hoisted_422 = ["onClick"]
-const _hoisted_423 = { class: "min-w-0" }
-const _hoisted_424 = { class: "font-bold text-lg text-gray-800 truncate" }
-const _hoisted_425 = { class: "text-xs text-gray-500 mt-0.5 truncate" }
+const _hoisted_423 = { class: "bg-white rounded-2xl shadow-xl w-full max-w-2xl relative overflow-hidden animate-fade-in-up flex flex-col max-h-[90vh]" }
+const _hoisted_424 = { class: "px-5 sm:px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 shrink-0" }
+const _hoisted_425 = { class: "flex items-center gap-3 min-w-0" }
 const _hoisted_426 = ["onClick"]
-const _hoisted_427 = {
+const _hoisted_427 = { class: "min-w-0" }
+const _hoisted_428 = { class: "font-bold text-lg text-gray-800 truncate" }
+const _hoisted_429 = { class: "text-xs text-gray-500 mt-0.5 truncate" }
+const _hoisted_430 = ["onClick"]
+const _hoisted_431 = {
   key: 0,
   class: "p-4 sm:p-6 overflow-y-auto grow space-y-4"
 }
-const _hoisted_428 = { class: "flex justify-between items-center" }
-const _hoisted_429 = { class: "text-xs text-gray-500 font-bold uppercase tracking-wider" }
-const _hoisted_430 = ["onClick"]
-const _hoisted_431 = { class: "overflow-x-auto border border-gray-200 rounded-xl" }
-const _hoisted_432 = { class: "w-full min-w-[560px] text-sm text-left" }
-const _hoisted_433 = { class: "divide-y divide-gray-100" }
-const _hoisted_434 = { class: "p-3" }
-const _hoisted_435 = { class: "font-semibold text-gray-900" }
-const _hoisted_436 = {
+const _hoisted_432 = { class: "flex justify-between items-center" }
+const _hoisted_433 = { class: "text-xs text-gray-500 font-bold uppercase tracking-wider" }
+const _hoisted_434 = ["onClick"]
+const _hoisted_435 = { class: "overflow-x-auto border border-gray-200 rounded-xl" }
+const _hoisted_436 = { class: "w-full min-w-[560px] text-sm text-left" }
+const _hoisted_437 = { class: "divide-y divide-gray-100" }
+const _hoisted_438 = { class: "p-3" }
+const _hoisted_439 = { class: "font-semibold text-gray-900" }
+const _hoisted_440 = {
   key: 0,
   class: "text-[11px] text-gray-400 mt-0.5"
 }
-const _hoisted_437 = { class: "p-3 text-xs" }
-const _hoisted_438 = { class: "p-3 text-xs" }
-const _hoisted_439 = { class: "p-3 text-gray-500 text-xs font-mono" }
-const _hoisted_440 = { class: "p-3" }
-const _hoisted_441 = { class: "p-3 text-right" }
-const _hoisted_442 = ["onClick"]
-const _hoisted_443 = { key: 0 }
-const _hoisted_444 = { class: "flex flex-col grow overflow-hidden" }
-const _hoisted_445 = { class: "p-5 sm:p-6 overflow-y-auto space-y-4 grow" }
-const _hoisted_446 = {
+const _hoisted_441 = { class: "p-3 text-xs" }
+const _hoisted_442 = { class: "p-3 text-xs" }
+const _hoisted_443 = { class: "p-3 text-gray-500 text-xs font-mono" }
+const _hoisted_444 = { class: "p-3" }
+const _hoisted_445 = { class: "p-3 text-right" }
+const _hoisted_446 = ["onClick"]
+const _hoisted_447 = { key: 0 }
+const _hoisted_448 = { class: "flex flex-col grow overflow-hidden" }
+const _hoisted_449 = { class: "p-5 sm:p-6 overflow-y-auto space-y-4 grow" }
+const _hoisted_450 = {
   key: 0,
   class: "text-xs text-blue-700 bg-blue-50 border border-blue-100 rounded-xl p-3 flex items-center gap-2"
 }
-const _hoisted_447 = { class: "grid grid-cols-1 sm:grid-cols-3 gap-4" }
-const _hoisted_448 = { class: "sm:col-span-2" }
-const _hoisted_449 = ["onUpdate:modelValue"]
-const _hoisted_450 = ["onUpdate:modelValue"]
-const _hoisted_451 = { class: "grid grid-cols-1 sm:grid-cols-2 gap-4" }
-const _hoisted_452 = ["onUpdate:modelValue"]
+const _hoisted_451 = { class: "grid grid-cols-1 sm:grid-cols-3 gap-4" }
+const _hoisted_452 = { class: "sm:col-span-2" }
 const _hoisted_453 = ["onUpdate:modelValue"]
-const _hoisted_454 = { class: "pt-2 border-t border-gray-100" }
-const _hoisted_455 = { class: "flex items-center gap-2.5 text-xs font-bold text-gray-800 cursor-pointer p-2 bg-gray-50 hover:bg-gray-100/80 rounded-xl border border-gray-200/80 transition-colors" }
+const _hoisted_454 = ["onUpdate:modelValue"]
+const _hoisted_455 = { class: "grid grid-cols-1 sm:grid-cols-2 gap-4" }
 const _hoisted_456 = ["onUpdate:modelValue"]
-const _hoisted_457 = {
+const _hoisted_457 = ["onUpdate:modelValue"]
+const _hoisted_458 = { class: "pt-2 border-t border-gray-100" }
+const _hoisted_459 = { class: "flex items-center gap-2.5 text-xs font-bold text-gray-800 cursor-pointer p-2 bg-gray-50 hover:bg-gray-100/80 rounded-xl border border-gray-200/80 transition-colors" }
+const _hoisted_460 = ["onUpdate:modelValue"]
+const _hoisted_461 = {
   key: 1,
   class: "space-y-1.5"
 }
-const _hoisted_458 = { class: "grid grid-cols-2 sm:grid-cols-3 gap-2 bg-gray-50 p-3 rounded-xl border border-gray-200 max-h-44 overflow-y-auto" }
-const _hoisted_459 = ["value", "onUpdate:modelValue"]
-const _hoisted_460 = { class: "truncate font-medium" }
-const _hoisted_461 = ["onUpdate:modelValue"]
-const _hoisted_462 = { class: "px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-between items-center shrink-0" }
-const _hoisted_463 = ["onClick", "disabled"]
-const _hoisted_464 = ["onClick", "disabled"]
-const _hoisted_465 = {
+const _hoisted_462 = { class: "grid grid-cols-2 sm:grid-cols-3 gap-2 bg-gray-50 p-3 rounded-xl border border-gray-200 max-h-44 overflow-y-auto" }
+const _hoisted_463 = ["value", "onUpdate:modelValue"]
+const _hoisted_464 = { class: "truncate font-medium" }
+const _hoisted_465 = ["onUpdate:modelValue"]
+const _hoisted_466 = { class: "px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-between items-center shrink-0" }
+const _hoisted_467 = ["onClick", "disabled"]
+const _hoisted_468 = ["onClick", "disabled"]
+const _hoisted_469 = {
   key: 0,
   class: "fa-solid fa-circle-notch fa-spin"
 }
-const _hoisted_466 = {
+const _hoisted_470 = {
   key: 4,
   class: "fixed inset-0 z-[70] flex items-center justify-center p-4"
 }
-const _hoisted_467 = ["onClick"]
-const _hoisted_468 = { class: "bg-white rounded-2xl shadow-xl w-full max-w-sm relative overflow-hidden animate-fade-in-up" }
-const _hoisted_469 = { class: "px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50" }
-const _hoisted_470 = { class: "font-bold text-lg text-gray-800" }
 const _hoisted_471 = ["onClick"]
-const _hoisted_472 = { class: "p-6 space-y-4" }
-const _hoisted_473 = ["value"]
-const _hoisted_474 = ["onUpdate:modelValue"]
-const _hoisted_475 = ["onUpdate:modelValue"]
-const _hoisted_476 = { class: "px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3" }
-const _hoisted_477 = ["onClick", "disabled"]
-const _hoisted_478 = ["onClick", "disabled"]
-const _hoisted_479 = {
+const _hoisted_472 = { class: "bg-white rounded-2xl shadow-xl w-full max-w-sm relative overflow-hidden animate-fade-in-up" }
+const _hoisted_473 = { class: "px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50" }
+const _hoisted_474 = { class: "font-bold text-lg text-gray-800" }
+const _hoisted_475 = ["onClick"]
+const _hoisted_476 = { class: "p-6 space-y-4" }
+const _hoisted_477 = ["value"]
+const _hoisted_478 = ["onUpdate:modelValue"]
+const _hoisted_479 = ["onUpdate:modelValue"]
+const _hoisted_480 = { class: "px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3" }
+const _hoisted_481 = ["onClick", "disabled"]
+const _hoisted_482 = ["onClick", "disabled"]
+const _hoisted_483 = {
   key: 0,
   class: "fa-solid fa-circle-notch fa-spin"
 }
-const _hoisted_480 = {
+const _hoisted_484 = {
   key: 5,
   class: "fixed inset-0 z-[70] flex items-center justify-center p-4"
 }
-const _hoisted_481 = ["onClick"]
-const _hoisted_482 = { class: "bg-white rounded-2xl shadow-xl w-full max-w-4xl relative overflow-hidden animate-fade-in-up flex flex-col max-h-[90vh]" }
-const _hoisted_483 = { class: "px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 shrink-0" }
-const _hoisted_484 = ["onClick"]
-const _hoisted_485 = { class: "p-6 overflow-y-auto grow" }
-const _hoisted_486 = {
+const _hoisted_485 = ["onClick"]
+const _hoisted_486 = { class: "bg-white rounded-2xl shadow-xl w-full max-w-4xl relative overflow-hidden animate-fade-in-up flex flex-col max-h-[90vh]" }
+const _hoisted_487 = { class: "px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 shrink-0" }
+const _hoisted_488 = ["onClick"]
+const _hoisted_489 = { class: "p-6 overflow-y-auto grow" }
+const _hoisted_490 = {
   key: 0,
   class: "space-y-4"
 }
-const _hoisted_487 = ["onUpdate:modelValue"]
-const _hoisted_488 = ["onUpdate:modelValue"]
-const _hoisted_489 = {
+const _hoisted_491 = ["onUpdate:modelValue"]
+const _hoisted_492 = ["onUpdate:modelValue"]
+const _hoisted_493 = {
   key: 0,
   class: "bg-red-50 text-red-600 p-3 rounded-lg text-sm font-semibold animate-shake"
 }
-const _hoisted_490 = {
+const _hoisted_494 = {
   key: 1,
   class: "space-y-4"
 }
-const _hoisted_491 = { class: "bg-green-50 p-4 rounded-xl text-green-800 text-sm mb-4 flex justify-between items-center" }
-const _hoisted_492 = ["onClick"]
-const _hoisted_493 = { class: "overflow-x-auto border border-gray-200 rounded-xl" }
-const _hoisted_494 = { class: "w-full text-xs text-left" }
-const _hoisted_495 = { class: "bg-gray-50 text-gray-500 font-bold uppercase border-b border-gray-200" }
-const _hoisted_496 = { class: "divide-y divide-gray-100" }
-const _hoisted_497 = { class: "p-3 font-bold text-gray-900 bg-gray-50 sticky left-0 border-r border-gray-200 z-10" }
-const _hoisted_498 = {
+const _hoisted_495 = { class: "bg-green-50 p-4 rounded-xl text-green-800 text-sm mb-4 flex justify-between items-center" }
+const _hoisted_496 = ["onClick"]
+const _hoisted_497 = { class: "overflow-x-auto border border-gray-200 rounded-xl" }
+const _hoisted_498 = { class: "w-full text-xs text-left" }
+const _hoisted_499 = { class: "bg-gray-50 text-gray-500 font-bold uppercase border-b border-gray-200" }
+const _hoisted_500 = { class: "divide-y divide-gray-100" }
+const _hoisted_501 = { class: "p-3 font-bold text-gray-900 bg-gray-50 sticky left-0 border-r border-gray-200 z-10" }
+const _hoisted_502 = {
   key: 0,
   class: "list-disc list-inside text-gray-600"
 }
-const _hoisted_499 = {
+const _hoisted_503 = {
   key: 1,
   class: "text-gray-300 italic"
 }
-const _hoisted_500 = { class: "px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3 shrink-0" }
-const _hoisted_501 = ["onClick", "disabled"]
-const _hoisted_502 = ["onClick"]
-const _hoisted_503 = ["onClick", "disabled"]
-const _hoisted_504 = {
+const _hoisted_504 = { class: "px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3 shrink-0" }
+const _hoisted_505 = ["onClick", "disabled"]
+const _hoisted_506 = ["onClick"]
+const _hoisted_507 = ["onClick", "disabled"]
+const _hoisted_508 = {
   key: 0,
   class: "fa-solid fa-circle-notch fa-spin"
 }
-const _hoisted_505 = { class: "mt-auto py-6 bg-white border-t border-gray-100" }
-const _hoisted_506 = { class: "max-w-4xl mx-auto px-4 grid grid-cols-3 items-center" }
-const _hoisted_507 = { class: "min-w-0 wrap-anywhere whitespace-pre-line text-[10px] text-gray-400 font-bold tracking-widest uppercase text-center" }
-const _hoisted_508 = { class: "flex justify-end" }
-const _hoisted_509 = ["src"]
-const _hoisted_510 = {
+const _hoisted_509 = { class: "mt-auto py-6 bg-white border-t border-gray-100" }
+const _hoisted_510 = { class: "max-w-4xl mx-auto px-4 grid grid-cols-3 items-center" }
+const _hoisted_511 = { class: "min-w-0 wrap-anywhere whitespace-pre-line text-[10px] text-gray-400 font-bold tracking-widest uppercase text-center" }
+const _hoisted_512 = { class: "flex justify-end" }
+const _hoisted_513 = ["src"]
+const _hoisted_514 = {
   key: 6,
   class: "fixed inset-0 z-[90] flex items-center justify-center p-4"
 }
-const _hoisted_511 = ["onClick"]
-const _hoisted_512 = { class: "bg-white rounded-3xl shadow-2xl w-full max-w-md relative overflow-hidden animate-fade-in-up border border-gray-100 flex flex-col max-h-[90vh]" }
-const _hoisted_513 = { class: "relative bg-linear-to-tr from-indigo-600 via-blue-600 to-indigo-800 text-white p-6 pt-7 overflow-hidden shrink-0" }
-const _hoisted_514 = { class: "flex items-center justify-between relative z-10 mb-3" }
-const _hoisted_515 = { class: "px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[11px] font-extrabold uppercase tracking-wider text-white border border-white/20" }
-const _hoisted_516 = ["onClick"]
-const _hoisted_517 = { class: "flex items-center gap-3 relative z-10" }
-const _hoisted_518 = { class: "w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl shadow-inner border border-white/20 shrink-0" }
-const _hoisted_519 = { class: "text-xl font-black tracking-tight text-white leading-tight" }
-const _hoisted_520 = { class: "p-6 overflow-y-auto flex-1 space-y-4" }
-const _hoisted_521 = { class: "text-gray-600 text-sm leading-relaxed whitespace-pre-line" }
-const _hoisted_522 = { class: "px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between shrink-0" }
-const _hoisted_523 = {
+const _hoisted_515 = ["onClick"]
+const _hoisted_516 = { class: "bg-white rounded-3xl shadow-2xl w-full max-w-md relative overflow-hidden animate-fade-in-up border border-gray-100 flex flex-col max-h-[90vh]" }
+const _hoisted_517 = { class: "relative bg-linear-to-tr from-indigo-600 via-blue-600 to-indigo-800 text-white p-6 pt-7 overflow-hidden shrink-0" }
+const _hoisted_518 = { class: "flex items-center justify-between relative z-10 mb-3" }
+const _hoisted_519 = { class: "px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[11px] font-extrabold uppercase tracking-wider text-white border border-white/20" }
+const _hoisted_520 = ["onClick"]
+const _hoisted_521 = { class: "flex items-center gap-3 relative z-10" }
+const _hoisted_522 = { class: "w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl shadow-inner border border-white/20 shrink-0" }
+const _hoisted_523 = { class: "text-xl font-black tracking-tight text-white leading-tight" }
+const _hoisted_524 = { class: "p-6 overflow-y-auto flex-1 space-y-4" }
+const _hoisted_525 = { class: "text-gray-600 text-sm leading-relaxed whitespace-pre-line" }
+const _hoisted_526 = { class: "px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between shrink-0" }
+const _hoisted_527 = {
   key: 0,
   class: "flex items-center gap-1.5"
 }
-const _hoisted_524 = { key: 1 }
-const _hoisted_525 = { class: "flex items-center gap-2" }
-const _hoisted_526 = ["onClick"]
-const _hoisted_527 = ["onClick"]
-const _hoisted_528 = {
+const _hoisted_528 = { key: 1 }
+const _hoisted_529 = { class: "flex items-center gap-2" }
+const _hoisted_530 = ["onClick"]
+const _hoisted_531 = ["onClick"]
+const _hoisted_532 = {
   key: 0,
   class: "fa-solid fa-chevron-right text-[10px]"
 }
-const _hoisted_529 = {
+const _hoisted_533 = {
   key: 1,
   class: "fa-solid fa-check text-[10px]"
 }
-const _hoisted_530 = {
+const _hoisted_534 = {
   key: 7,
   class: "fixed inset-0 z-[80] flex items-center justify-center p-4"
 }
-const _hoisted_531 = ["onClick"]
-const _hoisted_532 = { class: "bg-white rounded-3xl shadow-2xl w-full max-w-md relative overflow-hidden animate-fade-in-up border border-gray-100" }
-const _hoisted_533 = { class: "px-6 py-4 bg-linear-to-r from-amber-500 to-orange-500 text-white flex justify-between items-center" }
-const _hoisted_534 = { class: "flex items-center gap-2.5" }
-const _hoisted_535 = { class: "text-xs text-amber-100" }
-const _hoisted_536 = ["onClick"]
-const _hoisted_537 = { class: "p-6 space-y-5" }
-const _hoisted_538 = {
+const _hoisted_535 = ["onClick"]
+const _hoisted_536 = { class: "bg-white rounded-3xl shadow-2xl w-full max-w-md relative overflow-hidden animate-fade-in-up border border-gray-100" }
+const _hoisted_537 = { class: "px-6 py-4 bg-linear-to-r from-amber-500 to-orange-500 text-white flex justify-between items-center" }
+const _hoisted_538 = { class: "flex items-center gap-2.5" }
+const _hoisted_539 = { class: "text-xs text-amber-100" }
+const _hoisted_540 = ["onClick"]
+const _hoisted_541 = { class: "p-6 space-y-5" }
+const _hoisted_542 = {
   key: 0,
   class: "p-3 bg-gray-50 rounded-xl border border-gray-100 text-xs text-gray-600"
 }
-const _hoisted_539 = { class: "text-center space-y-2" }
-const _hoisted_540 = { class: "flex justify-center items-center gap-2 pt-1" }
-const _hoisted_541 = ["onClick"]
-const _hoisted_542 = { class: "text-xs font-bold text-amber-600" }
-const _hoisted_543 = ["onUpdate:modelValue"]
-const _hoisted_544 = { class: "text-[11px] text-gray-400 text-right" }
-const _hoisted_545 = {
+const _hoisted_543 = { class: "text-center space-y-2" }
+const _hoisted_544 = { class: "flex justify-center items-center gap-2 pt-1" }
+const _hoisted_545 = ["onClick"]
+const _hoisted_546 = { class: "text-xs font-bold text-amber-600" }
+const _hoisted_547 = ["onUpdate:modelValue"]
+const _hoisted_548 = { class: "text-[11px] text-gray-400 text-right" }
+const _hoisted_549 = {
   key: 1,
   class: "p-3 bg-red-50 text-red-600 text-xs font-bold rounded-xl border border-red-100 flex items-center gap-2"
 }
-const _hoisted_546 = { class: "px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3" }
-const _hoisted_547 = ["onClick", "disabled"]
-const _hoisted_548 = ["onClick", "disabled"]
-const _hoisted_549 = {
+const _hoisted_550 = { class: "px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3" }
+const _hoisted_551 = ["onClick", "disabled"]
+const _hoisted_552 = ["onClick", "disabled"]
+const _hoisted_553 = {
   key: 0,
   class: "fa-solid fa-circle-notch fa-spin"
 }
-const _hoisted_550 = {
+const _hoisted_554 = {
   key: 8,
   class: "fixed inset-0 z-[80] flex items-center justify-center p-4"
 }
-const _hoisted_551 = ["onClick"]
-const _hoisted_552 = { class: "bg-white rounded-3xl shadow-2xl w-full max-w-md relative overflow-hidden animate-fade-in-up border border-gray-100" }
-const _hoisted_553 = { class: "px-6 py-4 bg-linear-to-r from-amber-600 to-orange-600 text-white flex justify-between items-center" }
-const _hoisted_554 = { class: "flex items-center gap-2.5" }
-const _hoisted_555 = { class: "text-xs text-amber-100" }
-const _hoisted_556 = ["onClick"]
-const _hoisted_557 = { class: "p-6 space-y-5" }
-const _hoisted_558 = { class: "text-center space-y-2" }
-const _hoisted_559 = { class: "flex justify-center items-center gap-2 pt-1" }
+const _hoisted_555 = ["onClick"]
+const _hoisted_556 = { class: "bg-white rounded-3xl shadow-2xl w-full max-w-md relative overflow-hidden animate-fade-in-up border border-gray-100" }
+const _hoisted_557 = { class: "px-6 py-4 bg-linear-to-r from-amber-600 to-orange-600 text-white flex justify-between items-center" }
+const _hoisted_558 = { class: "flex items-center gap-2.5" }
+const _hoisted_559 = { class: "text-xs text-amber-100" }
 const _hoisted_560 = ["onClick"]
-const _hoisted_561 = { class: "text-xs font-bold text-amber-600" }
-const _hoisted_562 = ["onUpdate:modelValue"]
-const _hoisted_563 = { class: "text-[11px] text-gray-400 text-right" }
-const _hoisted_564 = {
+const _hoisted_561 = { class: "p-6 space-y-5" }
+const _hoisted_562 = { class: "text-center space-y-2" }
+const _hoisted_563 = { class: "flex justify-center items-center gap-2 pt-1" }
+const _hoisted_564 = ["onClick"]
+const _hoisted_565 = { class: "text-xs font-bold text-amber-600" }
+const _hoisted_566 = ["onUpdate:modelValue"]
+const _hoisted_567 = { class: "text-[11px] text-gray-400 text-right" }
+const _hoisted_568 = {
   key: 0,
   class: "p-3 bg-red-50 text-red-600 text-xs font-bold rounded-xl border border-red-100 flex items-center gap-2"
 }
-const _hoisted_565 = { class: "px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3" }
-const _hoisted_566 = ["onClick", "disabled"]
-const _hoisted_567 = ["onClick", "disabled"]
-const _hoisted_568 = {
+const _hoisted_569 = { class: "px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3" }
+const _hoisted_570 = ["onClick", "disabled"]
+const _hoisted_571 = ["onClick", "disabled"]
+const _hoisted_572 = {
   key: 0,
   class: "fa-solid fa-circle-notch fa-spin"
 }
-const _hoisted_569 = {
+const _hoisted_573 = {
   key: 9,
   class: "fixed inset-0 z-[80] flex items-center justify-center p-4"
 }
-const _hoisted_570 = ["onClick"]
-const _hoisted_571 = { class: "bg-white rounded-3xl shadow-2xl w-full max-w-md relative overflow-hidden animate-fade-in-up border border-gray-100" }
-const _hoisted_572 = { class: "px-6 py-4 bg-gray-900 text-white flex justify-between items-center" }
-const _hoisted_573 = ["onClick"]
-const _hoisted_574 = { class: "p-6 space-y-4" }
-const _hoisted_575 = ["onUpdate:modelValue"]
-const _hoisted_576 = ["onUpdate:modelValue"]
-const _hoisted_577 = {
+const _hoisted_574 = ["onClick"]
+const _hoisted_575 = { class: "bg-white rounded-3xl shadow-2xl w-full max-w-md relative overflow-hidden animate-fade-in-up border border-gray-100" }
+const _hoisted_576 = { class: "px-6 py-4 bg-gray-900 text-white flex justify-between items-center" }
+const _hoisted_577 = ["onClick"]
+const _hoisted_578 = { class: "p-6 space-y-4" }
+const _hoisted_579 = ["onUpdate:modelValue"]
+const _hoisted_580 = ["onUpdate:modelValue"]
+const _hoisted_581 = {
   key: 0,
   class: "p-3 bg-red-50 text-red-600 text-xs font-bold rounded-xl border border-red-100 flex items-center gap-2"
 }
-const _hoisted_578 = { class: "px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3" }
-const _hoisted_579 = ["onClick", "disabled"]
-const _hoisted_580 = ["onClick", "disabled"]
-const _hoisted_581 = {
+const _hoisted_582 = { class: "px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3" }
+const _hoisted_583 = ["onClick", "disabled"]
+const _hoisted_584 = ["onClick", "disabled"]
+const _hoisted_585 = {
   key: 0,
   class: "fa-solid fa-circle-notch fa-spin"
 }
-const _hoisted_582 = {
+const _hoisted_586 = {
   key: 10,
   class: "fixed inset-0 z-[80] flex items-center justify-center p-4"
 }
-const _hoisted_583 = ["onClick"]
-const _hoisted_584 = { class: "bg-white rounded-3xl shadow-2xl w-full max-w-lg relative overflow-hidden animate-fade-in-up border border-gray-100 flex flex-col max-h-[90vh]" }
-const _hoisted_585 = { class: "px-6 py-4 bg-indigo-700 text-white flex justify-between items-center shrink-0" }
-const _hoisted_586 = ["onClick"]
-const _hoisted_587 = { class: "p-6 overflow-y-auto space-y-5 flex-1" }
-const _hoisted_588 = { class: "flex items-center justify-between p-3 bg-indigo-50/70 border border-indigo-100 rounded-2xl" }
-const _hoisted_589 = ["onUpdate:modelValue"]
-const _hoisted_590 = { class: "grid grid-cols-2 gap-4" }
-const _hoisted_591 = ["onUpdate:modelValue"]
-const _hoisted_592 = ["onUpdate:modelValue"]
-const _hoisted_593 = { class: "flex items-center gap-2" }
-const _hoisted_594 = ["onUpdate:modelValue"]
-const _hoisted_595 = { class: "space-y-4 pt-2" }
-const _hoisted_596 = { class: "flex justify-between items-center" }
-const _hoisted_597 = { class: "block text-xs font-bold text-gray-700 uppercase tracking-wider" }
-const _hoisted_598 = ["onClick"]
-const _hoisted_599 = { class: "flex justify-between items-center" }
-const _hoisted_600 = { class: "text-xs font-black text-gray-500 uppercase tracking-wider" }
-const _hoisted_601 = ["onClick"]
-const _hoisted_602 = { class: "grid grid-cols-3 gap-3" }
-const _hoisted_603 = { class: "col-span-2" }
-const _hoisted_604 = ["onUpdate:modelValue"]
-const _hoisted_605 = ["onUpdate:modelValue"]
-const _hoisted_606 = ["onUpdate:modelValue"]
-const _hoisted_607 = { class: "px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3 shrink-0" }
-const _hoisted_608 = ["onClick", "disabled"]
-const _hoisted_609 = ["onClick", "disabled"]
-const _hoisted_610 = {
+const _hoisted_587 = ["onClick"]
+const _hoisted_588 = { class: "bg-white rounded-3xl shadow-2xl w-full max-w-lg relative overflow-hidden animate-fade-in-up border border-gray-100 flex flex-col max-h-[90vh]" }
+const _hoisted_589 = { class: "px-6 py-4 bg-indigo-700 text-white flex justify-between items-center shrink-0" }
+const _hoisted_590 = ["onClick"]
+const _hoisted_591 = { class: "p-6 overflow-y-auto space-y-5 flex-1" }
+const _hoisted_592 = { class: "flex items-center justify-between p-3 bg-indigo-50/70 border border-indigo-100 rounded-2xl" }
+const _hoisted_593 = ["onUpdate:modelValue"]
+const _hoisted_594 = { class: "grid grid-cols-2 gap-4" }
+const _hoisted_595 = ["onUpdate:modelValue"]
+const _hoisted_596 = ["onUpdate:modelValue"]
+const _hoisted_597 = { class: "flex items-center gap-2" }
+const _hoisted_598 = ["onUpdate:modelValue"]
+const _hoisted_599 = { class: "space-y-4 pt-2" }
+const _hoisted_600 = { class: "flex justify-between items-center" }
+const _hoisted_601 = { class: "block text-xs font-bold text-gray-700 uppercase tracking-wider" }
+const _hoisted_602 = ["onClick"]
+const _hoisted_603 = { class: "flex justify-between items-center" }
+const _hoisted_604 = { class: "text-xs font-black text-gray-500 uppercase tracking-wider" }
+const _hoisted_605 = ["onClick"]
+const _hoisted_606 = { class: "grid grid-cols-3 gap-3" }
+const _hoisted_607 = { class: "col-span-2" }
+const _hoisted_608 = ["onUpdate:modelValue"]
+const _hoisted_609 = ["onUpdate:modelValue"]
+const _hoisted_610 = ["onUpdate:modelValue"]
+const _hoisted_611 = { class: "px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3 shrink-0" }
+const _hoisted_612 = ["onClick", "disabled"]
+const _hoisted_613 = ["onClick", "disabled"]
+const _hoisted_614 = {
   key: 0,
   class: "fa-solid fa-circle-notch fa-spin"
 }
-const _hoisted_611 = {
+const _hoisted_615 = {
   key: 11,
   class: "fixed inset-0 z-[75] flex items-center justify-center p-4"
 }
-const _hoisted_612 = ["onClick"]
-const _hoisted_613 = { class: "bg-white rounded-3xl shadow-2xl w-full max-w-2xl relative overflow-hidden animate-fade-in-up flex flex-col max-h-[90vh]" }
-const _hoisted_614 = { class: "px-6 py-5 border-b border-gray-100 bg-linear-to-r from-amber-500/10 via-orange-50 to-amber-50 flex justify-between items-center shrink-0" }
-const _hoisted_615 = ["onClick"]
-const _hoisted_616 = { class: "px-6 pt-4 border-b border-gray-100 bg-gray-50/50 flex gap-2 shrink-0" }
-const _hoisted_617 = ["onClick"]
-const _hoisted_618 = ["onClick"]
-const _hoisted_619 = { class: "p-6 overflow-y-auto grow space-y-6" }
-const _hoisted_620 = {
+const _hoisted_616 = ["onClick"]
+const _hoisted_617 = { class: "bg-white rounded-3xl shadow-2xl w-full max-w-2xl relative overflow-hidden animate-fade-in-up flex flex-col max-h-[90vh]" }
+const _hoisted_618 = { class: "px-6 py-5 border-b border-gray-100 bg-linear-to-r from-amber-500/10 via-orange-50 to-amber-50 flex justify-between items-center shrink-0" }
+const _hoisted_619 = ["onClick"]
+const _hoisted_620 = { class: "px-6 pt-4 border-b border-gray-100 bg-gray-50/50 flex gap-2 shrink-0" }
+const _hoisted_621 = ["onClick"]
+const _hoisted_622 = ["onClick"]
+const _hoisted_623 = { class: "p-6 overflow-y-auto grow space-y-6" }
+const _hoisted_624 = {
   key: 0,
   class: "py-12 text-center text-gray-400 space-y-3"
 }
-const _hoisted_621 = {
+const _hoisted_625 = {
   key: 1,
   class: "space-y-6"
 }
-const _hoisted_622 = {
+const _hoisted_626 = {
   key: 0,
   class: "space-y-6"
 }
-const _hoisted_623 = { class: "bg-linear-to-br from-amber-50 via-white to-orange-50 border border-amber-200/80 rounded-2xl p-5 shadow-sm" }
-const _hoisted_624 = { class: "flex flex-col sm:flex-row sm:items-center justify-between gap-4" }
-const _hoisted_625 = { class: "text-xl font-bold text-gray-900 mt-2" }
-const _hoisted_626 = { class: "text-xs text-gray-500 mt-0.5" }
-const _hoisted_627 = { class: "font-mono text-gray-700" }
-const _hoisted_628 = { class: "text-right sm:text-right bg-white p-3.5 rounded-2xl border border-amber-100 shadow-sm flex sm:flex-col items-center sm:items-end justify-between sm:justify-center" }
-const _hoisted_629 = { class: "flex items-center gap-1 text-amber-500 text-base" }
-const _hoisted_630 = { class: "mt-1" }
-const _hoisted_631 = { class: "text-2xl font-black text-gray-900" }
-const _hoisted_632 = { class: "text-[11px] text-gray-500 font-medium" }
-const _hoisted_633 = { class: "mt-5 pt-4 border-t border-amber-100/80 space-y-1.5" }
-const _hoisted_634 = { class: "w-8 font-bold text-gray-600 flex items-center gap-1" }
-const _hoisted_635 = { class: "grow bg-gray-100 rounded-full h-2 overflow-hidden" }
-const _hoisted_636 = { class: "w-8 text-right font-mono text-gray-400 text-[11px]" }
-const _hoisted_637 = {
+const _hoisted_627 = { class: "bg-linear-to-br from-amber-50 via-white to-orange-50 border border-amber-200/80 rounded-2xl p-5 shadow-sm" }
+const _hoisted_628 = { class: "flex flex-col sm:flex-row sm:items-center justify-between gap-4" }
+const _hoisted_629 = { class: "text-xl font-bold text-gray-900 mt-2" }
+const _hoisted_630 = { class: "text-xs text-gray-500 mt-0.5" }
+const _hoisted_631 = { class: "font-mono text-gray-700" }
+const _hoisted_632 = { class: "text-right sm:text-right bg-white p-3.5 rounded-2xl border border-amber-100 shadow-sm flex sm:flex-col items-center sm:items-end justify-between sm:justify-center" }
+const _hoisted_633 = { class: "flex items-center gap-1 text-amber-500 text-base" }
+const _hoisted_634 = { class: "mt-1" }
+const _hoisted_635 = { class: "text-2xl font-black text-gray-900" }
+const _hoisted_636 = { class: "text-[11px] text-gray-500 font-medium" }
+const _hoisted_637 = { class: "mt-5 pt-4 border-t border-amber-100/80 space-y-1.5" }
+const _hoisted_638 = { class: "w-8 font-bold text-gray-600 flex items-center gap-1" }
+const _hoisted_639 = { class: "grow bg-gray-100 rounded-full h-2 overflow-hidden" }
+const _hoisted_640 = { class: "w-8 text-right font-mono text-gray-400 text-[11px]" }
+const _hoisted_641 = {
   key: 0,
   class: "space-y-3"
 }
-const _hoisted_638 = { class: "flex justify-between items-start gap-2 mb-2" }
-const _hoisted_639 = { class: "font-bold text-xs text-gray-900" }
-const _hoisted_640 = { class: "text-[11px] text-gray-400" }
-const _hoisted_641 = { class: "flex items-center gap-1 text-amber-500 text-xs shrink-0" }
-const _hoisted_642 = { class: "text-xs text-gray-700 italic bg-white p-3 rounded-xl border border-gray-100" }
-const _hoisted_643 = {
+const _hoisted_642 = { class: "flex justify-between items-start gap-2 mb-2" }
+const _hoisted_643 = { class: "font-bold text-xs text-gray-900" }
+const _hoisted_644 = { class: "text-[11px] text-gray-400" }
+const _hoisted_645 = { class: "flex items-center gap-1 text-amber-500 text-xs shrink-0" }
+const _hoisted_646 = { class: "text-xs text-gray-700 italic bg-white p-3 rounded-xl border border-gray-100" }
+const _hoisted_647 = {
   key: 1,
   class: "p-6 text-center text-gray-400 bg-gray-50 rounded-2xl border border-gray-100 text-xs"
 }
-const _hoisted_644 = { class: "space-y-6" }
-const _hoisted_645 = { class: "bg-linear-to-br from-orange-50 via-white to-amber-50 border border-orange-200/80 rounded-2xl p-5 shadow-sm" }
-const _hoisted_646 = { class: "flex flex-col sm:flex-row sm:items-center justify-between gap-4" }
-const _hoisted_647 = { class: "text-right sm:text-right bg-white p-3.5 rounded-2xl border border-orange-100 shadow-sm flex sm:flex-col items-center sm:items-end justify-between sm:justify-center" }
-const _hoisted_648 = { class: "flex items-center gap-1 text-orange-500 text-base" }
-const _hoisted_649 = { class: "mt-1" }
-const _hoisted_650 = { class: "text-2xl font-black text-gray-900" }
-const _hoisted_651 = { class: "text-[11px] text-gray-500 font-medium" }
-const _hoisted_652 = { class: "mt-5 pt-4 border-t border-orange-100/80 space-y-1.5" }
-const _hoisted_653 = { class: "w-8 font-bold text-gray-600 flex items-center gap-1" }
-const _hoisted_654 = { class: "grow bg-gray-100 rounded-full h-2 overflow-hidden" }
-const _hoisted_655 = { class: "w-8 text-right font-mono text-gray-400 text-[11px]" }
-const _hoisted_656 = {
+const _hoisted_648 = { class: "space-y-6" }
+const _hoisted_649 = { class: "bg-linear-to-br from-orange-50 via-white to-amber-50 border border-orange-200/80 rounded-2xl p-5 shadow-sm" }
+const _hoisted_650 = { class: "flex flex-col sm:flex-row sm:items-center justify-between gap-4" }
+const _hoisted_651 = { class: "text-right sm:text-right bg-white p-3.5 rounded-2xl border border-orange-100 shadow-sm flex sm:flex-col items-center sm:items-end justify-between sm:justify-center" }
+const _hoisted_652 = { class: "flex items-center gap-1 text-orange-500 text-base" }
+const _hoisted_653 = { class: "mt-1" }
+const _hoisted_654 = { class: "text-2xl font-black text-gray-900" }
+const _hoisted_655 = { class: "text-[11px] text-gray-500 font-medium" }
+const _hoisted_656 = { class: "mt-5 pt-4 border-t border-orange-100/80 space-y-1.5" }
+const _hoisted_657 = { class: "w-8 font-bold text-gray-600 flex items-center gap-1" }
+const _hoisted_658 = { class: "grow bg-gray-100 rounded-full h-2 overflow-hidden" }
+const _hoisted_659 = { class: "w-8 text-right font-mono text-gray-400 text-[11px]" }
+const _hoisted_660 = {
   key: 0,
   class: "space-y-3"
 }
-const _hoisted_657 = { class: "flex justify-between items-start gap-2 mb-2" }
-const _hoisted_658 = { class: "font-bold text-xs text-gray-900" }
-const _hoisted_659 = { class: "text-gray-400 font-normal" }
-const _hoisted_660 = { class: "text-[11px] text-gray-500 font-medium mt-0.5" }
-const _hoisted_661 = { class: "text-gray-700 font-semibold" }
-const _hoisted_662 = { class: "flex items-center gap-1 text-orange-500 text-xs shrink-0" }
-const _hoisted_663 = { class: "text-xs text-gray-700 italic bg-white p-3 rounded-xl border border-gray-100" }
-const _hoisted_664 = {
+const _hoisted_661 = { class: "flex justify-between items-start gap-2 mb-2" }
+const _hoisted_662 = { class: "font-bold text-xs text-gray-900" }
+const _hoisted_663 = { class: "text-gray-400 font-normal" }
+const _hoisted_664 = { class: "text-[11px] text-gray-500 font-medium mt-0.5" }
+const _hoisted_665 = { class: "text-gray-700 font-semibold" }
+const _hoisted_666 = { class: "flex items-center gap-1 text-orange-500 text-xs shrink-0" }
+const _hoisted_667 = { class: "text-xs text-gray-700 italic bg-white p-3 rounded-xl border border-gray-100" }
+const _hoisted_668 = {
   key: 1,
   class: "p-6 text-center text-gray-400 bg-gray-50 rounded-2xl border border-gray-100 text-xs"
 }
-const _hoisted_665 = { class: "px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end shrink-0" }
-const _hoisted_666 = ["onClick"]
-const _hoisted_667 = {
+const _hoisted_669 = { class: "px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end shrink-0" }
+const _hoisted_670 = ["onClick"]
+const _hoisted_671 = {
   key: 12,
   class: "fixed inset-0 z-[100] flex items-center justify-center p-4"
 }
-const _hoisted_668 = ["onClick"]
-const _hoisted_669 = { class: "bg-white rounded-2xl shadow-2xl w-full max-w-sm relative overflow-hidden animate-fade-in-up transform transition-all scale-100" }
-const _hoisted_670 = { class: "p-6 text-center" }
-const _hoisted_671 = {
+const _hoisted_672 = ["onClick"]
+const _hoisted_673 = { class: "bg-white rounded-2xl shadow-2xl w-full max-w-sm relative overflow-hidden animate-fade-in-up transform transition-all scale-100" }
+const _hoisted_674 = { class: "p-6 text-center" }
+const _hoisted_675 = {
   key: 0,
   class: "w-12 h-12 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 text-xl"
 }
-const _hoisted_672 = {
+const _hoisted_676 = {
   key: 1,
   class: "w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl"
 }
-const _hoisted_673 = { class: "text-lg font-bold text-gray-900 mb-2" }
-const _hoisted_674 = { class: "text-sm text-gray-500 leading-relaxed mb-6" }
-const _hoisted_675 = { class: "flex gap-3 justify-center" }
-const _hoisted_676 = ["onClick"]
-const _hoisted_677 = ["onClick"]
+const _hoisted_677 = { class: "text-lg font-bold text-gray-900 mb-2" }
+const _hoisted_678 = { class: "text-sm text-gray-500 leading-relaxed mb-6" }
+const _hoisted_679 = { class: "flex gap-3 justify-center" }
+const _hoisted_680 = ["onClick"]
+const _hoisted_681 = ["onClick"]
 
 return function render(_ctx, _cache) {
   return (_openBlock(), _createElementBlock(_Fragment, null, [
@@ -1966,7 +1973,7 @@ return function render(_ctx, _cache) {
                         return (_openBlock(), _createElementBlock("option", {
                           key: region.id,
                           value: region.id
-                        }, _toDisplayString(region.nombre), 9 /* TEXT, PROPS */, _hoisted_153))
+                        }, _toDisplayString(region.displayName || region.nombre), 9 /* TEXT, PROPS */, _hoisted_153))
                       }), 128 /* KEYED_FRAGMENT */))
                     ], 40 /* PROPS, NEED_HYDRATION */, _hoisted_152)
                   ]))
@@ -1974,13 +1981,13 @@ return function render(_ctx, _cache) {
             ]),
             (_ctx.isAdminGen)
               ? (_openBlock(), _createElementBlock("details", _hoisted_154, [
-                  _cache[65] || (_cache[65] = _createElementVNode("summary", null, "Administrar regionales y códigos AD", -1 /* CACHED */)),
+                  _cache[66] || (_cache[66] = _createElementVNode("summary", null, "Regionales: alias y acceso", -1 /* CACHED */)),
                   _createElementVNode("div", _hoisted_155, [
                     (_openBlock(true), _createElementBlock(_Fragment, null, _renderList(_ctx.regions, (region) => {
                       return (_openBlock(), _createElementBlock("button", {
                         key: region.id,
                         onClick: $event => (_ctx.editRegion(region))
-                      }, _toDisplayString(region.nombre) + " · " + _toDisplayString(region.estado), 9 /* TEXT, PROPS */, _hoisted_156))
+                      }, _toDisplayString(region.displayName || region.nombre) + " · " + _toDisplayString(region.estado), 9 /* TEXT, PROPS */, _hoisted_156))
                     }), 128 /* KEYED_FRAGMENT */))
                   ]),
                   _createElementVNode("form", {
@@ -1988,9 +1995,10 @@ return function render(_ctx, _cache) {
                     class: "regional-form"
                   }, [
                     _createElementVNode("label", null, [
-                      _cache[61] || (_cache[61] = _createTextVNode("Nombre", -1 /* CACHED */)),
+                      _cache[61] || (_cache[61] = _createTextVNode("Nombre institucional", -1 /* CACHED */)),
                       _withDirectives(_createElementVNode("input", {
                         "onUpdate:modelValue": $event => ((_ctx.regionalForm.nombre) = $event),
+                        readonly: _ctx.organizationManaged || _ctx.regionalForm.directoryManaged,
                         maxlength: "150",
                         required: ""
                       }, null, 8 /* PROPS */, _hoisted_158), [
@@ -1998,66 +2006,81 @@ return function render(_ctx, _cache) {
                       ])
                     ]),
                     _createElementVNode("label", null, [
-                      _cache[62] || (_cache[62] = _createTextVNode("Código regional AD", -1 /* CACHED */)),
+                      _cache[62] || (_cache[62] = _createTextVNode("Alias en Almuerzo", -1 /* CACHED */)),
                       _withDirectives(_createElementVNode("input", {
-                        "onUpdate:modelValue": $event => ((_ctx.regionalForm.directoryCode) = $event),
-                        readonly: _ctx.regionalForm.directoryManaged,
-                        maxlength: "64"
+                        "onUpdate:modelValue": $event => ((_ctx.regionalForm.alias) = $event),
+                        maxlength: "150",
+                        placeholder: "Opcional: nombre para mostrar"
                       }, null, 8 /* PROPS */, _hoisted_159), [
-                        [_vModelText, _ctx.regionalForm.directoryCode]
+                        [_vModelText, _ctx.regionalForm.alias]
                       ])
                     ]),
+                    (_ctx.regionalForm.directoryCode || !_ctx.organizationManaged)
+                      ? (_openBlock(), _createElementBlock("label", _hoisted_160, [
+                          _cache[63] || (_cache[63] = _createTextVNode("Código AD anterior (si existe)", -1 /* CACHED */)),
+                          _withDirectives(_createElementVNode("input", {
+                            "onUpdate:modelValue": $event => ((_ctx.regionalForm.directoryCode) = $event),
+                            readonly: _ctx.organizationManaged || _ctx.regionalForm.directoryManaged,
+                            maxlength: "64"
+                          }, null, 8 /* PROPS */, _hoisted_161), [
+                            [_vModelText, _ctx.regionalForm.directoryCode]
+                          ])
+                        ]))
+                      : _createCommentVNode("v-if", true),
                     _createElementVNode("label", null, [
-                      _cache[64] || (_cache[64] = _createTextVNode("Estado", -1 /* CACHED */)),
+                      _cache[65] || (_cache[65] = _createTextVNode("Estado", -1 /* CACHED */)),
                       _withDirectives(_createElementVNode("select", {
                         "onUpdate:modelValue": $event => ((_ctx.regionalForm.estado) = $event)
-                      }, [...(_cache[63] || (_cache[63] = [
+                      }, [...(_cache[64] || (_cache[64] = [
                         _createElementVNode("option", null, "ACTIVO", -1 /* CACHED */),
                         _createElementVNode("option", null, "INACTIVO", -1 /* CACHED */)
-                      ]))], 8 /* PROPS */, _hoisted_160), [
+                      ]))], 8 /* PROPS */, _hoisted_162), [
                         [_vModelSelect, _ctx.regionalForm.estado]
                       ])
                     ]),
                     _createElementVNode("button", {
                       type: "submit",
                       disabled: _ctx.regionalSaving
-                    }, _toDisplayString(_ctx.regionalSaving ? 'Guardando…' : 'Guardar regional'), 9 /* TEXT, PROPS */, _hoisted_161),
-                    _createElementVNode("button", {
-                      type: "button",
-                      onClick: $event => (Object.assign(_ctx.regionalForm, {id:'',nombre:'',directoryCode:'',directoryManaged:false,estado:'ACTIVO'}))
-                    }, "Nueva", 8 /* PROPS */, _hoisted_162)
+                    }, _toDisplayString(_ctx.regionalSaving ? 'Guardando…' : 'Guardar regional'), 9 /* TEXT, PROPS */, _hoisted_163),
+                    (!_ctx.organizationManaged)
+                      ? (_openBlock(), _createElementBlock("button", {
+                          key: 1,
+                          type: "button",
+                          onClick: $event => (Object.assign(_ctx.regionalForm, {id:'',nombre:'',alias:'',directoryCode:'',directoryKey:'',directoryManaged:false,estado:'ACTIVO'}))
+                        }, "Nueva", 8 /* PROPS */, _hoisted_164))
+                      : _createCommentVNode("v-if", true)
                   ], 40 /* PROPS, NEED_HYDRATION */, _hoisted_157),
                   (_ctx.regionalError)
-                    ? (_openBlock(), _createElementBlock("p", _hoisted_163, _toDisplayString(_ctx.regionalError), 1 /* TEXT */))
+                    ? (_openBlock(), _createElementBlock("p", _hoisted_165, _toDisplayString(_ctx.regionalError), 1 /* TEXT */))
                     : _createCommentVNode("v-if", true)
                 ]))
               : _createCommentVNode("v-if", true),
             _createCommentVNode(" Navigation "),
             (!_ctx.isAdminGen)
-              ? (_openBlock(), _createElementBlock("p", _hoisted_164, _toDisplayString(_ctx.canManageRegion ? 'Gestión operativa de tu regional. Identidades, roles, departamentos y configuración institucional son de solo lectura.' : 'Consulta y gestión de pedidos de tu departamento. La identidad y los accesos los administra ADMIN_GEN.'), 1 /* TEXT */))
+              ? (_openBlock(), _createElementBlock("p", _hoisted_166, _toDisplayString(_ctx.canManageRegion ? 'Gestión operativa de tu regional. Identidades, roles, departamentos y configuración institucional son de solo lectura.' : 'Consulta y gestión de pedidos de tu departamento. La identidad y los accesos los administra ADMIN_GEN.'), 1 /* TEXT */))
               : _createCommentVNode("v-if", true),
-            _createElementVNode("div", _hoisted_165, [
+            _createElementVNode("div", _hoisted_167, [
               (_openBlock(true), _createElementBlock(_Fragment, null, _renderList(_ctx.adminTabs, (tab) => {
                 return (_openBlock(), _createElementBlock("button", {
                   key: tab,
                   onClick: $event => {_ctx.adminState.tab = tab; if (tab === 'VALORACIONES') _ctx.loadRatingsSummary();},
                   class: _normalizeClass(['px-4 py-2 font-bold text-xs rounded-t-lg border-b-2 transition-all whitespace-nowrap', _ctx.adminState.tab === tab ? 'border-blue-600 text-blue-600 bg-blue-50/50' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'])
-                }, _toDisplayString(tab === 'DIAS_LIBRES' ? 'CALENDARIO' : tab), 11 /* TEXT, CLASS, PROPS */, _hoisted_166))
+                }, _toDisplayString(tab === 'DIAS_LIBRES' ? 'CALENDARIO' : tab), 11 /* TEXT, CLASS, PROPS */, _hoisted_168))
               }), 128 /* KEYED_FRAGMENT */))
             ]),
             _createCommentVNode(" Users Module "),
             (_ctx.adminState.tab === 'USUARIOS')
-              ? (_openBlock(), _createElementBlock("div", _hoisted_167, [
-                  _createElementVNode("div", _hoisted_168, [
-                    _createElementVNode("div", _hoisted_169, [
-                      _createElementVNode("div", _hoisted_170, [
-                        _cache[67] || (_cache[67] = _createElementVNode("i", { class: "fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs" }, null, -1 /* CACHED */)),
+              ? (_openBlock(), _createElementBlock("div", _hoisted_169, [
+                  _createElementVNode("div", _hoisted_170, [
+                    _createElementVNode("div", _hoisted_171, [
+                      _createElementVNode("div", _hoisted_172, [
+                        _cache[68] || (_cache[68] = _createElementVNode("i", { class: "fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs" }, null, -1 /* CACHED */)),
                         _withDirectives(_createElementVNode("input", {
                           "onUpdate:modelValue": $event => ((_ctx.adminState.filters.users.search) = $event),
                           type: "text",
                           placeholder: "Buscar usuario...",
                           class: "w-full bg-gray-50 border border-gray-200 text-xs rounded-lg pl-9 pr-8 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-                        }, null, 8 /* PROPS */, _hoisted_171), [
+                        }, null, 8 /* PROPS */, _hoisted_173), [
                           [_vModelText, _ctx.adminState.filters.users.search]
                         ]),
                         (_ctx.adminState.filters.users.search)
@@ -2065,64 +2088,64 @@ return function render(_ctx, _cache) {
                               key: 0,
                               onClick: $event => (_ctx.clearFilters('users')),
                               class: "absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                            }, [...(_cache[66] || (_cache[66] = [
+                            }, [...(_cache[67] || (_cache[67] = [
                               _createElementVNode("i", { class: "fa-solid fa-xmark" }, null, -1 /* CACHED */)
-                            ]))], 8 /* PROPS */, _hoisted_172))
+                            ]))], 8 /* PROPS */, _hoisted_174))
                           : _createCommentVNode("v-if", true)
                       ])
                     ]),
-                    _cache[68] || (_cache[68] = _createElementVNode("p", { class: "text-xs text-gray-500" }, "Cuentas incorporadas por AD o importación. Los datos de identidad son de solo lectura.", -1 /* CACHED */))
+                    _cache[69] || (_cache[69] = _createElementVNode("p", { class: "text-xs text-gray-500" }, "Cuentas incorporadas por AD o importación. Los datos de identidad son de solo lectura.", -1 /* CACHED */))
                   ]),
-                  _createElementVNode("div", _hoisted_173, [
-                    _createElementVNode("table", _hoisted_174, [
-                      _createElementVNode("thead", _hoisted_175, [
+                  _createElementVNode("div", _hoisted_175, [
+                    _createElementVNode("table", _hoisted_176, [
+                      _createElementVNode("thead", _hoisted_177, [
                         _createElementVNode("tr", null, [
-                          _cache[69] || (_cache[69] = _createElementVNode("th", { class: "p-3 rounded-l" }, "Nombre", -1 /* CACHED */)),
-                          _cache[70] || (_cache[70] = _createElementVNode("th", { class: "p-3" }, "Código", -1 /* CACHED */)),
-                          _cache[71] || (_cache[71] = _createElementVNode("th", { class: "p-3" }, "Correo", -1 /* CACHED */)),
-                          _cache[72] || (_cache[72] = _createElementVNode("th", { class: "p-3" }, "Depto", -1 /* CACHED */)),
-                          _cache[73] || (_cache[73] = _createElementVNode("th", { class: "p-3" }, "Rol", -1 /* CACHED */)),
-                          _cache[74] || (_cache[74] = _createElementVNode("th", { class: "p-3" }, "Estado", -1 /* CACHED */)),
+                          _cache[70] || (_cache[70] = _createElementVNode("th", { class: "p-3 rounded-l" }, "Nombre", -1 /* CACHED */)),
+                          _cache[71] || (_cache[71] = _createElementVNode("th", { class: "p-3" }, "Código", -1 /* CACHED */)),
+                          _cache[72] || (_cache[72] = _createElementVNode("th", { class: "p-3" }, "Correo", -1 /* CACHED */)),
+                          _cache[73] || (_cache[73] = _createElementVNode("th", { class: "p-3" }, "Depto", -1 /* CACHED */)),
+                          _cache[74] || (_cache[74] = _createElementVNode("th", { class: "p-3" }, "Rol", -1 /* CACHED */)),
+                          _cache[75] || (_cache[75] = _createElementVNode("th", { class: "p-3" }, "Estado", -1 /* CACHED */)),
                           (_ctx.canManageRegion)
-                            ? (_openBlock(), _createElementBlock("th", _hoisted_176, "Acciones"))
+                            ? (_openBlock(), _createElementBlock("th", _hoisted_178, "Acciones"))
                             : _createCommentVNode("v-if", true)
                         ])
                       ]),
-                      _createElementVNode("tbody", _hoisted_177, [
+                      _createElementVNode("tbody", _hoisted_179, [
                         (_openBlock(true), _createElementBlock(_Fragment, null, _renderList(_ctx.filteredUsers, (u) => {
                           return (_openBlock(), _createElementBlock("tr", {
                             key: u.email,
                             class: "hover:bg-gray-50"
                           }, [
-                            _createElementVNode("td", _hoisted_178, _toDisplayString(u.nombre), 1 /* TEXT */),
-                            _createElementVNode("td", _hoisted_179, _toDisplayString(u.codigo || '-'), 1 /* TEXT */),
-                            _createElementVNode("td", _hoisted_180, _toDisplayString(u.email), 1 /* TEXT */),
-                            _createElementVNode("td", _hoisted_181, [
-                              _createElementVNode("span", _hoisted_182, _toDisplayString(u.departamento), 1 /* TEXT */)
-                            ]),
+                            _createElementVNode("td", _hoisted_180, _toDisplayString(u.nombre), 1 /* TEXT */),
+                            _createElementVNode("td", _hoisted_181, _toDisplayString(u.codigo || '-'), 1 /* TEXT */),
+                            _createElementVNode("td", _hoisted_182, _toDisplayString(u.email), 1 /* TEXT */),
                             _createElementVNode("td", _hoisted_183, [
-                              _createElementVNode("span", _hoisted_184, _toDisplayString(u.rol), 1 /* TEXT */)
+                              _createElementVNode("span", _hoisted_184, _toDisplayString(u.departamento), 1 /* TEXT */)
                             ]),
                             _createElementVNode("td", _hoisted_185, [
+                              _createElementVNode("span", _hoisted_186, _toDisplayString(u.rol), 1 /* TEXT */)
+                            ]),
+                            _createElementVNode("td", _hoisted_187, [
                               _createElementVNode("span", {
                                 class: _normalizeClass(['px-2 py-1 rounded-full text-xs font-bold', u.estado === 'ACTIVO' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'])
                               }, _toDisplayString(u.estado), 3 /* TEXT, CLASS */),
                               (u.regionalBlocked)
-                                ? (_openBlock(), _createElementBlock("span", _hoisted_186, "SUSPENDIDO EN LA REGIONAL"))
+                                ? (_openBlock(), _createElementBlock("span", _hoisted_188, "SUSPENDIDO EN LA REGIONAL"))
                                 : _createCommentVNode("v-if", true)
                             ]),
                             (_ctx.canManageRegion)
-                              ? (_openBlock(), _createElementBlock("td", _hoisted_187, [
-                                  _createElementVNode("div", _hoisted_188, [
+                              ? (_openBlock(), _createElementBlock("td", _hoisted_189, [
+                                  _createElementVNode("div", _hoisted_190, [
                                     (_ctx.isAdminGen)
                                       ? (_openBlock(), _createElementBlock("button", {
                                           key: 0,
                                           onClick: $event => (_ctx.openUserModal(u)),
                                           class: "text-blue-600 hover:bg-blue-50 p-1.5 rounded",
                                           title: "Gestionar acceso"
-                                        }, [...(_cache[75] || (_cache[75] = [
+                                        }, [...(_cache[76] || (_cache[76] = [
                                           _createElementVNode("i", { class: "fa-solid fa-user-shield" }, null, -1 /* CACHED */)
-                                        ]))], 8 /* PROPS */, _hoisted_189))
+                                        ]))], 8 /* PROPS */, _hoisted_191))
                                       : _createCommentVNode("v-if", true),
                                     (_ctx.isAdminGen)
                                       ? (_openBlock(), _createElementBlock("button", {
@@ -2135,7 +2158,7 @@ return function render(_ctx, _cache) {
                                           _createElementVNode("i", {
                                             class: _normalizeClass(_ctx.userStatusSaving===u.email ? 'fa-solid fa-spinner fa-spin' : (u.estado==='ACTIVO'?'fa-solid fa-ban':'fa-solid fa-check'))
                                           }, null, 2 /* CLASS */)
-                                        ], 8 /* PROPS */, _hoisted_190))
+                                        ], 8 /* PROPS */, _hoisted_192))
                                       : _createCommentVNode("v-if", true),
                                     (_ctx.canBlockUser(u))
                                       ? (_openBlock(), _createElementBlock("button", {
@@ -2148,7 +2171,7 @@ return function render(_ctx, _cache) {
                                           _createElementVNode("i", {
                                             class: _normalizeClass(_ctx.regionalBlockSaving===u.email ? 'fa-solid fa-spinner fa-spin' : (u.regionalBlocked?'fa-solid fa-unlock':'fa-solid fa-lock'))
                                           }, null, 2 /* CLASS */)
-                                        ], 8 /* PROPS */, _hoisted_191))
+                                        ], 8 /* PROPS */, _hoisted_193))
                                       : _createCommentVNode("v-if", true)
                                   ])
                                 ]))
@@ -2162,38 +2185,38 @@ return function render(_ctx, _cache) {
               : _createCommentVNode("v-if", true),
             _createCommentVNode(" Orders Module "),
             (_ctx.adminState.tab === 'PEDIDOS')
-              ? (_openBlock(), _createElementBlock("div", _hoisted_192, [
-                  _createElementVNode("div", _hoisted_193, [
-                    _cache[78] || (_cache[78] = _createElementVNode("h2", { class: "text-xl font-bold text-gray-900" }, "Pedidos", -1 /* CACHED */)),
-                    _createElementVNode("div", _hoisted_194, [
+              ? (_openBlock(), _createElementBlock("div", _hoisted_194, [
+                  _createElementVNode("div", _hoisted_195, [
+                    _cache[79] || (_cache[79] = _createElementVNode("h2", { class: "text-xl font-bold text-gray-900" }, "Pedidos", -1 /* CACHED */)),
+                    _createElementVNode("div", _hoisted_196, [
                       (_ctx.adminState.filters.orders.search || _ctx.adminState.filters.orders.dateStart || _ctx.adminState.filters.orders.status)
                         ? (_openBlock(), _createElementBlock("button", {
                             key: 0,
                             onClick: $event => (_ctx.clearFilters('orders')),
                             class: "text-red-500 hover:bg-red-50 text-xs font-bold py-2 px-3 rounded-lg transition-colors"
-                          }, [...(_cache[76] || (_cache[76] = [
+                          }, [...(_cache[77] || (_cache[77] = [
                             _createElementVNode("i", { class: "fa-solid fa-trash-can mr-1" }, null, -1 /* CACHED */),
                             _createTextVNode(" Limpiar ", -1 /* CACHED */)
-                          ]))], 8 /* PROPS */, _hoisted_195))
+                          ]))], 8 /* PROPS */, _hoisted_197))
                         : _createCommentVNode("v-if", true),
                       _createElementVNode("button", {
                         onClick: $event => (_ctx.adminState.filters.orders.open = !_ctx.adminState.filters.orders.open),
                         class: "bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-2"
-                      }, [...(_cache[77] || (_cache[77] = [
+                      }, [...(_cache[78] || (_cache[78] = [
                         _createElementVNode("i", { class: "fa-solid fa-filter" }, null, -1 /* CACHED */),
                         _createTextVNode(" Filtros ", -1 /* CACHED */)
-                      ]))], 8 /* PROPS */, _hoisted_196)
+                      ]))], 8 /* PROPS */, _hoisted_198)
                     ])
                   ]),
                   _createCommentVNode(" Filter Bar "),
                   (_ctx.adminState.filters.orders.open)
-                    ? (_openBlock(), _createElementBlock("div", _hoisted_197, [
+                    ? (_openBlock(), _createElementBlock("div", _hoisted_199, [
                         _withDirectives(_createElementVNode("input", {
                           "onUpdate:modelValue": $event => ((_ctx.adminState.filters.orders.search) = $event),
                           type: "text",
                           placeholder: "Buscar por texto...",
                           class: "bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs focus:ring-1 focus:ring-blue-500 outline-none"
-                        }, null, 8 /* PROPS */, _hoisted_198), [
+                        }, null, 8 /* PROPS */, _hoisted_200), [
                           [_vModelText, _ctx.adminState.filters.orders.search]
                         ]),
                         _withDirectives(_createElementVNode("input", {
@@ -2201,7 +2224,7 @@ return function render(_ctx, _cache) {
                           type: "date",
                           title: "Desde",
                           class: "bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs focus:ring-1 focus:ring-blue-500 outline-none"
-                        }, null, 8 /* PROPS */, _hoisted_199), [
+                        }, null, 8 /* PROPS */, _hoisted_201), [
                           [_vModelText, _ctx.adminState.filters.orders.dateStart]
                         ]),
                         _withDirectives(_createElementVNode("input", {
@@ -2209,24 +2232,24 @@ return function render(_ctx, _cache) {
                           type: "date",
                           title: "Hasta",
                           class: "bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs focus:ring-1 focus:ring-blue-500 outline-none"
-                        }, null, 8 /* PROPS */, _hoisted_200), [
+                        }, null, 8 /* PROPS */, _hoisted_202), [
                           [_vModelText, _ctx.adminState.filters.orders.dateEnd]
                         ]),
                         _withDirectives(_createElementVNode("select", {
                           "onUpdate:modelValue": $event => ((_ctx.adminState.filters.orders.status) = $event),
                           class: "bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs focus:ring-1 focus:ring-blue-500 outline-none"
-                        }, [...(_cache[79] || (_cache[79] = [
+                        }, [...(_cache[80] || (_cache[80] = [
                           _createElementVNode("option", { value: "" }, "Todos los Estados", -1 /* CACHED */),
                           _createElementVNode("option", { value: "ACTIVO" }, "Activo", -1 /* CACHED */),
                           _createElementVNode("option", { value: "CANCELADO" }, "Cancelado", -1 /* CACHED */)
-                        ]))], 8 /* PROPS */, _hoisted_201), [
+                        ]))], 8 /* PROPS */, _hoisted_203), [
                           [_vModelSelect, _ctx.adminState.filters.orders.status]
                         ])
                       ]))
                     : _createCommentVNode("v-if", true),
-                  _createElementVNode("div", _hoisted_202, [
-                    _createElementVNode("table", _hoisted_203, [
-                      _cache[80] || (_cache[80] = _createElementVNode("thead", { class: "bg-gray-50 text-gray-500 font-bold uppercase text-xs" }, [
+                  _createElementVNode("div", _hoisted_204, [
+                    _createElementVNode("table", _hoisted_205, [
+                      _cache[81] || (_cache[81] = _createElementVNode("thead", { class: "bg-gray-50 text-gray-500 font-bold uppercase text-xs" }, [
                         _createElementVNode("tr", null, [
                           _createElementVNode("th", { class: "p-3 rounded-l" }, "Fecha"),
                           _createElementVNode("th", { class: "p-3" }, "Usuario"),
@@ -2243,22 +2266,22 @@ return function render(_ctx, _cache) {
                             key: o.id,
                             class: "border-b last:border-0 hover:bg-gray-50"
                           }, [
-                            _createElementVNode("td", _hoisted_204, _toDisplayString(o.date.split('-').slice(1).reverse().join('/')), 1 /* TEXT */),
-                            _createElementVNode("td", _hoisted_205, [
-                              _createElementVNode("div", _hoisted_206, _toDisplayString(o.nombre), 1 /* TEXT */),
-                              _createElementVNode("div", _hoisted_207, _toDisplayString(o.email), 1 /* TEXT */)
+                            _createElementVNode("td", _hoisted_206, _toDisplayString(o.date.split('-').slice(1).reverse().join('/')), 1 /* TEXT */),
+                            _createElementVNode("td", _hoisted_207, [
+                              _createElementVNode("div", _hoisted_208, _toDisplayString(o.nombre), 1 /* TEXT */),
+                              _createElementVNode("div", _hoisted_209, _toDisplayString(o.email), 1 /* TEXT */)
                             ]),
-                            _createElementVNode("td", _hoisted_208, _toDisplayString(o.dept), 1 /* TEXT */),
-                            _createElementVNode("td", _hoisted_209, _toDisplayString(_ctx.formatMenuText(o.resumen)), 1 /* TEXT */),
-                            _createElementVNode("td", _hoisted_210, _toDisplayString(o.creado_por === o.email ? '(Mismo)' : o.creado_por), 1 /* TEXT */),
-                            _createElementVNode("td", _hoisted_211, [
-                              _createElementVNode("span", _hoisted_212, _toDisplayString(o.estado), 1 /* TEXT */)
-                            ]),
+                            _createElementVNode("td", _hoisted_210, _toDisplayString(o.dept), 1 /* TEXT */),
+                            _createElementVNode("td", _hoisted_211, _toDisplayString(_ctx.formatMenuText(o.resumen)), 1 /* TEXT */),
+                            _createElementVNode("td", _hoisted_212, _toDisplayString(o.creado_por === o.email ? '(Mismo)' : o.creado_por), 1 /* TEXT */),
                             _createElementVNode("td", _hoisted_213, [
+                              _createElementVNode("span", _hoisted_214, _toDisplayString(o.estado), 1 /* TEXT */)
+                            ]),
+                            _createElementVNode("td", _hoisted_215, [
                               _createElementVNode("button", {
                                 onClick: $event => (_ctx.adminCancelOrder(o.id)),
                                 class: "text-red-500 hover:bg-red-50 p-2 rounded text-xs font-bold border border-red-100"
-                              }, " Cancelar ", 8 /* PROPS */, _hoisted_214)
+                              }, " Cancelar ", 8 /* PROPS */, _hoisted_216)
                             ])
                           ]))
                         }), 128 /* KEYED_FRAGMENT */))
@@ -2269,16 +2292,16 @@ return function render(_ctx, _cache) {
               : _createCommentVNode("v-if", true),
             _createCommentVNode(" Ratings / Valoraciones Module "),
             (_ctx.adminState.tab === 'VALORACIONES')
-              ? (_openBlock(), _createElementBlock("div", _hoisted_215, [
-                  _createElementVNode("div", _hoisted_216, [
-                    _cache[83] || (_cache[83] = _createElementVNode("div", null, [
+              ? (_openBlock(), _createElementBlock("div", _hoisted_217, [
+                  _createElementVNode("div", _hoisted_218, [
+                    _cache[84] || (_cache[84] = _createElementVNode("div", null, [
                       _createElementVNode("h2", { class: "text-xl font-bold text-gray-900 flex items-center gap-2" }, [
                         _createElementVNode("i", { class: "fa-solid fa-star text-amber-500" }),
                         _createTextVNode(" Calificaciones y Satisfacción ")
                       ]),
                       _createElementVNode("p", { class: "text-xs text-gray-500 mt-1" }, "Supervisión en tiempo real de la calidad del proveedor y de los almuerzos diarios.")
                     ], -1 /* CACHED */)),
-                    _createElementVNode("div", _hoisted_217, [
+                    _createElementVNode("div", _hoisted_219, [
                       _createElementVNode("button", {
                         onClick: _ctx.loadRatingsSummary,
                         class: "px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl flex items-center gap-2 transition-colors",
@@ -2287,117 +2310,117 @@ return function render(_ctx, _cache) {
                         _createElementVNode("i", {
                           class: _normalizeClass(['fa-solid fa-rotate', _ctx.ratingsSummary.loading ? 'fa-spin' : ''])
                         }, null, 2 /* CLASS */),
-                        _cache[81] || (_cache[81] = _createTextVNode(" Actualizar ", -1 /* CACHED */))
-                      ], 8 /* PROPS */, _hoisted_218),
+                        _cache[82] || (_cache[82] = _createTextVNode(" Actualizar ", -1 /* CACHED */))
+                      ], 8 /* PROPS */, _hoisted_220),
                       (_ctx.isAdminGen)
                         ? (_openBlock(), _createElementBlock("button", {
                             key: 0,
                             onClick: _ctx.openProviderResetModal,
                             class: "px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl flex items-center gap-2 transition-colors shadow-sm shadow-amber-600/20"
-                          }, [...(_cache[82] || (_cache[82] = [
+                          }, [...(_cache[83] || (_cache[83] = [
                             _createElementVNode("i", { class: "fa-solid fa-arrows-rotate" }, null, -1 /* CACHED */),
                             _createTextVNode(" Cambiar Proveedor ", -1 /* CACHED */)
-                          ]))], 8 /* PROPS */, _hoisted_219))
+                          ]))], 8 /* PROPS */, _hoisted_221))
                         : _createCommentVNode("v-if", true)
                     ])
                   ]),
                   _createCommentVNode(" Stats Overview Grid "),
-                  _createElementVNode("div", _hoisted_220, [
+                  _createElementVNode("div", _hoisted_222, [
                     _createCommentVNode(" Provider Satisfaction Card "),
-                    _createElementVNode("div", _hoisted_221, [
-                      _createElementVNode("div", _hoisted_222, [
+                    _createElementVNode("div", _hoisted_223, [
+                      _createElementVNode("div", _hoisted_224, [
                         _createElementVNode("div", null, [
-                          _cache[84] || (_cache[84] = _createElementVNode("span", { class: "text-[10px] font-black uppercase tracking-wider text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200/60" }, "Proveedor Activo", -1 /* CACHED */)),
-                          _createElementVNode("h3", _hoisted_223, _toDisplayString(_ctx.ratingsSummary.providerStats?.providerInfo?.name || _ctx.providerInfo.name), 1 /* TEXT */),
-                          _createElementVNode("p", _hoisted_224, "Ciclo activo desde: " + _toDisplayString(_ctx.ratingsSummary.providerStats?.providerInfo?.periodStart || 'Reciente'), 1 /* TEXT */)
+                          _cache[85] || (_cache[85] = _createElementVNode("span", { class: "text-[10px] font-black uppercase tracking-wider text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200/60" }, "Proveedor Activo", -1 /* CACHED */)),
+                          _createElementVNode("h3", _hoisted_225, _toDisplayString(_ctx.ratingsSummary.providerStats?.providerInfo?.name || _ctx.providerInfo.name), 1 /* TEXT */),
+                          _createElementVNode("p", _hoisted_226, "Ciclo activo desde: " + _toDisplayString(_ctx.ratingsSummary.providerStats?.providerInfo?.periodStart || 'Reciente'), 1 /* TEXT */)
                         ]),
-                        _createElementVNode("div", _hoisted_225, [
-                          _createElementVNode("div", _hoisted_226, [
+                        _createElementVNode("div", _hoisted_227, [
+                          _createElementVNode("div", _hoisted_228, [
                             _createElementVNode("span", null, _toDisplayString(_ctx.ratingsSummary.providerStats?.average || 0), 1 /* TEXT */),
-                            _cache[85] || (_cache[85] = _createElementVNode("span", { class: "text-amber-400 text-2xl" }, "★", -1 /* CACHED */))
+                            _cache[86] || (_cache[86] = _createElementVNode("span", { class: "text-amber-400 text-2xl" }, "★", -1 /* CACHED */))
                           ]),
-                          _createElementVNode("p", _hoisted_227, _toDisplayString(_ctx.ratingsSummary.providerStats?.total || 0) + " evaluaciones", 1 /* TEXT */)
+                          _createElementVNode("p", _hoisted_229, _toDisplayString(_ctx.ratingsSummary.providerStats?.total || 0) + " evaluaciones", 1 /* TEXT */)
                         ])
                       ]),
                       _createCommentVNode(" Star breakdown bars "),
-                      _createElementVNode("div", _hoisted_228, [
+                      _createElementVNode("div", _hoisted_230, [
                         (_openBlock(), _createElementBlock(_Fragment, null, _renderList([5,4,3,2,1], (s) => {
                           return _createElementVNode("div", {
                             key: s,
                             class: "flex items-center gap-2 text-xs text-gray-500"
                           }, [
-                            _createElementVNode("span", _hoisted_229, _toDisplayString(s) + " ★", 1 /* TEXT */),
-                            _createElementVNode("div", _hoisted_230, [
+                            _createElementVNode("span", _hoisted_231, _toDisplayString(s) + " ★", 1 /* TEXT */),
+                            _createElementVNode("div", _hoisted_232, [
                               _createElementVNode("div", {
                                 class: "bg-amber-500 h-full rounded-full transition-all duration-500",
                                 style: _normalizeStyle({ width: ((_ctx.ratingsSummary.providerStats?.total ? (_ctx.ratingsSummary.providerStats.starsCount[s] / _ctx.ratingsSummary.providerStats.total) * 100 : 0) + '%') })
                               }, null, 4 /* STYLE */)
                             ]),
-                            _createElementVNode("span", _hoisted_231, _toDisplayString(_ctx.ratingsSummary.providerStats?.starsCount?.[s] || 0), 1 /* TEXT */)
+                            _createElementVNode("span", _hoisted_233, _toDisplayString(_ctx.ratingsSummary.providerStats?.starsCount?.[s] || 0), 1 /* TEXT */)
                           ])
                         }), 64 /* STABLE_FRAGMENT */))
                       ])
                     ]),
                     _createCommentVNode(" Meals Satisfaction Card "),
-                    _createElementVNode("div", _hoisted_232, [
-                      _createElementVNode("div", _hoisted_233, [
-                        _cache[87] || (_cache[87] = _createElementVNode("div", null, [
+                    _createElementVNode("div", _hoisted_234, [
+                      _createElementVNode("div", _hoisted_235, [
+                        _cache[88] || (_cache[88] = _createElementVNode("div", null, [
                           _createElementVNode("span", { class: "text-[10px] font-black uppercase tracking-wider text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full border border-blue-200/60" }, "Almuerzos Servidos"),
                           _createElementVNode("h3", { class: "text-lg font-bold text-gray-900 mt-2" }, "Satisfacción de Comidas"),
                           _createElementVNode("p", { class: "text-xs text-gray-400" }, "Promedio general de valoraciones por plato")
                         ], -1 /* CACHED */)),
-                        _createElementVNode("div", _hoisted_234, [
-                          _createElementVNode("div", _hoisted_235, [
+                        _createElementVNode("div", _hoisted_236, [
+                          _createElementVNode("div", _hoisted_237, [
                             _createElementVNode("span", null, _toDisplayString(_ctx.ratingsSummary.mealStats?.average || 0), 1 /* TEXT */),
-                            _cache[86] || (_cache[86] = _createElementVNode("span", { class: "text-amber-400 text-2xl" }, "★", -1 /* CACHED */))
+                            _cache[87] || (_cache[87] = _createElementVNode("span", { class: "text-amber-400 text-2xl" }, "★", -1 /* CACHED */))
                           ]),
-                          _createElementVNode("p", _hoisted_236, _toDisplayString(_ctx.ratingsSummary.mealStats?.total || 0) + " comidas calificadas", 1 /* TEXT */)
+                          _createElementVNode("p", _hoisted_238, _toDisplayString(_ctx.ratingsSummary.mealStats?.total || 0) + " comidas calificadas", 1 /* TEXT */)
                         ])
                       ]),
                       _createCommentVNode(" Star breakdown bars "),
-                      _createElementVNode("div", _hoisted_237, [
+                      _createElementVNode("div", _hoisted_239, [
                         (_openBlock(), _createElementBlock(_Fragment, null, _renderList([5,4,3,2,1], (s) => {
                           return _createElementVNode("div", {
                             key: s,
                             class: "flex items-center gap-2 text-xs text-gray-500"
                           }, [
-                            _createElementVNode("span", _hoisted_238, _toDisplayString(s) + " ★", 1 /* TEXT */),
-                            _createElementVNode("div", _hoisted_239, [
+                            _createElementVNode("span", _hoisted_240, _toDisplayString(s) + " ★", 1 /* TEXT */),
+                            _createElementVNode("div", _hoisted_241, [
                               _createElementVNode("div", {
                                 class: "bg-blue-600 h-full rounded-full transition-all duration-500",
                                 style: _normalizeStyle({ width: ((_ctx.ratingsSummary.mealStats?.total ? (_ctx.ratingsSummary.mealStats.starsCount[s] / _ctx.ratingsSummary.mealStats.total) * 100 : 0) + '%') })
                               }, null, 4 /* STYLE */)
                             ]),
-                            _createElementVNode("span", _hoisted_240, _toDisplayString(_ctx.ratingsSummary.mealStats?.starsCount?.[s] || 0), 1 /* TEXT */)
+                            _createElementVNode("span", _hoisted_242, _toDisplayString(_ctx.ratingsSummary.mealStats?.starsCount?.[s] || 0), 1 /* TEXT */)
                           ])
                         }), 64 /* STABLE_FRAGMENT */))
                       ])
                     ])
                   ]),
                   _createCommentVNode(" Recent Comments Dual Columns "),
-                  _createElementVNode("div", _hoisted_241, [
+                  _createElementVNode("div", _hoisted_243, [
                     _createCommentVNode(" Provider Feedback List "),
-                    _createElementVNode("div", _hoisted_242, [
-                      _cache[88] || (_cache[88] = _createElementVNode("h4", { class: "font-bold text-sm text-gray-900 flex items-center gap-2" }, [
+                    _createElementVNode("div", _hoisted_244, [
+                      _cache[89] || (_cache[89] = _createElementVNode("h4", { class: "font-bold text-sm text-gray-900 flex items-center gap-2" }, [
                         _createElementVNode("i", { class: "fa-solid fa-comments text-amber-500" }),
                         _createTextVNode(" Opiniones sobre el Proveedor ")
                       ], -1 /* CACHED */)),
                       (!_ctx.ratingsSummary.providerStats?.recentFeedback?.length)
-                        ? (_openBlock(), _createElementBlock("div", _hoisted_243, " No hay comentarios registrados para este período. "))
-                        : (_openBlock(), _createElementBlock("div", _hoisted_244, [
+                        ? (_openBlock(), _createElementBlock("div", _hoisted_245, " No hay comentarios registrados para este período. "))
+                        : (_openBlock(), _createElementBlock("div", _hoisted_246, [
                             (_openBlock(true), _createElementBlock(_Fragment, null, _renderList(_ctx.ratingsSummary.providerStats.recentFeedback, (item) => {
                               return (_openBlock(), _createElementBlock("div", {
                                 key: item.id,
                                 class: "p-3.5 bg-gray-50 rounded-xl border border-gray-100 text-xs space-y-1.5"
                               }, [
-                                _createElementVNode("div", _hoisted_245, [
-                                  _createElementVNode("div", _hoisted_246, [
+                                _createElementVNode("div", _hoisted_247, [
+                                  _createElementVNode("div", _hoisted_248, [
                                     _createElementVNode("span", null, _toDisplayString(item.nombre), 1 /* TEXT */),
                                     (item.departamento)
-                                      ? (_openBlock(), _createElementBlock("span", _hoisted_247, "(" + _toDisplayString(item.departamento) + ")", 1 /* TEXT */))
+                                      ? (_openBlock(), _createElementBlock("span", _hoisted_249, "(" + _toDisplayString(item.departamento) + ")", 1 /* TEXT */))
                                       : _createCommentVNode("v-if", true)
                                   ]),
-                                  _createElementVNode("div", _hoisted_248, [
+                                  _createElementVNode("div", _hoisted_250, [
                                     (_openBlock(), _createElementBlock(_Fragment, null, _renderList(5, (star) => {
                                       return _createElementVNode("i", {
                                         key: star,
@@ -2407,9 +2430,9 @@ return function render(_ctx, _cache) {
                                   ])
                                 ]),
                                 (item.comentario)
-                                  ? (_openBlock(), _createElementBlock("p", _hoisted_249, "\"" + _toDisplayString(item.comentario) + "\"", 1 /* TEXT */))
+                                  ? (_openBlock(), _createElementBlock("p", _hoisted_251, "\"" + _toDisplayString(item.comentario) + "\"", 1 /* TEXT */))
                                   : _createCommentVNode("v-if", true),
-                                _createElementVNode("div", _hoisted_250, [
+                                _createElementVNode("div", _hoisted_252, [
                                   _createElementVNode("span", null, "Versión voto: v" + _toDisplayString(item.version), 1 /* TEXT */),
                                   _createElementVNode("span", null, _toDisplayString(item.fecha), 1 /* TEXT */)
                                 ])
@@ -2418,25 +2441,25 @@ return function render(_ctx, _cache) {
                           ]))
                     ]),
                     _createCommentVNode(" Meal Feedback List "),
-                    _createElementVNode("div", _hoisted_251, [
-                      _cache[90] || (_cache[90] = _createElementVNode("h4", { class: "font-bold text-sm text-gray-900 flex items-center gap-2" }, [
+                    _createElementVNode("div", _hoisted_253, [
+                      _cache[91] || (_cache[91] = _createElementVNode("h4", { class: "font-bold text-sm text-gray-900 flex items-center gap-2" }, [
                         _createElementVNode("i", { class: "fa-solid fa-bowl-food text-blue-500" }),
                         _createTextVNode(" Opiniones sobre Almuerzos ")
                       ], -1 /* CACHED */)),
                       (!_ctx.ratingsSummary.mealStats?.recentFeedback?.length)
-                        ? (_openBlock(), _createElementBlock("div", _hoisted_252, " No hay valoraciones de comidas registradas. "))
-                        : (_openBlock(), _createElementBlock("div", _hoisted_253, [
+                        ? (_openBlock(), _createElementBlock("div", _hoisted_254, " No hay valoraciones de comidas registradas. "))
+                        : (_openBlock(), _createElementBlock("div", _hoisted_255, [
                             (_openBlock(true), _createElementBlock(_Fragment, null, _renderList(_ctx.ratingsSummary.mealStats.recentFeedback, (item) => {
                               return (_openBlock(), _createElementBlock("div", {
                                 key: item.id,
                                 class: "p-3.5 bg-gray-50 rounded-xl border border-gray-100 text-xs space-y-1.5"
                               }, [
-                                _createElementVNode("div", _hoisted_254, [
-                                  _createElementVNode("div", _hoisted_255, [
-                                    _createElementVNode("span", null, _toDisplayString(item.nombre), 1 /* TEXT */),
-                                    _createElementVNode("span", _hoisted_256, _toDisplayString(item.fechaConsumo), 1 /* TEXT */)
-                                  ]),
+                                _createElementVNode("div", _hoisted_256, [
                                   _createElementVNode("div", _hoisted_257, [
+                                    _createElementVNode("span", null, _toDisplayString(item.nombre), 1 /* TEXT */),
+                                    _createElementVNode("span", _hoisted_258, _toDisplayString(item.fechaConsumo), 1 /* TEXT */)
+                                  ]),
+                                  _createElementVNode("div", _hoisted_259, [
                                     (_openBlock(), _createElementBlock(_Fragment, null, _renderList(5, (star) => {
                                       return _createElementVNode("i", {
                                         key: star,
@@ -2446,13 +2469,13 @@ return function render(_ctx, _cache) {
                                   ])
                                 ]),
                                 (item.platos)
-                                  ? (_openBlock(), _createElementBlock("div", _hoisted_258, [
-                                      _cache[89] || (_cache[89] = _createElementVNode("span", { class: "font-bold" }, "Menú:", -1 /* CACHED */)),
+                                  ? (_openBlock(), _createElementBlock("div", _hoisted_260, [
+                                      _cache[90] || (_cache[90] = _createElementVNode("span", { class: "font-bold" }, "Menú:", -1 /* CACHED */)),
                                       _createTextVNode(" " + _toDisplayString(item.platos), 1 /* TEXT */)
                                     ]))
                                   : _createCommentVNode("v-if", true),
                                 (item.comentario)
-                                  ? (_openBlock(), _createElementBlock("p", _hoisted_259, "\"" + _toDisplayString(item.comentario) + "\"", 1 /* TEXT */))
+                                  ? (_openBlock(), _createElementBlock("p", _hoisted_261, "\"" + _toDisplayString(item.comentario) + "\"", 1 /* TEXT */))
                                   : _createCommentVNode("v-if", true)
                               ]))
                             }), 128 /* KEYED_FRAGMENT */))
@@ -2463,59 +2486,64 @@ return function render(_ctx, _cache) {
               : _createCommentVNode("v-if", true),
             _createCommentVNode(" Depts Module (Admin Gen) "),
             (_ctx.adminState.tab === 'DEPTOS')
-              ? (_openBlock(), _createElementBlock("div", _hoisted_260, [
-                  _createElementVNode("div", _hoisted_261, [
-                    _cache[92] || (_cache[92] = _createElementVNode("h2", { class: "text-xl font-bold text-gray-900" }, "Departamentos", -1 /* CACHED */)),
-                    (_ctx.isAdminGen)
+              ? (_openBlock(), _createElementBlock("div", _hoisted_262, [
+                  _createElementVNode("div", _hoisted_263, [
+                    _cache[93] || (_cache[93] = _createElementVNode("h2", { class: "text-xl font-bold text-gray-900" }, "Departamentos", -1 /* CACHED */)),
+                    (_ctx.isAdminGen && !_ctx.organizationManaged)
                       ? (_openBlock(), _createElementBlock("button", {
                           key: 0,
                           onClick: $event => (_ctx.openDeptModal()),
                           class: "bg-gray-900 hover:bg-gray-800 text-white text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-2"
-                        }, [...(_cache[91] || (_cache[91] = [
+                        }, [...(_cache[92] || (_cache[92] = [
                           _createElementVNode("i", { class: "fa-solid fa-plus" }, null, -1 /* CACHED */),
                           _createTextVNode(" Depto ", -1 /* CACHED */)
-                        ]))], 8 /* PROPS */, _hoisted_262))
+                        ]))], 8 /* PROPS */, _hoisted_264))
                       : _createCommentVNode("v-if", true)
                   ]),
-                  _createElementVNode("div", _hoisted_263, [
-                    _createElementVNode("table", _hoisted_264, [
-                      _createElementVNode("thead", _hoisted_265, [
+                  _createElementVNode("div", _hoisted_265, [
+                    _createElementVNode("table", _hoisted_266, [
+                      _createElementVNode("thead", _hoisted_267, [
                         _createElementVNode("tr", null, [
-                          _cache[93] || (_cache[93] = _createElementVNode("th", { class: "p-3 rounded-l" }, "Nombre", -1 /* CACHED */)),
-                          _cache[94] || (_cache[94] = _createElementVNode("th", { class: "p-3" }, "Admins (Emails)", -1 /* CACHED */)),
-                          _cache[95] || (_cache[95] = _createElementVNode("th", { class: "p-3" }, "Estado", -1 /* CACHED */)),
+                          _cache[94] || (_cache[94] = _createElementVNode("th", { class: "p-3 rounded-l" }, "Nombre", -1 /* CACHED */)),
+                          _cache[95] || (_cache[95] = _createElementVNode("th", { class: "p-3" }, "Admins (Emails)", -1 /* CACHED */)),
+                          _cache[96] || (_cache[96] = _createElementVNode("th", { class: "p-3" }, "Estado", -1 /* CACHED */)),
                           (_ctx.canManageRegion)
-                            ? (_openBlock(), _createElementBlock("th", _hoisted_266, "Acciones"))
+                            ? (_openBlock(), _createElementBlock("th", _hoisted_268, "Acciones"))
                             : _createCommentVNode("v-if", true)
                         ])
                       ]),
-                      _createElementVNode("tbody", _hoisted_267, [
+                      _createElementVNode("tbody", _hoisted_269, [
                         (_openBlock(true), _createElementBlock(_Fragment, null, _renderList(_ctx.adminState.departments, (d) => {
                           return (_openBlock(), _createElementBlock("tr", {
                             key: d.id,
                             class: "hover:bg-gray-50"
                           }, [
-                            _createElementVNode("td", _hoisted_268, _toDisplayString(d.nombre), 1 /* TEXT */),
-                            _createElementVNode("td", _hoisted_269, [
+                            _createElementVNode("td", _hoisted_270, [
+                              _createTextVNode(_toDisplayString(d.displayName || d.nombre), 1 /* TEXT */),
+                              (d.alias)
+                                ? (_openBlock(), _createElementBlock("span", _hoisted_271, _toDisplayString(d.nombre), 1 /* TEXT */))
+                                : _createCommentVNode("v-if", true)
+                            ]),
+                            _createElementVNode("td", _hoisted_272, [
                               _createElementVNode("span", {
                                 class: _normalizeClass(!d.admins ? 'text-amber-700 font-semibold' : '')
                               }, _toDisplayString(d.admins || 'Sin responsable asignado'), 3 /* TEXT, CLASS */)
                             ]),
-                            _createElementVNode("td", _hoisted_270, [
+                            _createElementVNode("td", _hoisted_273, [
                               _createElementVNode("span", {
                                 class: _normalizeClass(['px-2 py-1 rounded-full text-xs font-bold', d.estado === 'ACTIVO' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'])
                               }, _toDisplayString(d.estado), 3 /* TEXT, CLASS */)
                             ]),
-                            _createElementVNode("td", _hoisted_271, [
+                            _createElementVNode("td", _hoisted_274, [
                               (_ctx.isAdminGen)
                                 ? (_openBlock(), _createElementBlock("button", {
                                     key: 0,
                                     onClick: $event => (_ctx.openDeptModal(d)),
                                     class: "text-blue-600 hover:bg-blue-50 p-1.5 rounded",
                                     title: "Editar"
-                                  }, [...(_cache[96] || (_cache[96] = [
+                                  }, [...(_cache[97] || (_cache[97] = [
                                     _createElementVNode("i", { class: "fa-solid fa-pen" }, null, -1 /* CACHED */)
-                                  ]))], 8 /* PROPS */, _hoisted_272))
+                                  ]))], 8 /* PROPS */, _hoisted_275))
                                 : _createCommentVNode("v-if", true),
                               (_ctx.isAdminGen)
                                 ? (_openBlock(), _createElementBlock("button", {
@@ -2523,9 +2551,9 @@ return function render(_ctx, _cache) {
                                     onClick: $event => (_ctx.deleteDept(d.id)),
                                     class: "text-red-500 hover:bg-red-50 p-1.5 rounded",
                                     title: "Eliminar"
-                                  }, [...(_cache[97] || (_cache[97] = [
+                                  }, [...(_cache[98] || (_cache[98] = [
                                     _createElementVNode("i", { class: "fa-solid fa-trash" }, null, -1 /* CACHED */)
-                                  ]))], 8 /* PROPS */, _hoisted_273))
+                                  ]))], 8 /* PROPS */, _hoisted_276))
                                 : _createCommentVNode("v-if", true)
                             ])
                           ]))
@@ -2537,24 +2565,24 @@ return function render(_ctx, _cache) {
               : _createCommentVNode("v-if", true),
             _createCommentVNode(" Config Module "),
             (_ctx.canManageRegion && ['CONFIG','AVISOS'].includes(_ctx.adminState.tab))
-              ? (_openBlock(), _createElementBlock("div", _hoisted_274, [
+              ? (_openBlock(), _createElementBlock("div", _hoisted_277, [
                   (!_ctx.canManageRegion)
-                    ? (_openBlock(), _createElementBlock("div", _hoisted_275, [...(_cache[98] || (_cache[98] = [
+                    ? (_openBlock(), _createElementBlock("div", _hoisted_278, [...(_cache[99] || (_cache[99] = [
                         _createElementVNode("i", { class: "fa-solid fa-lock text-3xl mb-3" }, null, -1 /* CACHED */),
                         _createElementVNode("p", null, "Solo el Administrador General puede editar la configuración.", -1 /* CACHED */)
                       ]))]))
-                    : (_openBlock(), _createElementBlock("div", _hoisted_276, [
+                    : (_openBlock(), _createElementBlock("div", _hoisted_279, [
                         (_ctx.isAdminGen)
-                          ? (_openBlock(), _createElementBlock("div", _hoisted_277, [
-                              _cache[101] || (_cache[101] = _createElementVNode("h2", { class: "text-xl font-bold text-gray-900" }, "Variables del Sistema", -1 /* CACHED */)),
-                              _createElementVNode("div", _hoisted_278, [
+                          ? (_openBlock(), _createElementBlock("div", _hoisted_280, [
+                              _cache[102] || (_cache[102] = _createElementVNode("h2", { class: "text-xl font-bold text-gray-900" }, "Variables del Sistema", -1 /* CACHED */)),
+                              _createElementVNode("div", _hoisted_281, [
                                 (_ctx.adminState.configEdit)
                                   ? (_openBlock(), _createElementBlock("button", {
                                       key: 0,
                                       onClick: $event => (_ctx.adminState.configEdit = false),
                                       class: "text-gray-500 hover:bg-gray-100 text-xs font-bold py-2 px-4 rounded-lg",
                                       disabled: _ctx.adminState.loading
-                                    }, "Cancelar", 8 /* PROPS */, _hoisted_279))
+                                    }, "Cancelar", 8 /* PROPS */, _hoisted_282))
                                   : _createCommentVNode("v-if", true),
                                 (_ctx.adminState.configEdit)
                                   ? (_openBlock(), _createElementBlock("button", {
@@ -2564,51 +2592,51 @@ return function render(_ctx, _cache) {
                                       disabled: _ctx.adminState.loading
                                     }, [
                                       (_ctx.adminState.loading)
-                                        ? (_openBlock(), _createElementBlock("i", _hoisted_281))
+                                        ? (_openBlock(), _createElementBlock("i", _hoisted_284))
                                         : _createCommentVNode("v-if", true),
-                                      _cache[99] || (_cache[99] = _createTextVNode(" Guardar ", -1 /* CACHED */))
-                                    ], 8 /* PROPS */, _hoisted_280))
+                                      _cache[100] || (_cache[100] = _createTextVNode(" Guardar ", -1 /* CACHED */))
+                                    ], 8 /* PROPS */, _hoisted_283))
                                   : _createCommentVNode("v-if", true),
                                 (!_ctx.adminState.configEdit)
                                   ? (_openBlock(), _createElementBlock("button", {
                                       key: 2,
                                       onClick: $event => (_ctx.adminState.configEdit = true),
                                       class: "text-blue-600 hover:bg-blue-50 text-xs font-bold py-2 px-4 rounded-lg"
-                                    }, [...(_cache[100] || (_cache[100] = [
+                                    }, [...(_cache[101] || (_cache[101] = [
                                       _createElementVNode("i", { class: "fa-solid fa-pen" }, null, -1 /* CACHED */),
                                       _createTextVNode(" Editar", -1 /* CACHED */)
-                                    ]))], 8 /* PROPS */, _hoisted_282))
+                                    ]))], 8 /* PROPS */, _hoisted_285))
                                   : _createCommentVNode("v-if", true)
                               ])
                             ]))
                           : _createCommentVNode("v-if", true),
                         (_ctx.isAdminGen && _ctx.isTestEmailMode)
-                          ? (_openBlock(), _createElementBlock("div", _hoisted_283, [
+                          ? (_openBlock(), _createElementBlock("div", _hoisted_286, [
                               _createElementVNode("div", null, [
-                                _cache[102] || (_cache[102] = _createElementVNode("div", { class: "text-xs font-black text-amber-700 uppercase tracking-wide" }, "Modo prueba activo", -1 /* CACHED */)),
-                                _createElementVNode("div", _hoisted_284, "Destino: " + _toDisplayString(_ctx.adminState.config['TEST_EMAIL_DEST'] || 'Sin configurar'), 1 /* TEXT */)
+                                _cache[103] || (_cache[103] = _createElementVNode("div", { class: "text-xs font-black text-amber-700 uppercase tracking-wide" }, "Modo prueba activo", -1 /* CACHED */)),
+                                _createElementVNode("div", _hoisted_287, "Destino: " + _toDisplayString(_ctx.adminState.config['TEST_EMAIL_DEST'] || 'Sin configurar'), 1 /* TEXT */)
                               ]),
                               _createElementVNode("button", {
                                 onClick: _ctx.runTestDailyCloseEmails,
                                 class: "bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold py-2 px-4 rounded-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed",
                                 disabled: _ctx.adminState.loading
-                              }, [...(_cache[103] || (_cache[103] = [
+                              }, [...(_cache[104] || (_cache[104] = [
                                 _createElementVNode("i", { class: "fa-solid fa-paper-plane" }, null, -1 /* CACHED */),
                                 _createTextVNode(" Enviar correos de prueba ", -1 /* CACHED */)
-                              ]))], 8 /* PROPS */, _hoisted_285)
+                              ]))], 8 /* PROPS */, _hoisted_288)
                             ]))
                           : _createCommentVNode("v-if", true),
                         _createCommentVNode(" Quick Management Actions: Announcement & Provider "),
-                        _createElementVNode("div", _hoisted_286, [
-                          _createElementVNode("div", _hoisted_287, [
+                        _createElementVNode("div", _hoisted_289, [
+                          _createElementVNode("div", _hoisted_290, [
                             _createElementVNode("div", null, [
-                              _cache[105] || (_cache[105] = _createElementVNode("div", { class: "text-xs font-bold text-indigo-900 flex items-center gap-1.5" }, [
+                              _cache[106] || (_cache[106] = _createElementVNode("div", { class: "text-xs font-bold text-indigo-900 flex items-center gap-1.5" }, [
                                 _createElementVNode("i", { class: "fa-solid fa-bullhorn text-indigo-600" }),
                                 _createTextVNode(" Aviso de la regional ")
                               ], -1 /* CACHED */)),
-                              _createElementVNode("div", _hoisted_288, [
-                                _cache[104] || (_cache[104] = _createTextVNode(" Estado: ", -1 /* CACHED */)),
-                                _createElementVNode("span", _hoisted_289, _toDisplayString(_ctx.announcementConfig.enabled ? 'Activo' : 'Inactivo'), 1 /* TEXT */),
+                              _createElementVNode("div", _hoisted_291, [
+                                _cache[105] || (_cache[105] = _createTextVNode(" Estado: ", -1 /* CACHED */)),
+                                _createElementVNode("span", _hoisted_292, _toDisplayString(_ctx.announcementConfig.enabled ? 'Activo' : 'Inactivo'), 1 /* TEXT */),
                                 _createTextVNode(" (" + _toDisplayString((_ctx.announcementConfig.slides || []).length) + " slides) ", 1 /* TEXT */)
                               ])
                             ]),
@@ -2616,18 +2644,18 @@ return function render(_ctx, _cache) {
                               onClick: _ctx.openAnnouncementConfigModal,
                               type: "button",
                               class: "px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition-colors shrink-0 shadow-sm shadow-indigo-600/20"
-                            }, " Configurar ", 8 /* PROPS */, _hoisted_290)
+                            }, " Configurar ", 8 /* PROPS */, _hoisted_293)
                           ]),
                           (_ctx.isAdminGen)
-                            ? (_openBlock(), _createElementBlock("div", _hoisted_291, [
+                            ? (_openBlock(), _createElementBlock("div", _hoisted_294, [
                                 _createElementVNode("div", null, [
-                                  _cache[107] || (_cache[107] = _createElementVNode("div", { class: "text-xs font-bold text-amber-900 flex items-center gap-1.5" }, [
+                                  _cache[108] || (_cache[108] = _createElementVNode("div", { class: "text-xs font-bold text-amber-900 flex items-center gap-1.5" }, [
                                     _createElementVNode("i", { class: "fa-solid fa-award text-amber-600" }),
                                     _createTextVNode(" Proveedor de Alimentos ")
                                   ], -1 /* CACHED */)),
-                                  _createElementVNode("div", _hoisted_292, [
-                                    _cache[106] || (_cache[106] = _createTextVNode(" Actual: ", -1 /* CACHED */)),
-                                    _createElementVNode("span", _hoisted_293, _toDisplayString(_ctx.providerInfo.name), 1 /* TEXT */)
+                                  _createElementVNode("div", _hoisted_295, [
+                                    _cache[107] || (_cache[107] = _createTextVNode(" Actual: ", -1 /* CACHED */)),
+                                    _createElementVNode("span", _hoisted_296, _toDisplayString(_ctx.providerInfo.name), 1 /* TEXT */)
                                   ])
                                 ]),
                                 (_ctx.isAdminGen)
@@ -2636,14 +2664,14 @@ return function render(_ctx, _cache) {
                                       onClick: _ctx.openProviderResetModal,
                                       type: "button",
                                       class: "px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold transition-colors shrink-0 shadow-sm shadow-amber-600/20"
-                                    }, " Gestionar ", 8 /* PROPS */, _hoisted_294))
+                                    }, " Gestionar ", 8 /* PROPS */, _hoisted_297))
                                   : _createCommentVNode("v-if", true)
                               ]))
                             : _createCommentVNode("v-if", true)
                         ]),
                         (_ctx.isAdminGen)
-                          ? (_openBlock(), _createElementBlock("section", _hoisted_295, [
-                              _cache[115] || (_cache[115] = _createElementVNode("h3", {
+                          ? (_openBlock(), _createElementBlock("section", _hoisted_298, [
+                              _cache[116] || (_cache[116] = _createElementVNode("h3", {
                                 id: "branding-heading",
                                 class: "font-bold text-sm text-gray-900 mb-4"
                               }, [
@@ -2653,9 +2681,9 @@ return function render(_ctx, _cache) {
                                 }),
                                 _createTextVNode("Identidad visual y pie de página")
                               ], -1 /* CACHED */)),
-                              _createElementVNode("div", _hoisted_296, [
-                                _createElementVNode("div", _hoisted_297, [
-                                  _cache[108] || (_cache[108] = _createElementVNode("label", {
+                              _createElementVNode("div", _hoisted_299, [
+                                _createElementVNode("div", _hoisted_300, [
+                                  _cache[109] || (_cache[109] = _createElementVNode("label", {
                                     for: "branding-footer",
                                     class: "block text-xs font-semibold text-gray-600 mb-2"
                                   }, "Texto del pie de página", -1 /* CACHED */)),
@@ -2666,22 +2694,22 @@ return function render(_ctx, _cache) {
                                     rows: "2",
                                     disabled: _ctx.brandingSaving,
                                     class: "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white"
-                                  }, null, 8 /* PROPS */, _hoisted_298), [
+                                  }, null, 8 /* PROPS */, _hoisted_301), [
                                     [_vModelText, _ctx.brandingForm.footerText]
                                   ])
                                 ]),
                                 _createElementVNode("div", null, [
-                                  _cache[111] || (_cache[111] = _createElementVNode("label", {
+                                  _cache[112] || (_cache[112] = _createElementVNode("label", {
                                     for: "branding-favicon",
                                     class: "block text-xs font-semibold text-gray-600 mb-2"
                                   }, "Favicon", -1 /* CACHED */)),
-                                  _createElementVNode("div", _hoisted_299, [
+                                  _createElementVNode("div", _hoisted_302, [
                                     _createElementVNode("img", {
                                       src: _ctx.faviconUrl,
                                       alt: "Favicon actual",
                                       class: "h-10 w-10 object-contain rounded-lg"
-                                    }, null, 8 /* PROPS */, _hoisted_300),
-                                    _cache[109] || (_cache[109] = _createElementVNode("span", { class: "text-xs text-gray-500" }, "PNG · hasta 512 KB y 512 × 512 px", -1 /* CACHED */))
+                                    }, null, 8 /* PROPS */, _hoisted_303),
+                                    _cache[110] || (_cache[110] = _createElementVNode("span", { class: "text-xs text-gray-500" }, "PNG · hasta 512 KB y 512 × 512 px", -1 /* CACHED */))
                                   ]),
                                   _createElementVNode("input", {
                                     id: "branding-favicon",
@@ -2690,34 +2718,34 @@ return function render(_ctx, _cache) {
                                     onChange: $event => (_ctx.selectBrandingFile($event, 'favicon')),
                                     disabled: _ctx.brandingSaving,
                                     class: "max-w-full text-xs"
-                                  }, null, 40 /* PROPS, NEED_HYDRATION */, _hoisted_301),
-                                  _createElementVNode("label", _hoisted_302, [
+                                  }, null, 40 /* PROPS, NEED_HYDRATION */, _hoisted_304),
+                                  _createElementVNode("label", _hoisted_305, [
                                     _withDirectives(_createElementVNode("input", {
                                       type: "checkbox",
                                       "onUpdate:modelValue": $event => ((_ctx.brandingForm.resetFavicon) = $event),
                                       onChange: $event => (_ctx.clearBrandingFile('favicon')),
                                       disabled: _ctx.brandingSaving
-                                    }, null, 40 /* PROPS, NEED_HYDRATION */, _hoisted_303), [
+                                    }, null, 40 /* PROPS, NEED_HYDRATION */, _hoisted_306), [
                                       [_vModelCheckbox, _ctx.brandingForm.resetFavicon]
                                     ]),
-                                    _cache[110] || (_cache[110] = _createTextVNode("Usar el logo predeterminado", -1 /* CACHED */))
+                                    _cache[111] || (_cache[111] = _createTextVNode("Usar el logo predeterminado", -1 /* CACHED */))
                                   ])
                                 ]),
                                 _createElementVNode("div", null, [
-                                  _cache[114] || (_cache[114] = _createElementVNode("label", {
+                                  _cache[115] || (_cache[115] = _createElementVNode("label", {
                                     for: "branding-stamp",
                                     class: "block text-xs font-semibold text-gray-600 mb-2"
                                   }, "Sello del pie de página", -1 /* CACHED */)),
-                                  _createElementVNode("div", _hoisted_304, [
+                                  _createElementVNode("div", _hoisted_307, [
                                     (_ctx.footerSignatureUrl)
                                       ? (_openBlock(), _createElementBlock("img", {
                                           key: 0,
                                           src: _ctx.footerSignatureUrl,
                                           alt: "Sello actual",
                                           class: "h-10 max-w-28 object-contain"
-                                        }, null, 8 /* PROPS */, _hoisted_305))
+                                        }, null, 8 /* PROPS */, _hoisted_308))
                                       : _createCommentVNode("v-if", true),
-                                    _cache[112] || (_cache[112] = _createElementVNode("span", { class: "text-xs text-gray-500" }, "PNG · hasta 2 MB y 2400 × 1200 px", -1 /* CACHED */))
+                                    _cache[113] || (_cache[113] = _createElementVNode("span", { class: "text-xs text-gray-500" }, "PNG · hasta 2 MB y 2400 × 1200 px", -1 /* CACHED */))
                                   ]),
                                   _createElementVNode("input", {
                                     id: "branding-stamp",
@@ -2726,21 +2754,21 @@ return function render(_ctx, _cache) {
                                     onChange: $event => (_ctx.selectBrandingFile($event, 'stamp')),
                                     disabled: _ctx.brandingSaving,
                                     class: "max-w-full text-xs"
-                                  }, null, 40 /* PROPS, NEED_HYDRATION */, _hoisted_306),
-                                  _createElementVNode("label", _hoisted_307, [
+                                  }, null, 40 /* PROPS, NEED_HYDRATION */, _hoisted_309),
+                                  _createElementVNode("label", _hoisted_310, [
                                     _withDirectives(_createElementVNode("input", {
                                       type: "checkbox",
                                       "onUpdate:modelValue": $event => ((_ctx.brandingForm.removeStamp) = $event),
                                       onChange: $event => (_ctx.clearBrandingFile('stamp')),
                                       disabled: _ctx.brandingSaving
-                                    }, null, 40 /* PROPS, NEED_HYDRATION */, _hoisted_308), [
+                                    }, null, 40 /* PROPS, NEED_HYDRATION */, _hoisted_311), [
                                       [_vModelCheckbox, _ctx.brandingForm.removeStamp]
                                     ]),
-                                    _cache[113] || (_cache[113] = _createTextVNode("Quitar el sello", -1 /* CACHED */))
+                                    _cache[114] || (_cache[114] = _createTextVNode("Quitar el sello", -1 /* CACHED */))
                                   ])
                                 ])
                               ]),
-                              _createElementVNode("div", _hoisted_309, [
+                              _createElementVNode("div", _hoisted_312, [
                                 _createElementVNode("button", {
                                   type: "button",
                                   onClick: _ctx.saveBranding,
@@ -2752,35 +2780,35 @@ return function render(_ctx, _cache) {
                                     "aria-hidden": "true"
                                   }, null, 2 /* CLASS */),
                                   _createTextVNode(_toDisplayString(_ctx.brandingSaving ? 'Guardando…' : 'Guardar identidad visual'), 1 /* TEXT */)
-                                ], 8 /* PROPS */, _hoisted_310),
+                                ], 8 /* PROPS */, _hoisted_313),
                                 (_ctx.brandingMessage)
-                                  ? (_openBlock(), _createElementBlock("p", _hoisted_311, _toDisplayString(_ctx.brandingMessage), 1 /* TEXT */))
+                                  ? (_openBlock(), _createElementBlock("p", _hoisted_314, _toDisplayString(_ctx.brandingMessage), 1 /* TEXT */))
                                   : _createCommentVNode("v-if", true)
                               ])
                             ]))
                           : _createCommentVNode("v-if", true),
                         _createCommentVNode(" Customized Inputs for specific keys "),
                         (_ctx.isAdminGen)
-                          ? (_openBlock(), _createElementBlock("div", _hoisted_312, [
+                          ? (_openBlock(), _createElementBlock("div", _hoisted_315, [
                               (_openBlock(true), _createElementBlock(_Fragment, null, _renderList(_ctx.adminState.configList, (item) => {
                                 return _withDirectives((_openBlock(), _createElementBlock("div", {
                                   key: item.key,
                                   class: "bg-gray-50 p-4 rounded-xl border border-gray-200"
                                 }, [
-                                  _createElementVNode("div", _hoisted_313, [
-                                    _createElementVNode("div", _hoisted_314, _toDisplayString(item.key), 1 /* TEXT */),
-                                    _createElementVNode("div", _hoisted_315, _toDisplayString(item.desc), 1 /* TEXT */)
+                                  _createElementVNode("div", _hoisted_316, [
+                                    _createElementVNode("div", _hoisted_317, _toDisplayString(item.key), 1 /* TEXT */),
+                                    _createElementVNode("div", _hoisted_318, _toDisplayString(item.desc), 1 /* TEXT */)
                                   ]),
                                   (!_ctx.adminState.configEdit)
-                                    ? (_openBlock(), _createElementBlock("div", _hoisted_316, _toDisplayString(_ctx.formatConfigValue(item.key, _ctx.adminState.config[item.key])), 1 /* TEXT */))
-                                    : (_openBlock(), _createElementBlock("div", _hoisted_317, [
+                                    ? (_openBlock(), _createElementBlock("div", _hoisted_319, _toDisplayString(_ctx.formatConfigValue(item.key, _ctx.adminState.config[item.key])), 1 /* TEXT */))
+                                    : (_openBlock(), _createElementBlock("div", _hoisted_320, [
                                         (item.key === 'HORA_ENVIO' || item.key === 'HORA_RECORDATORIO')
                                           ? _withDirectives((_openBlock(), _createElementBlock("input", {
                                               key: 0,
                                               type: "time",
                                               "onUpdate:modelValue": $event => ((_ctx.adminState.config[item.key]) = $event),
                                               class: "w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-                                            }, null, 8 /* PROPS */, _hoisted_318)), [
+                                            }, null, 8 /* PROPS */, _hoisted_321)), [
                                               [_vModelText, _ctx.adminState.config[item.key]]
                                             ])
                                           : (item.key === 'MEAL_PRICE_CURRENT')
@@ -2792,7 +2820,7 @@ return function render(_ctx, _cache) {
                                                 step: "0.01",
                                                 "onUpdate:modelValue": $event => ((_ctx.adminState.config[item.key]) = $event),
                                                 class: "w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-                                              }, null, 8 /* PROPS */, _hoisted_319)), [
+                                              }, null, 8 /* PROPS */, _hoisted_322)), [
                                                 [_vModelText, _ctx.adminState.config[item.key]]
                                               ])
                                             : (item.key.includes('LIMIT') || item.key.includes('MINUTOS'))
@@ -2801,7 +2829,7 @@ return function render(_ctx, _cache) {
                                                   type: "number",
                                                   "onUpdate:modelValue": $event => ((_ctx.adminState.config[item.key]) = $event),
                                                   class: "w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-                                                }, null, 8 /* PROPS */, _hoisted_320)), [
+                                                }, null, 8 /* PROPS */, _hoisted_323)), [
                                                   [_vModelText, _ctx.adminState.config[item.key]]
                                                 ])
                                               : _withDirectives((_openBlock(), _createElementBlock("input", {
@@ -2809,7 +2837,7 @@ return function render(_ctx, _cache) {
                                                   type: "text",
                                                   "onUpdate:modelValue": $event => ((_ctx.adminState.config[item.key]) = $event),
                                                   class: "w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-                                                }, null, 8 /* PROPS */, _hoisted_321)), [
+                                                }, null, 8 /* PROPS */, _hoisted_324)), [
                                                   [_vModelText, _ctx.adminState.config[item.key]]
                                                 ])
                                       ]))
@@ -2821,16 +2849,16 @@ return function render(_ctx, _cache) {
                           : _createCommentVNode("v-if", true),
                         _createCommentVNode(" Responsibles Editor "),
                         (_ctx.isAdminGen)
-                          ? (_openBlock(), _createElementBlock("div", _hoisted_322, [
-                              _cache[120] || (_cache[120] = _createElementVNode("h3", { class: "font-bold text-sm text-gray-900 mb-4 flex items-center gap-2" }, [
+                          ? (_openBlock(), _createElementBlock("div", _hoisted_325, [
+                              _cache[121] || (_cache[121] = _createElementVNode("h3", { class: "font-bold text-sm text-gray-900 mb-4 flex items-center gap-2" }, [
                                 _createElementVNode("i", { class: "fa-solid fa-envelope-circle-check text-gray-400" }),
                                 _createTextVNode(" Responsables (Resumen Diario) ")
                               ], -1 /* CACHED */)),
-                              _createElementVNode("div", _hoisted_323, [
-                                _cache[119] || (_cache[119] = _createElementVNode("p", { class: "text-xs text-gray-500 mb-4" }, "Estos correos se agregan como copia (CC) al resumen diario enviado a ADMIN_EMAILS con el Excel consolidado adjunto. No otorgan acceso a la plataforma.", -1 /* CACHED */)),
-                                _createElementVNode("div", _hoisted_324, [
+                              _createElementVNode("div", _hoisted_326, [
+                                _cache[120] || (_cache[120] = _createElementVNode("p", { class: "text-xs text-gray-500 mb-4" }, "Estos correos se agregan como copia (CC) al resumen diario enviado a ADMIN_EMAILS con el Excel consolidado adjunto. No otorgan acceso a la plataforma.", -1 /* CACHED */)),
+                                _createElementVNode("div", _hoisted_327, [
                                   (_ctx.adminState.responsiblesList.length === 0)
-                                    ? (_openBlock(), _createElementBlock("div", _hoisted_325, " Sin correos configurados. "))
+                                    ? (_openBlock(), _createElementBlock("div", _hoisted_328, " Sin correos configurados. "))
                                     : _createCommentVNode("v-if", true),
                                   (_openBlock(true), _createElementBlock(_Fragment, null, _renderList(_ctx.adminState.responsiblesList, (email, idx) => {
                                     return (_openBlock(), _createElementBlock("div", {
@@ -2843,19 +2871,19 @@ return function render(_ctx, _cache) {
                                         type: "email",
                                         placeholder: "correo@ejemplo.com",
                                         class: "flex-1 min-w-0 bg-white border border-gray-200 rounded px-2 py-2 text-xs outline-none focus:ring-1 focus:ring-blue-500 disabled:text-gray-500"
-                                      }, null, 8 /* PROPS */, _hoisted_326), [
+                                      }, null, 8 /* PROPS */, _hoisted_329), [
                                         [_vModelText, _ctx.adminState.responsiblesList[idx]]
                                       ]),
-                                      _cache[117] || (_cache[117] = _createElementVNode("span", { class: "hidden sm:inline-flex text-[10px] font-bold uppercase tracking-wide text-gray-400 px-2" }, "CC", -1 /* CACHED */)),
+                                      _cache[118] || (_cache[118] = _createElementVNode("span", { class: "hidden sm:inline-flex text-[10px] font-bold uppercase tracking-wide text-gray-400 px-2" }, "CC", -1 /* CACHED */)),
                                       (_ctx.adminState.configEdit)
                                         ? (_openBlock(), _createElementBlock("button", {
                                             key: 0,
                                             onClick: $event => (_ctx.removeResponsible(idx)),
                                             class: "self-start sm:self-auto text-red-500 hover:bg-red-50 p-2 rounded",
                                             title: "Eliminar correo"
-                                          }, [...(_cache[116] || (_cache[116] = [
+                                          }, [...(_cache[117] || (_cache[117] = [
                                             _createElementVNode("i", { class: "fa-solid fa-trash" }, null, -1 /* CACHED */)
-                                          ]))], 8 /* PROPS */, _hoisted_327))
+                                          ]))], 8 /* PROPS */, _hoisted_330))
                                         : _createCommentVNode("v-if", true)
                                     ]))
                                   }), 128 /* KEYED_FRAGMENT */))
@@ -2865,10 +2893,10 @@ return function render(_ctx, _cache) {
                                       key: 0,
                                       onClick: _ctx.addResponsible,
                                       class: "mt-4 text-blue-600 hover:bg-blue-50 text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-2"
-                                    }, [...(_cache[118] || (_cache[118] = [
+                                    }, [...(_cache[119] || (_cache[119] = [
                                       _createElementVNode("i", { class: "fa-solid fa-plus" }, null, -1 /* CACHED */),
                                       _createTextVNode(" Agregar correo ", -1 /* CACHED */)
-                                    ]))], 8 /* PROPS */, _hoisted_328))
+                                    ]))], 8 /* PROPS */, _hoisted_331))
                                   : _createCommentVNode("v-if", true)
                               ])
                             ]))
@@ -2878,106 +2906,106 @@ return function render(_ctx, _cache) {
               : _createCommentVNode("v-if", true),
             _createCommentVNode(" Menu Module (New) "),
             (_ctx.adminState.tab === 'MENU')
-              ? (_openBlock(), _createElementBlock("div", _hoisted_329, [
-                  _cache[129] || (_cache[129] = _createElementVNode("h2", { class: "text-xl font-bold text-gray-900 mb-4" }, "Gestión de Menú", -1 /* CACHED */)),
-                  _createElementVNode("div", _hoisted_330, [
-                    _createElementVNode("div", _hoisted_331, [
+              ? (_openBlock(), _createElementBlock("div", _hoisted_332, [
+                  _cache[130] || (_cache[130] = _createElementVNode("h2", { class: "text-xl font-bold text-gray-900 mb-4" }, "Gestión de Menú", -1 /* CACHED */)),
+                  _createElementVNode("div", _hoisted_333, [
+                    _createElementVNode("div", _hoisted_334, [
                       _createElementVNode("div", null, [
-                        _cache[121] || (_cache[121] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Fecha", -1 /* CACHED */)),
+                        _cache[122] || (_cache[122] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Fecha", -1 /* CACHED */)),
                         _withDirectives(_createElementVNode("input", {
                           type: "date",
                           "onUpdate:modelValue": $event => ((_ctx.adminState.menuDate) = $event),
                           onChange: _ctx.checkMenuDate,
                           min: _ctx.adminState.nextBusinessDay,
                           class: "bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-                        }, null, 40 /* PROPS, NEED_HYDRATION */, _hoisted_332), [
+                        }, null, 40 /* PROPS, NEED_HYDRATION */, _hoisted_335), [
                           [_vModelText, _ctx.adminState.menuDate]
                         ])
                       ]),
                       (_ctx.adminState.menuDate)
-                        ? (_openBlock(), _createElementBlock("div", _hoisted_333, [
-                            _cache[122] || (_cache[122] = _createTextVNode(" Editando menú para: ", -1 /* CACHED */)),
+                        ? (_openBlock(), _createElementBlock("div", _hoisted_336, [
+                            _cache[123] || (_cache[123] = _createTextVNode(" Editando menú para: ", -1 /* CACHED */)),
                             _createElementVNode("b", null, _toDisplayString(_ctx.adminState.menuDate), 1 /* TEXT */)
                           ]))
                         : _createCommentVNode("v-if", true)
                     ]),
-                    _createElementVNode("div", _hoisted_334, [
+                    _createElementVNode("div", _hoisted_337, [
                       (_ctx.isAdminGen)
                         ? (_openBlock(), _createElementBlock("button", {
                             key: 0,
                             onClick: _ctx.openCategoryManager,
                             class: "bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-2 shadow-sm transition-colors"
-                          }, [...(_cache[123] || (_cache[123] = [
+                          }, [...(_cache[124] || (_cache[124] = [
                             _createElementVNode("i", { class: "fa-solid fa-sliders" }, null, -1 /* CACHED */),
                             _createTextVNode(" Configurar categorías ", -1 /* CACHED */)
-                          ]))], 8 /* PROPS */, _hoisted_335))
+                          ]))], 8 /* PROPS */, _hoisted_338))
                         : _createCommentVNode("v-if", true),
                       _createElementVNode("button", {
                         onClick: _ctx.openMenuImportModal,
                         class: "bg-green-600 hover:bg-green-700 text-white text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-2 shadow-sm transition-colors"
-                      }, [...(_cache[124] || (_cache[124] = [
+                      }, [...(_cache[125] || (_cache[125] = [
                         _createElementVNode("i", { class: "fa-solid fa-file-import" }, null, -1 /* CACHED */),
                         _createTextVNode(" Importar Menú Semanal ", -1 /* CACHED */)
-                      ]))], 8 /* PROPS */, _hoisted_336)
+                      ]))], 8 /* PROPS */, _hoisted_339)
                     ])
                   ]),
                   (!_ctx.adminState.menuDate)
-                    ? (_openBlock(), _createElementBlock("div", _hoisted_337, [...(_cache[125] || (_cache[125] = [
+                    ? (_openBlock(), _createElementBlock("div", _hoisted_340, [...(_cache[126] || (_cache[126] = [
                         _createElementVNode("i", { class: "fa-solid fa-calendar-days text-3xl mb-2" }, null, -1 /* CACHED */),
                         _createElementVNode("p", null, "Selecciona una fecha para editar.", -1 /* CACHED */)
                       ]))]))
-                    : (_openBlock(), _createElementBlock("div", _hoisted_338, [
+                    : (_openBlock(), _createElementBlock("div", _hoisted_341, [
                         (_openBlock(true), _createElementBlock(_Fragment, null, _renderList(_ctx.adminMenuCategories, (category) => {
                           return (_openBlock(), _createElementBlock("div", {
                             key: category.id,
                             class: "border border-gray-200 rounded-xl overflow-hidden"
                           }, [
-                            _createElementVNode("div", _hoisted_339, [
-                              _createElementVNode("h3", _hoisted_340, [
+                            _createElementVNode("div", _hoisted_342, [
+                              _createElementVNode("h3", _hoisted_343, [
                                 _createElementVNode("i", {
                                   class: _normalizeClass(_ctx.getIconForCategory(category.id))
                                 }, null, 2 /* CLASS */),
                                 _createTextVNode(" " + _toDisplayString(_ctx.formatCatName(category.id)), 1 /* TEXT */)
                               ]),
                               (category.estado !== 'ACTIVO')
-                                ? (_openBlock(), _createElementBlock("span", _hoisted_341, "Inactiva"))
+                                ? (_openBlock(), _createElementBlock("span", _hoisted_344, "Inactiva"))
                                 : (_openBlock(), _createElementBlock("button", {
                                     key: 1,
                                     onClick: $event => (_ctx.openMenuModal(null, category.id)),
                                     class: "text-blue-600 hover:bg-blue-100 p-1.5 rounded text-xs font-bold transition-colors"
-                                  }, [...(_cache[126] || (_cache[126] = [
+                                  }, [...(_cache[127] || (_cache[127] = [
                                     _createElementVNode("i", { class: "fa-solid fa-plus" }, null, -1 /* CACHED */),
                                     _createTextVNode(" Agregar ", -1 /* CACHED */)
-                                  ]))], 8 /* PROPS */, _hoisted_342))
+                                  ]))], 8 /* PROPS */, _hoisted_345))
                             ]),
-                            _createElementVNode("div", _hoisted_343, [
+                            _createElementVNode("div", _hoisted_346, [
                               (_openBlock(true), _createElementBlock(_Fragment, null, _renderList(_ctx.adminState.menuItems.filter(i => i.cat === category.id), (item) => {
                                 return (_openBlock(), _createElementBlock("div", {
                                   key: item.id,
                                   class: "p-4 flex justify-between items-start hover:bg-gray-50/50 group"
                                 }, [
                                   _createElementVNode("div", null, [
-                                    _createElementVNode("div", _hoisted_344, _toDisplayString(_ctx.formatMenuText(item.plato)), 1 /* TEXT */),
-                                    _createElementVNode("div", _hoisted_345, _toDisplayString(_ctx.formatMenuText(item.desc)), 1 /* TEXT */)
+                                    _createElementVNode("div", _hoisted_347, _toDisplayString(_ctx.formatMenuText(item.plato)), 1 /* TEXT */),
+                                    _createElementVNode("div", _hoisted_348, _toDisplayString(_ctx.formatMenuText(item.desc)), 1 /* TEXT */)
                                   ]),
-                                  _createElementVNode("div", _hoisted_346, [
+                                  _createElementVNode("div", _hoisted_349, [
                                     _createElementVNode("button", {
                                       onClick: $event => (_ctx.openMenuModal(item, category.id)),
                                       class: "text-gray-400 hover:text-blue-600"
-                                    }, [...(_cache[127] || (_cache[127] = [
+                                    }, [...(_cache[128] || (_cache[128] = [
                                       _createElementVNode("i", { class: "fa-solid fa-pen" }, null, -1 /* CACHED */)
-                                    ]))], 8 /* PROPS */, _hoisted_347),
+                                    ]))], 8 /* PROPS */, _hoisted_350),
                                     _createElementVNode("button", {
                                       onClick: $event => (_ctx.deleteMenuItem(item.id)),
                                       class: "text-gray-400 hover:text-red-500"
-                                    }, [...(_cache[128] || (_cache[128] = [
+                                    }, [...(_cache[129] || (_cache[129] = [
                                       _createElementVNode("i", { class: "fa-solid fa-trash" }, null, -1 /* CACHED */)
-                                    ]))], 8 /* PROPS */, _hoisted_348)
+                                    ]))], 8 /* PROPS */, _hoisted_351)
                                   ])
                                 ]))
                               }), 128 /* KEYED_FRAGMENT */)),
                               (!_ctx.adminState.menuItems.some(i => i.cat === category.id))
-                                ? (_openBlock(), _createElementBlock("div", _hoisted_349, " Sin opciones. "))
+                                ? (_openBlock(), _createElementBlock("div", _hoisted_352, " Sin opciones. "))
                                 : _createCommentVNode("v-if", true)
                             ])
                           ]))
@@ -2987,14 +3015,14 @@ return function render(_ctx, _cache) {
               : _createCommentVNode("v-if", true),
             _createCommentVNode(" Holidays Module (New) "),
             (_ctx.adminState.tab === 'DIAS_LIBRES')
-              ? (_openBlock(), _createElementBlock("div", _hoisted_350, [
-                  _cache[134] || (_cache[134] = _createElementVNode("h2", { class: "text-xl font-bold text-gray-900 mb-4" }, "Días Libres (Feriados)", -1 /* CACHED */)),
-                  _createElementVNode("div", _hoisted_351, [
+              ? (_openBlock(), _createElementBlock("div", _hoisted_353, [
+                  _cache[135] || (_cache[135] = _createElementVNode("h2", { class: "text-xl font-bold text-gray-900 mb-4" }, "Días Libres (Feriados)", -1 /* CACHED */)),
+                  _createElementVNode("div", _hoisted_354, [
                     _withDirectives(_createElementVNode("input", {
                       "onUpdate:modelValue": $event => ((_ctx.adminState.holidayModal.data.date) = $event),
                       type: "date",
                       class: "bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-                    }, null, 8 /* PROPS */, _hoisted_352), [
+                    }, null, 8 /* PROPS */, _hoisted_355), [
                       [_vModelText, _ctx.adminState.holidayModal.data.date]
                     ]),
                     _withDirectives(_createElementVNode("input", {
@@ -3002,7 +3030,7 @@ return function render(_ctx, _cache) {
                       type: "text",
                       placeholder: "Descripción (ej. Navidad)",
                       class: "flex-grow bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-                    }, null, 8 /* PROPS */, _hoisted_353), [
+                    }, null, 8 /* PROPS */, _hoisted_356), [
                       [_vModelText, _ctx.adminState.holidayModal.data.desc]
                     ]),
                     _createElementVNode("button", {
@@ -3011,40 +3039,40 @@ return function render(_ctx, _cache) {
                       disabled: _ctx.adminState.loading
                     }, [
                       (_ctx.adminState.loading)
-                        ? (_openBlock(), _createElementBlock("i", _hoisted_355))
+                        ? (_openBlock(), _createElementBlock("i", _hoisted_358))
                         : _createCommentVNode("v-if", true),
-                      _cache[130] || (_cache[130] = _createTextVNode(" Agregar ", -1 /* CACHED */))
-                    ], 8 /* PROPS */, _hoisted_354)
+                      _cache[131] || (_cache[131] = _createTextVNode(" Agregar ", -1 /* CACHED */))
+                    ], 8 /* PROPS */, _hoisted_357)
                   ]),
-                  _createElementVNode("div", _hoisted_356, [
-                    _createElementVNode("table", _hoisted_357, [
-                      _createElementVNode("thead", _hoisted_358, [
+                  _createElementVNode("div", _hoisted_359, [
+                    _createElementVNode("table", _hoisted_360, [
+                      _createElementVNode("thead", _hoisted_361, [
                         _createElementVNode("tr", null, [
-                          _cache[131] || (_cache[131] = _createElementVNode("th", { class: "p-3 rounded-l" }, "Fecha", -1 /* CACHED */)),
-                          _cache[132] || (_cache[132] = _createElementVNode("th", { class: "p-3" }, "Motivo", -1 /* CACHED */)),
+                          _cache[132] || (_cache[132] = _createElementVNode("th", { class: "p-3 rounded-l" }, "Fecha", -1 /* CACHED */)),
+                          _cache[133] || (_cache[133] = _createElementVNode("th", { class: "p-3" }, "Motivo", -1 /* CACHED */)),
                           (_ctx.canManageRegion)
-                            ? (_openBlock(), _createElementBlock("th", _hoisted_359, "Acciones"))
+                            ? (_openBlock(), _createElementBlock("th", _hoisted_362, "Acciones"))
                             : _createCommentVNode("v-if", true)
                         ])
                       ]),
-                      _createElementVNode("tbody", _hoisted_360, [
+                      _createElementVNode("tbody", _hoisted_363, [
                         (_openBlock(true), _createElementBlock(_Fragment, null, _renderList(_ctx.adminState.holidays, (h) => {
                           return (_openBlock(), _createElementBlock("tr", {
                             key: h.date,
                             class: "hover:bg-gray-50"
                           }, [
-                            _createElementVNode("td", _hoisted_361, _toDisplayString(h.date.split('-').reverse().join('/')), 1 /* TEXT */),
-                            _createElementVNode("td", _hoisted_362, _toDisplayString(h.desc), 1 /* TEXT */),
-                            _createElementVNode("td", _hoisted_363, [
+                            _createElementVNode("td", _hoisted_364, _toDisplayString(h.date.split('-').reverse().join('/')), 1 /* TEXT */),
+                            _createElementVNode("td", _hoisted_365, _toDisplayString(h.desc), 1 /* TEXT */),
+                            _createElementVNode("td", _hoisted_366, [
                               _createElementVNode("button", {
                                 onClick: $event => (_ctx.deleteHoliday(h.date)),
                                 class: "text-red-500 hover:bg-red-50 p-2 rounded text-xs font-bold border border-red-100"
-                              }, " Eliminar ", 8 /* PROPS */, _hoisted_364)
+                              }, " Eliminar ", 8 /* PROPS */, _hoisted_367)
                             ])
                           ]))
                         }), 128 /* KEYED_FRAGMENT */)),
                         (_ctx.adminState.holidays.length === 0)
-                          ? (_openBlock(), _createElementBlock("tr", _hoisted_365, [...(_cache[133] || (_cache[133] = [
+                          ? (_openBlock(), _createElementBlock("tr", _hoisted_368, [...(_cache[134] || (_cache[134] = [
                               _createElementVNode("td", {
                                 colspan: "3",
                                 class: "p-4 text-center text-gray-400"
@@ -3061,54 +3089,54 @@ return function render(_ctx, _cache) {
     ], 2 /* CLASS */),
     _createCommentVNode(" Admin User Modal "),
     (_ctx.isAdminGen && _ctx.adminState.userModal.open)
-      ? (_openBlock(), _createElementBlock("div", _hoisted_366, [
+      ? (_openBlock(), _createElementBlock("div", _hoisted_369, [
           _createElementVNode("div", {
             class: "absolute inset-0 bg-gray-900/50 backdrop-blur-sm",
             onClick: $event => (_ctx.adminState.userModal.open = false)
-          }, null, 8 /* PROPS */, _hoisted_367),
-          _createElementVNode("div", _hoisted_368, [
-            _createElementVNode("div", _hoisted_369, [
-              _cache[136] || (_cache[136] = _createElementVNode("h3", { class: "font-bold text-lg text-gray-800" }, "Gestionar acceso", -1 /* CACHED */)),
+          }, null, 8 /* PROPS */, _hoisted_370),
+          _createElementVNode("div", _hoisted_371, [
+            _createElementVNode("div", _hoisted_372, [
+              _cache[137] || (_cache[137] = _createElementVNode("h3", { class: "font-bold text-lg text-gray-800" }, "Gestionar acceso", -1 /* CACHED */)),
               _createElementVNode("button", {
                 onClick: $event => (_ctx.adminState.userModal.open = false),
                 class: "text-gray-400 hover:text-gray-600"
-              }, [...(_cache[135] || (_cache[135] = [
+              }, [...(_cache[136] || (_cache[136] = [
                 _createElementVNode("i", { class: "fa-solid fa-xmark" }, null, -1 /* CACHED */)
-              ]))], 8 /* PROPS */, _hoisted_370)
+              ]))], 8 /* PROPS */, _hoisted_373)
             ]),
-            _createElementVNode("div", _hoisted_371, [
-              _cache[147] || (_cache[147] = _createElementVNode("p", { class: "text-xs text-blue-800 bg-blue-50 rounded-lg p-3" }, "Nombre y código se actualizan desde AD. El departamento verificado tampoco puede modificarse aquí. Solo se administran los permisos y la habilitación local.", -1 /* CACHED */)),
+            _createElementVNode("div", _hoisted_374, [
+              _cache[148] || (_cache[148] = _createElementVNode("p", { class: "text-xs text-blue-800 bg-blue-50 rounded-lg p-3" }, "Nombre y código se actualizan desde AD. El departamento verificado tampoco puede modificarse aquí. Solo se administran los permisos y la habilitación local.", -1 /* CACHED */)),
               (_ctx.adminState.userModal.data.regionalBlocked)
-                ? (_openBlock(), _createElementBlock("p", _hoisted_372, "Existe una suspensión regional. Habilitar el estado general no la retira."))
+                ? (_openBlock(), _createElementBlock("p", _hoisted_375, "Existe una suspensión regional. Habilitar el estado general no la retira."))
                 : _createCommentVNode("v-if", true),
-              _createElementVNode("label", _hoisted_373, [
-                _cache[138] || (_cache[138] = _createTextVNode("Estado general", -1 /* CACHED */)),
+              _createElementVNode("label", _hoisted_376, [
+                _cache[139] || (_cache[139] = _createTextVNode("Estado general", -1 /* CACHED */)),
                 _withDirectives(_createElementVNode("select", {
                   "onUpdate:modelValue": $event => ((_ctx.adminState.userModal.data.estado) = $event),
                   class: "mt-1 w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm"
-                }, [...(_cache[137] || (_cache[137] = [
+                }, [...(_cache[138] || (_cache[138] = [
                   _createElementVNode("option", null, "ACTIVO", -1 /* CACHED */),
                   _createElementVNode("option", null, "PENDIENTE", -1 /* CACHED */),
                   _createElementVNode("option", null, "INACTIVO", -1 /* CACHED */)
-                ]))], 8 /* PROPS */, _hoisted_374), [
+                ]))], 8 /* PROPS */, _hoisted_377), [
                   [_vModelSelect, _ctx.adminState.userModal.data.estado]
                 ])
               ]),
               _createElementVNode("div", null, [
-                _cache[139] || (_cache[139] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Correo", -1 /* CACHED */)),
+                _cache[140] || (_cache[140] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Correo", -1 /* CACHED */)),
                 _withDirectives(_createElementVNode("input", {
                   "onUpdate:modelValue": $event => ((_ctx.adminState.userModal.data.email) = $event),
                   readonly: "",
                   type: "email",
                   class: "w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none disabled:opacity-50"
-                }, null, 8 /* PROPS */, _hoisted_375), [
+                }, null, 8 /* PROPS */, _hoisted_378), [
                   [_vModelText, _ctx.adminState.userModal.data.email]
                 ])
               ]),
               (_ctx.adminState.userModal.data.directoryAccount)
-                ? (_openBlock(), _createElementBlock("div", _hoisted_376, [
-                    _cache[140] || (_cache[140] = _createElementVNode("p", { class: "text-xs font-semibold text-blue-800" }, "Cuenta AD vinculada", -1 /* CACHED */)),
-                    _createElementVNode("p", _hoisted_377, _toDisplayString(_ctx.adminState.userModal.data.directoryAccount), 1 /* TEXT */),
+                ? (_openBlock(), _createElementBlock("div", _hoisted_379, [
+                    _cache[141] || (_cache[141] = _createElementVNode("p", { class: "text-xs font-semibold text-blue-800" }, "Cuenta AD vinculada", -1 /* CACHED */)),
+                    _createElementVNode("p", _hoisted_380, _toDisplayString(_ctx.adminState.userModal.data.directoryAccount), 1 /* TEXT */),
                     (_ctx.isAdminGen)
                       ? (_openBlock(), _createElementBlock("button", {
                           key: 0,
@@ -3118,26 +3146,26 @@ return function render(_ctx, _cache) {
                           class: "text-xs font-semibold text-blue-700 mt-2 disabled:opacity-50"
                         }, [
                           (_ctx.directoryLinkSaving)
-                            ? (_openBlock(), _createElementBlock("i", _hoisted_379))
+                            ? (_openBlock(), _createElementBlock("i", _hoisted_382))
                             : _createCommentVNode("v-if", true),
                           _createTextVNode(_toDisplayString(_ctx.directoryLinkSaving ? 'Restableciendo…' : 'Restablecer vínculo AD'), 1 /* TEXT */)
-                        ], 8 /* PROPS */, _hoisted_378))
+                        ], 8 /* PROPS */, _hoisted_381))
                       : _createCommentVNode("v-if", true)
                   ]))
                 : _createCommentVNode("v-if", true),
               _createElementVNode("div", null, [
-                _cache[141] || (_cache[141] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Nombre", -1 /* CACHED */)),
+                _cache[142] || (_cache[142] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Nombre", -1 /* CACHED */)),
                 _withDirectives(_createElementVNode("input", {
                   "onUpdate:modelValue": $event => ((_ctx.adminState.userModal.data.nombre) = $event),
                   readonly: "",
                   type: "text",
                   class: "w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                }, null, 8 /* PROPS */, _hoisted_380), [
+                }, null, 8 /* PROPS */, _hoisted_383), [
                   [_vModelText, _ctx.adminState.userModal.data.nombre]
                 ])
               ]),
               _createElementVNode("div", null, [
-                _cache[142] || (_cache[142] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Código de Empleado", -1 /* CACHED */)),
+                _cache[143] || (_cache[143] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Código de Empleado", -1 /* CACHED */)),
                 _withDirectives(_createElementVNode("input", {
                   "onUpdate:modelValue": $event => ((_ctx.adminState.userModal.data.codigo) = $event),
                   readonly: "",
@@ -3147,12 +3175,12 @@ return function render(_ctx, _cache) {
                   maxlength: "4",
                   placeholder: "4 dígitos (ej. 5445)",
                   class: "w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                }, null, 8 /* PROPS */, _hoisted_381), [
+                }, null, 8 /* PROPS */, _hoisted_384), [
                   [_vModelText, _ctx.adminState.userModal.data.codigo]
                 ])
               ]),
               _createElementVNode("div", null, [
-                _cache[143] || (_cache[143] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Departamento", -1 /* CACHED */)),
+                _cache[144] || (_cache[144] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Departamento", -1 /* CACHED */)),
                 (_ctx.isAdminGen)
                   ? _withDirectives((_openBlock(), _createElementBlock("select", {
                       key: 0,
@@ -3164,9 +3192,9 @@ return function render(_ctx, _cache) {
                         return (_openBlock(), _createElementBlock("option", {
                           key: d.id,
                           value: d.id
-                        }, _toDisplayString(d.nombre), 9 /* TEXT, PROPS */, _hoisted_383))
+                        }, _toDisplayString(d.displayName || d.nombre), 9 /* TEXT, PROPS */, _hoisted_386))
                       }), 128 /* KEYED_FRAGMENT */))
-                    ], 8 /* PROPS */, _hoisted_382)), [
+                    ], 8 /* PROPS */, _hoisted_385)), [
                       [_vModelSelect, _ctx.adminState.userModal.data.departamento]
                     ])
                   : _withDirectives((_openBlock(), _createElementBlock("input", {
@@ -3175,224 +3203,240 @@ return function render(_ctx, _cache) {
                       disabled: "",
                       type: "text",
                       class: "w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none opacity-50"
-                    }, null, 8 /* PROPS */, _hoisted_384)), [
+                    }, null, 8 /* PROPS */, _hoisted_387)), [
                       [_vModelText, _ctx.adminState.userModal.data.departamento]
                     ])
               ]),
               (_ctx.isAdminGen)
-                ? (_openBlock(), _createElementBlock("div", _hoisted_385, [
-                    _cache[146] || (_cache[146] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Rol", -1 /* CACHED */)),
+                ? (_openBlock(), _createElementBlock("div", _hoisted_388, [
+                    _cache[147] || (_cache[147] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Rol", -1 /* CACHED */)),
                     _withDirectives(_createElementVNode("select", {
                       "onUpdate:modelValue": $event => ((_ctx.adminState.userModal.data.rol) = $event),
                       class: "w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                     }, [
-                      _cache[144] || (_cache[144] = _createElementVNode("option", { value: "USER" }, "Usuario", -1 /* CACHED */)),
-                      _cache[145] || (_cache[145] = _createElementVNode("option", { value: "ADMIN_DEP" }, "Admin Depto", -1 /* CACHED */)),
+                      _cache[145] || (_cache[145] = _createElementVNode("option", { value: "USER" }, "Usuario", -1 /* CACHED */)),
+                      _cache[146] || (_cache[146] = _createElementVNode("option", { value: "ADMIN_DEP" }, "Admin Depto", -1 /* CACHED */)),
                       (_ctx.isAdminGen)
-                        ? (_openBlock(), _createElementBlock("option", _hoisted_387, "Admin Regional"))
+                        ? (_openBlock(), _createElementBlock("option", _hoisted_390, "Admin Regional"))
                         : _createCommentVNode("v-if", true),
                       (_ctx.isAdminGen)
-                        ? (_openBlock(), _createElementBlock("option", _hoisted_388, "Admin General"))
+                        ? (_openBlock(), _createElementBlock("option", _hoisted_391, "Admin General"))
                         : _createCommentVNode("v-if", true)
-                    ], 8 /* PROPS */, _hoisted_386), [
+                    ], 8 /* PROPS */, _hoisted_389), [
                       [_vModelSelect, _ctx.adminState.userModal.data.rol]
                     ])
                   ]))
                 : _createCommentVNode("v-if", true)
             ]),
-            _createElementVNode("div", _hoisted_389, [
+            _createElementVNode("div", _hoisted_392, [
               _createElementVNode("button", {
                 onClick: $event => (_ctx.adminState.userModal.open = false),
                 class: "px-4 py-2 rounded-lg text-sm font-bold text-gray-500 hover:bg-gray-200 transition-colors",
                 disabled: _ctx.adminState.loading
-              }, "Cancelar", 8 /* PROPS */, _hoisted_390),
+              }, "Cancelar", 8 /* PROPS */, _hoisted_393),
               _createElementVNode("button", {
                 onClick: _ctx.saveUser,
                 class: "px-4 py-2 rounded-lg text-sm font-bold bg-gray-900 text-white hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2",
                 disabled: _ctx.adminState.loading
               }, [
                 (_ctx.adminState.loading)
-                  ? (_openBlock(), _createElementBlock("i", _hoisted_392))
+                  ? (_openBlock(), _createElementBlock("i", _hoisted_395))
                   : _createCommentVNode("v-if", true),
-                _cache[148] || (_cache[148] = _createTextVNode(" Guardar ", -1 /* CACHED */))
-              ], 8 /* PROPS */, _hoisted_391)
+                _cache[149] || (_cache[149] = _createTextVNode(" Guardar ", -1 /* CACHED */))
+              ], 8 /* PROPS */, _hoisted_394)
             ])
           ])
         ]))
       : _createCommentVNode("v-if", true),
     _createCommentVNode(" Dept Modal "),
     (_ctx.isAdminGen && _ctx.adminState.deptModal.open)
-      ? (_openBlock(), _createElementBlock("div", _hoisted_393, [
+      ? (_openBlock(), _createElementBlock("div", _hoisted_396, [
           _createElementVNode("div", {
             class: "absolute inset-0 bg-gray-900/50 backdrop-blur-sm",
-            onClick: $event => (_ctx.adminState.deptModal.open = false)
-          }, null, 8 /* PROPS */, _hoisted_394),
-          _createElementVNode("div", _hoisted_395, [
-            _createElementVNode("div", _hoisted_396, [
-              _createElementVNode("h3", _hoisted_397, _toDisplayString(_ctx.adminState.deptModal.isNew ? 'Nuevo Departamento' : 'Editar Departamento'), 1 /* TEXT */),
-              _createElementVNode("button", {
-                onClick: $event => (_ctx.adminState.deptModal.open = false),
-                class: "text-gray-400 hover:text-gray-600"
-              }, [...(_cache[149] || (_cache[149] = [
-                _createElementVNode("i", { class: "fa-solid fa-xmark" }, null, -1 /* CACHED */)
-              ]))], 8 /* PROPS */, _hoisted_398)
-            ]),
+            onClick: $event => (!_ctx.adminState.deptModal.saving && (_ctx.adminState.deptModal.open = false))
+          }, null, 8 /* PROPS */, _hoisted_397),
+          _createElementVNode("div", _hoisted_398, [
             _createElementVNode("div", _hoisted_399, [
+              _createElementVNode("h3", _hoisted_400, _toDisplayString(_ctx.adminState.deptModal.isNew ? 'Nuevo Departamento' : 'Editar Departamento'), 1 /* TEXT */),
+              _createElementVNode("button", {
+                onClick: $event => (!_ctx.adminState.deptModal.saving && (_ctx.adminState.deptModal.open = false)),
+                class: "text-gray-400 hover:text-gray-600"
+              }, [...(_cache[150] || (_cache[150] = [
+                _createElementVNode("i", { class: "fa-solid fa-xmark" }, null, -1 /* CACHED */)
+              ]))], 8 /* PROPS */, _hoisted_401)
+            ]),
+            _createElementVNode("div", _hoisted_402, [
               _createElementVNode("div", null, [
-                _cache[150] || (_cache[150] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Nombre", -1 /* CACHED */)),
+                _cache[151] || (_cache[151] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Nombre institucional", -1 /* CACHED */)),
                 _withDirectives(_createElementVNode("input", {
-                  readonly: _ctx.adminState.deptModal.data.directoryManaged,
+                  readonly: _ctx.organizationManaged || _ctx.adminState.deptModal.data.directoryManaged,
                   "onUpdate:modelValue": $event => ((_ctx.adminState.deptModal.data.nombre) = $event),
                   type: "text",
                   class: "w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                }, null, 8 /* PROPS */, _hoisted_400), [
+                }, null, 8 /* PROPS */, _hoisted_403), [
                   [_vModelText, _ctx.adminState.deptModal.data.nombre]
                 ])
               ]),
               _createElementVNode("div", null, [
-                _cache[151] || (_cache[151] = _createElementVNode("label", {
+                _cache[152] || (_cache[152] = _createElementVNode("label", {
                   for: "dept-directory-code",
                   class: "block text-xs font-bold text-gray-500 uppercase mb-1"
-                }, "Código de departamento AD", -1 /* CACHED */)),
+                }, "Código AD anterior (si existe)", -1 /* CACHED */)),
                 _withDirectives(_createElementVNode("input", {
-                  readonly: _ctx.adminState.deptModal.data.directoryManaged,
+                  readonly: _ctx.organizationManaged || _ctx.adminState.deptModal.data.directoryManaged,
                   id: "dept-directory-code",
                   "onUpdate:modelValue": $event => ((_ctx.adminState.deptModal.data.directoryCode) = $event),
                   maxlength: "64",
                   class: "w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm"
-                }, null, 8 /* PROPS */, _hoisted_401), [
+                }, null, 8 /* PROPS */, _hoisted_404), [
                   [_vModelText, _ctx.adminState.deptModal.data.directoryCode]
                 ])
               ]),
               _createElementVNode("div", null, [
-                _cache[153] || (_cache[153] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Admins", -1 /* CACHED */)),
-                _createElementVNode("div", _hoisted_402, [
+                _cache[153] || (_cache[153] = _createElementVNode("label", {
+                  for: "dept-alias",
+                  class: "block text-xs font-bold text-gray-500 uppercase mb-1"
+                }, "Alias en Almuerzo", -1 /* CACHED */)),
+                _withDirectives(_createElementVNode("input", {
+                  id: "dept-alias",
+                  "onUpdate:modelValue": $event => ((_ctx.adminState.deptModal.data.alias) = $event),
+                  maxlength: "150",
+                  placeholder: "Opcional: nombre para mostrar",
+                  class: "w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                }, null, 8 /* PROPS */, _hoisted_405), [
+                  [_vModelText, _ctx.adminState.deptModal.data.alias]
+                ]),
+                _cache[154] || (_cache[154] = _createElementVNode("p", { class: "text-xs text-gray-500 mt-1" }, "Se muestra en pantallas, correos y reportes. El nombre institucional se conserva.", -1 /* CACHED */))
+              ]),
+              _createElementVNode("div", null, [
+                _cache[156] || (_cache[156] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Admins", -1 /* CACHED */)),
+                _createElementVNode("div", _hoisted_406, [
                   (_openBlock(true), _createElementBlock(_Fragment, null, _renderList((_ctx.adminState.deptModal.data.admins ? _ctx.adminState.deptModal.data.admins.split(',').map(e=>e.trim()).filter(e=>e) : []), (email) => {
                     return (_openBlock(), _createElementBlock("span", {
                       key: email,
                       class: "bg-white border border-gray-200 px-2 py-1 rounded text-xs flex items-center gap-2 shadow-sm"
                     }, [
-                      _createElementVNode("span", _hoisted_403, _toDisplayString(email), 1 /* TEXT */),
+                      _createElementVNode("span", _hoisted_407, _toDisplayString(email), 1 /* TEXT */),
                       _createElementVNode("button", {
                         onClick: $event => (_ctx.removeDeptAdmin(email)),
                         class: "text-gray-400 hover:text-red-500 w-4 h-4 flex items-center justify-center rounded-full hover:bg-red-50"
-                      }, [...(_cache[152] || (_cache[152] = [
+                      }, [...(_cache[155] || (_cache[155] = [
                         _createElementVNode("i", { class: "fa-solid fa-xmark" }, null, -1 /* CACHED */)
-                      ]))], 8 /* PROPS */, _hoisted_404)
+                      ]))], 8 /* PROPS */, _hoisted_408)
                     ]))
                   }), 128 /* KEYED_FRAGMENT */)),
                   (!_ctx.adminState.deptModal.data.admins)
-                    ? (_openBlock(), _createElementBlock("span", _hoisted_405, "Sin administradores."))
+                    ? (_openBlock(), _createElementBlock("span", _hoisted_409, "Sin administradores."))
                     : _createCommentVNode("v-if", true)
                 ]),
-                _createElementVNode("div", _hoisted_406, [
+                _createElementVNode("div", _hoisted_410, [
                   _withDirectives(_createElementVNode("input", {
                     "onUpdate:modelValue": $event => ((_ctx.deptAdminSearch) = $event),
                     type: "text",
                     class: "w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none",
                     placeholder: "Buscar usuario para agregar..."
-                  }, null, 8 /* PROPS */, _hoisted_407), [
+                  }, null, 8 /* PROPS */, _hoisted_411), [
                     [_vModelText, _ctx.deptAdminSearch]
                   ]),
                   (_ctx.deptAdminSearch && _ctx.filteredAdminUsers.length > 0)
-                    ? (_openBlock(), _createElementBlock("div", _hoisted_408, [
+                    ? (_openBlock(), _createElementBlock("div", _hoisted_412, [
                         (_openBlock(true), _createElementBlock(_Fragment, null, _renderList(_ctx.filteredAdminUsers, (u) => {
                           return (_openBlock(), _createElementBlock("button", {
                             key: u.email,
                             onClick: $event => {_ctx.addDeptAdmin(u); _ctx.deptAdminSearch=''},
                             class: "w-full text-left px-3 py-2 text-xs hover:bg-gray-50 flex justify-between items-center border-b border-gray-50 last:border-0"
                           }, [
-                            _createElementVNode("span", _hoisted_410, _toDisplayString(u.nombre), 1 /* TEXT */),
-                            _createElementVNode("span", _hoisted_411, _toDisplayString(u.email), 1 /* TEXT */)
-                          ], 8 /* PROPS */, _hoisted_409))
+                            _createElementVNode("span", _hoisted_414, _toDisplayString(u.nombre), 1 /* TEXT */),
+                            _createElementVNode("span", _hoisted_415, _toDisplayString(u.email), 1 /* TEXT */)
+                          ], 8 /* PROPS */, _hoisted_413))
                         }), 128 /* KEYED_FRAGMENT */))
                       ]))
                     : _createCommentVNode("v-if", true)
                 ]),
-                _cache[154] || (_cache[154] = _createElementVNode("p", { class: "mt-2 text-xs text-gray-500" }, "Solo colaboradores habilitados de este departamento. Asignar un responsable no cambia su adscripción. Los datos organizativos verificados se corrigen en AD.", -1 /* CACHED */))
+                _cache[157] || (_cache[157] = _createElementVNode("p", { class: "mt-2 text-xs text-gray-500" }, "Solo colaboradores habilitados de este departamento. Asignar un responsable no cambia su adscripción. Los datos organizativos verificados se corrigen en AD.", -1 /* CACHED */))
               ]),
               _createElementVNode("div", null, [
-                _cache[156] || (_cache[156] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Estado", -1 /* CACHED */)),
+                _cache[159] || (_cache[159] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Estado", -1 /* CACHED */)),
                 _withDirectives(_createElementVNode("select", {
                   "onUpdate:modelValue": $event => ((_ctx.adminState.deptModal.data.estado) = $event),
                   class: "w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                }, [...(_cache[155] || (_cache[155] = [
+                }, [...(_cache[158] || (_cache[158] = [
                   _createElementVNode("option", { value: "ACTIVO" }, "ACTIVO", -1 /* CACHED */),
                   _createElementVNode("option", { value: "INACTIVO" }, "INACTIVO", -1 /* CACHED */)
-                ]))], 8 /* PROPS */, _hoisted_412), [
+                ]))], 8 /* PROPS */, _hoisted_416), [
                   [_vModelSelect, _ctx.adminState.deptModal.data.estado]
                 ])
               ])
             ]),
-            _createElementVNode("div", _hoisted_413, [
+            _createElementVNode("div", _hoisted_417, [
               _createElementVNode("button", {
-                onClick: $event => (_ctx.adminState.deptModal.open = false),
+                onClick: $event => (!_ctx.adminState.deptModal.saving && (_ctx.adminState.deptModal.open = false)),
                 class: "px-4 py-2 rounded-lg text-sm font-bold text-gray-500 hover:bg-gray-200 transition-colors",
-                disabled: _ctx.adminState.loading
-              }, "Cancelar", 8 /* PROPS */, _hoisted_414),
+                disabled: _ctx.adminState.deptModal.saving
+              }, "Cancelar", 8 /* PROPS */, _hoisted_418),
               _createElementVNode("button", {
                 onClick: _ctx.saveDept,
                 class: "px-4 py-2 rounded-lg text-sm font-bold bg-gray-900 text-white hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2",
-                disabled: _ctx.adminState.loading
+                disabled: _ctx.adminState.deptModal.saving
               }, [
-                (_ctx.adminState.loading)
-                  ? (_openBlock(), _createElementBlock("i", _hoisted_416))
+                (_ctx.adminState.deptModal.saving)
+                  ? (_openBlock(), _createElementBlock("i", _hoisted_420))
                   : _createCommentVNode("v-if", true),
-                _cache[157] || (_cache[157] = _createTextVNode(" Guardar ", -1 /* CACHED */))
-              ], 8 /* PROPS */, _hoisted_415)
+                _cache[160] || (_cache[160] = _createTextVNode(" Guardar ", -1 /* CACHED */))
+              ], 8 /* PROPS */, _hoisted_419)
             ])
           ])
         ]))
       : _createCommentVNode("v-if", true),
     _createCommentVNode(" Menu Categories Manager & Editor (Single Unified Modal) "),
     (_ctx.adminState.categoryManagerModal.open)
-      ? (_openBlock(), _createElementBlock("div", _hoisted_417, [
+      ? (_openBlock(), _createElementBlock("div", _hoisted_421, [
           _createElementVNode("div", {
             class: "absolute inset-0 bg-gray-900/50 backdrop-blur-sm",
             onClick: $event => (_ctx.adminState.categoryManagerModal.open = false)
-          }, null, 8 /* PROPS */, _hoisted_418),
-          _createElementVNode("div", _hoisted_419, [
+          }, null, 8 /* PROPS */, _hoisted_422),
+          _createElementVNode("div", _hoisted_423, [
             _createCommentVNode(" Header "),
-            _createElementVNode("div", _hoisted_420, [
-              _createElementVNode("div", _hoisted_421, [
+            _createElementVNode("div", _hoisted_424, [
+              _createElementVNode("div", _hoisted_425, [
                 (_ctx.adminState.categoryManagerModal.view === 'FORM')
                   ? (_openBlock(), _createElementBlock("button", {
                       key: 0,
                       onClick: $event => (_ctx.adminState.categoryManagerModal.view = 'LIST'),
                       class: "w-8 h-8 rounded-lg bg-white border border-gray-200 text-gray-600 hover:text-gray-900 hover:bg-gray-100 flex items-center justify-center transition-colors shrink-0",
                       title: "Volver a la lista"
-                    }, [...(_cache[158] || (_cache[158] = [
+                    }, [...(_cache[161] || (_cache[161] = [
                       _createElementVNode("i", { class: "fa-solid fa-arrow-left text-xs" }, null, -1 /* CACHED */)
-                    ]))], 8 /* PROPS */, _hoisted_422))
+                    ]))], 8 /* PROPS */, _hoisted_426))
                   : _createCommentVNode("v-if", true),
-                _createElementVNode("div", _hoisted_423, [
-                  _createElementVNode("h3", _hoisted_424, _toDisplayString(_ctx.adminState.categoryManagerModal.view === 'FORM' ? (_ctx.adminState.categoryModal.isNew ? 'Nueva categoría' : ('Editar categoría: ' + (_ctx.adminState.categoryModal.data?.nombre || ''))) : 'Categorías del menú'), 1 /* TEXT */),
-                  _createElementVNode("p", _hoisted_425, _toDisplayString(_ctx.adminState.categoryManagerModal.view === 'FORM' ? 'Configura las reglas y propiedades de la categoría' : 'Controlan las secciones disponibles y los encabezados reconocidos al importar.'), 1 /* TEXT */)
+                _createElementVNode("div", _hoisted_427, [
+                  _createElementVNode("h3", _hoisted_428, _toDisplayString(_ctx.adminState.categoryManagerModal.view === 'FORM' ? (_ctx.adminState.categoryModal.isNew ? 'Nueva categoría' : ('Editar categoría: ' + (_ctx.adminState.categoryModal.data?.nombre || ''))) : 'Categorías del menú'), 1 /* TEXT */),
+                  _createElementVNode("p", _hoisted_429, _toDisplayString(_ctx.adminState.categoryManagerModal.view === 'FORM' ? 'Configura las reglas y propiedades de la categoría' : 'Controlan las secciones disponibles y los encabezados reconocidos al importar.'), 1 /* TEXT */)
                 ])
               ]),
               _createElementVNode("button", {
                 onClick: $event => (_ctx.adminState.categoryManagerModal.open = false),
                 class: "text-gray-400 hover:text-gray-600 p-1.5 rounded-lg shrink-0 ml-2"
-              }, [...(_cache[159] || (_cache[159] = [
+              }, [...(_cache[162] || (_cache[162] = [
                 _createElementVNode("i", { class: "fa-solid fa-xmark text-lg" }, null, -1 /* CACHED */)
-              ]))], 8 /* PROPS */, _hoisted_426)
+              ]))], 8 /* PROPS */, _hoisted_430)
             ]),
             _createCommentVNode(" Body View 1: List "),
             (_ctx.adminState.categoryManagerModal.view === 'LIST')
-              ? (_openBlock(), _createElementBlock("div", _hoisted_427, [
-                  _createElementVNode("div", _hoisted_428, [
-                    _createElementVNode("span", _hoisted_429, _toDisplayString(_ctx.adminState.menuCategories.length) + " categorías configuradas", 1 /* TEXT */),
+              ? (_openBlock(), _createElementBlock("div", _hoisted_431, [
+                  _createElementVNode("div", _hoisted_432, [
+                    _createElementVNode("span", _hoisted_433, _toDisplayString(_ctx.adminState.menuCategories.length) + " categorías configuradas", 1 /* TEXT */),
                     _createElementVNode("button", {
                       onClick: $event => (_ctx.openCategoryModal()),
                       class: "bg-gray-900 hover:bg-black text-white text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors shadow-sm"
-                    }, [...(_cache[160] || (_cache[160] = [
+                    }, [...(_cache[163] || (_cache[163] = [
                       _createElementVNode("i", { class: "fa-solid fa-plus" }, null, -1 /* CACHED */),
                       _createTextVNode(" Nueva categoría ", -1 /* CACHED */)
-                    ]))], 8 /* PROPS */, _hoisted_430)
+                    ]))], 8 /* PROPS */, _hoisted_434)
                   ]),
-                  _createElementVNode("div", _hoisted_431, [
-                    _createElementVNode("table", _hoisted_432, [
-                      _cache[163] || (_cache[163] = _createElementVNode("thead", { class: "bg-gray-50 text-gray-500 font-bold uppercase text-xs" }, [
+                  _createElementVNode("div", _hoisted_435, [
+                    _createElementVNode("table", _hoisted_436, [
+                      _cache[166] || (_cache[166] = _createElementVNode("thead", { class: "bg-gray-50 text-gray-500 font-bold uppercase text-xs" }, [
                         _createElementVNode("tr", null, [
                           _createElementVNode("th", { class: "p-3" }, "Categoría"),
                           _createElementVNode("th", { class: "p-3" }, "Selección"),
@@ -3402,47 +3446,47 @@ return function render(_ctx, _cache) {
                           _createElementVNode("th", { class: "p-3 text-right" }, "Acciones")
                         ])
                       ], -1 /* CACHED */)),
-                      _createElementVNode("tbody", _hoisted_433, [
+                      _createElementVNode("tbody", _hoisted_437, [
                         (_openBlock(true), _createElementBlock(_Fragment, null, _renderList(_ctx.adminState.menuCategories, (category) => {
                           return (_openBlock(), _createElementBlock("tr", {
                             key: category.id,
                             class: "hover:bg-gray-50"
                           }, [
-                            _createElementVNode("td", _hoisted_434, [
-                              _createElementVNode("div", _hoisted_435, _toDisplayString(category.nombre), 1 /* TEXT */),
+                            _createElementVNode("td", _hoisted_438, [
+                              _createElementVNode("div", _hoisted_439, _toDisplayString(category.nombre), 1 /* TEXT */),
                               (category.aliases && category.aliases.length)
-                                ? (_openBlock(), _createElementBlock("div", _hoisted_436, "Alias: " + _toDisplayString(category.aliases.join(', ')), 1 /* TEXT */))
+                                ? (_openBlock(), _createElementBlock("div", _hoisted_440, "Alias: " + _toDisplayString(category.aliases.join(', ')), 1 /* TEXT */))
                                 : _createCommentVNode("v-if", true)
                             ]),
-                            _createElementVNode("td", _hoisted_437, [
+                            _createElementVNode("td", _hoisted_441, [
                               _createElementVNode("span", {
                                 class: _normalizeClass(['px-2 py-0.5 rounded font-bold text-[10px] uppercase', category.tipo_seleccion === 'MULTIPLE' ? 'bg-purple-50 text-purple-700 border border-purple-200' : 'bg-gray-100 text-gray-600'])
                               }, _toDisplayString(category.tipo_seleccion === 'MULTIPLE' ? 'Múltiple' : 'Única'), 3 /* TEXT, CLASS */)
                             ]),
-                            _createElementVNode("td", _hoisted_438, [
+                            _createElementVNode("td", _hoisted_442, [
                               _createElementVNode("span", {
                                 class: _normalizeClass(['px-2 py-0.5 rounded font-bold text-[10px] uppercase', category.es_combinable !== false ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-amber-50 text-amber-700 border border-amber-200'])
                               }, _toDisplayString(category.es_combinable !== false ? 'Sí' : 'Exclusiva'), 3 /* TEXT, CLASS */)
                             ]),
-                            _createElementVNode("td", _hoisted_439, _toDisplayString(category.orden), 1 /* TEXT */),
-                            _createElementVNode("td", _hoisted_440, [
+                            _createElementVNode("td", _hoisted_443, _toDisplayString(category.orden), 1 /* TEXT */),
+                            _createElementVNode("td", _hoisted_444, [
                               _createElementVNode("span", {
                                 class: _normalizeClass(['px-2 py-1 rounded-full text-xs font-bold', category.estado === 'ACTIVO' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'])
                               }, _toDisplayString(category.estado), 3 /* TEXT, CLASS */)
                             ]),
-                            _createElementVNode("td", _hoisted_441, [
+                            _createElementVNode("td", _hoisted_445, [
                               _createElementVNode("button", {
                                 onClick: $event => (_ctx.openCategoryModal(category)),
                                 class: "text-blue-600 hover:bg-blue-50 p-2 rounded",
                                 title: "Editar categoría"
-                              }, [...(_cache[161] || (_cache[161] = [
+                              }, [...(_cache[164] || (_cache[164] = [
                                 _createElementVNode("i", { class: "fa-solid fa-pen" }, null, -1 /* CACHED */)
-                              ]))], 8 /* PROPS */, _hoisted_442)
+                              ]))], 8 /* PROPS */, _hoisted_446)
                             ])
                           ]))
                         }), 128 /* KEYED_FRAGMENT */)),
                         (_ctx.adminState.menuCategories.length === 0)
-                          ? (_openBlock(), _createElementBlock("tr", _hoisted_443, [...(_cache[162] || (_cache[162] = [
+                          ? (_openBlock(), _createElementBlock("tr", _hoisted_447, [...(_cache[165] || (_cache[165] = [
                               _createElementVNode("td", {
                                 colspan: "6",
                                 class: "p-5 text-center text-gray-400"
@@ -3455,36 +3499,36 @@ return function render(_ctx, _cache) {
                 ]))
               : (_openBlock(), _createElementBlock(_Fragment, { key: 1 }, [
                   _createCommentVNode(" Body View 2: Form "),
-                  _createElementVNode("div", _hoisted_444, [
-                    _createElementVNode("div", _hoisted_445, [
+                  _createElementVNode("div", _hoisted_448, [
+                    _createElementVNode("div", _hoisted_449, [
                       (!_ctx.adminState.categoryModal.isNew)
-                        ? (_openBlock(), _createElementBlock("p", _hoisted_446, [...(_cache[164] || (_cache[164] = [
+                        ? (_openBlock(), _createElementBlock("p", _hoisted_450, [...(_cache[167] || (_cache[167] = [
                             _createElementVNode("i", { class: "fa-solid fa-circle-info text-blue-500" }, null, -1 /* CACHED */),
                             _createElementVNode("span", null, "Cambiar el nombre no modifica los menús ni pedidos ya registrados históricamente.", -1 /* CACHED */)
                           ]))]))
                         : _createCommentVNode("v-if", true),
-                      _createElementVNode("div", _hoisted_447, [
-                        _createElementVNode("div", _hoisted_448, [
-                          _cache[165] || (_cache[165] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Nombre visible", -1 /* CACHED */)),
+                      _createElementVNode("div", _hoisted_451, [
+                        _createElementVNode("div", _hoisted_452, [
+                          _cache[168] || (_cache[168] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Nombre visible", -1 /* CACHED */)),
                           _withDirectives(_createElementVNode("input", {
                             "onUpdate:modelValue": $event => ((_ctx.adminState.categoryModal.data.nombre) = $event),
                             type: "text",
                             maxlength: "80",
                             placeholder: "Ej. Carnes, Ensaladas...",
                             class: "w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                          }, null, 8 /* PROPS */, _hoisted_449), [
+                          }, null, 8 /* PROPS */, _hoisted_453), [
                             [_vModelText, _ctx.adminState.categoryModal.data.nombre]
                           ])
                         ]),
                         _createElementVNode("div", null, [
-                          _cache[166] || (_cache[166] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Orden de aparición", -1 /* CACHED */)),
+                          _cache[169] || (_cache[169] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Orden de aparición", -1 /* CACHED */)),
                           _withDirectives(_createElementVNode("input", {
                             "onUpdate:modelValue": $event => ((_ctx.adminState.categoryModal.data.orden) = $event),
                             type: "number",
                             min: "0",
                             max: "9999",
                             class: "w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                          }, null, 8 /* PROPS */, _hoisted_450), [
+                          }, null, 8 /* PROPS */, _hoisted_454), [
                             [
                               _vModelText,
                               _ctx.adminState.categoryModal.data.orden,
@@ -3494,50 +3538,50 @@ return function render(_ctx, _cache) {
                           ])
                         ])
                       ]),
-                      _createElementVNode("div", _hoisted_451, [
+                      _createElementVNode("div", _hoisted_455, [
                         _createElementVNode("div", null, [
-                          _cache[168] || (_cache[168] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Tipo de selección", -1 /* CACHED */)),
+                          _cache[171] || (_cache[171] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Tipo de selección", -1 /* CACHED */)),
                           _withDirectives(_createElementVNode("select", {
                             "onUpdate:modelValue": $event => ((_ctx.adminState.categoryModal.data.tipo_seleccion) = $event),
                             class: "w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                          }, [...(_cache[167] || (_cache[167] = [
+                          }, [...(_cache[170] || (_cache[170] = [
                             _createElementVNode("option", { value: "UNICA" }, "Selección Única (1 plato)", -1 /* CACHED */),
                             _createElementVNode("option", { value: "MULTIPLE" }, "Selección Múltiple (Varios platos)", -1 /* CACHED */)
-                          ]))], 8 /* PROPS */, _hoisted_452), [
+                          ]))], 8 /* PROPS */, _hoisted_456), [
                             [_vModelSelect, _ctx.adminState.categoryModal.data.tipo_seleccion]
                           ]),
-                          _cache[169] || (_cache[169] = _createElementVNode("p", { class: "text-[11px] text-gray-400 mt-1" }, "Define si el colaborador puede marcar uno o varios platos de esta categoría.", -1 /* CACHED */))
+                          _cache[172] || (_cache[172] = _createElementVNode("p", { class: "text-[11px] text-gray-400 mt-1" }, "Define si el colaborador puede marcar uno o varios platos de esta categoría.", -1 /* CACHED */))
                         ]),
                         _createElementVNode("div", null, [
-                          _cache[171] || (_cache[171] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Estado", -1 /* CACHED */)),
+                          _cache[174] || (_cache[174] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Estado", -1 /* CACHED */)),
                           _withDirectives(_createElementVNode("select", {
                             "onUpdate:modelValue": $event => ((_ctx.adminState.categoryModal.data.estado) = $event),
                             class: "w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                          }, [...(_cache[170] || (_cache[170] = [
+                          }, [...(_cache[173] || (_cache[173] = [
                             _createElementVNode("option", { value: "ACTIVO" }, "ACTIVO", -1 /* CACHED */),
                             _createElementVNode("option", { value: "INACTIVO" }, "INACTIVO", -1 /* CACHED */)
-                          ]))], 8 /* PROPS */, _hoisted_453), [
+                          ]))], 8 /* PROPS */, _hoisted_457), [
                             [_vModelSelect, _ctx.adminState.categoryModal.data.estado]
                           ])
                         ])
                       ]),
-                      _createElementVNode("div", _hoisted_454, [
-                        _createElementVNode("label", _hoisted_455, [
+                      _createElementVNode("div", _hoisted_458, [
+                        _createElementVNode("label", _hoisted_459, [
                           _withDirectives(_createElementVNode("input", {
                             "onUpdate:modelValue": $event => ((_ctx.adminState.categoryModal.data.es_combinable) = $event),
                             type: "checkbox",
                             class: "w-4 h-4 text-blue-600 rounded"
-                          }, null, 8 /* PROPS */, _hoisted_456), [
+                          }, null, 8 /* PROPS */, _hoisted_460), [
                             [_vModelCheckbox, _ctx.adminState.categoryModal.data.es_combinable]
                           ]),
-                          _cache[172] || (_cache[172] = _createElementVNode("span", null, "¿Es combinable con otras categorías?", -1 /* CACHED */))
+                          _cache[175] || (_cache[175] = _createElementVNode("span", null, "¿Es combinable con otras categorías?", -1 /* CACHED */))
                         ]),
-                        _cache[173] || (_cache[173] = _createElementVNode("p", { class: "text-[11px] text-gray-400 mt-1 pl-1" }, "Si está desmarcado, funcionará como categoría especial exclusiva (el usuario solo podrá pedir platos de esta categoría).", -1 /* CACHED */))
+                        _cache[176] || (_cache[176] = _createElementVNode("p", { class: "text-[11px] text-gray-400 mt-1 pl-1" }, "Si está desmarcado, funcionará como categoría especial exclusiva (el usuario solo podrá pedir platos de esta categoría).", -1 /* CACHED */))
                       ]),
                       (_ctx.adminState.categoryModal.data && _ctx.adminState.categoryModal.data.es_combinable)
-                        ? (_openBlock(), _createElementBlock("div", _hoisted_457, [
-                            _cache[174] || (_cache[174] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Combinable específicamente con", -1 /* CACHED */)),
-                            _createElementVNode("div", _hoisted_458, [
+                        ? (_openBlock(), _createElementBlock("div", _hoisted_461, [
+                            _cache[177] || (_cache[177] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Combinable específicamente con", -1 /* CACHED */)),
+                            _createElementVNode("div", _hoisted_462, [
                               (_openBlock(true), _createElementBlock(_Fragment, null, _renderList((_ctx.menuCategories || _ctx.adminState.menuCategories || []).filter(c => c && c.id !== _ctx.adminState.categoryModal.data?.id), (cat) => {
                                 return (_openBlock(), _createElementBlock("label", {
                                   key: cat.id,
@@ -3548,50 +3592,50 @@ return function render(_ctx, _cache) {
                                     value: cat.id,
                                     "onUpdate:modelValue": $event => ((_ctx.adminState.categoryModal.data.combinable_con) = $event),
                                     class: "w-3.5 h-3.5 text-blue-600 rounded"
-                                  }, null, 8 /* PROPS */, _hoisted_459), [
+                                  }, null, 8 /* PROPS */, _hoisted_463), [
                                     [_vModelCheckbox, _ctx.adminState.categoryModal.data.combinable_con]
                                   ]),
-                                  _createElementVNode("span", _hoisted_460, _toDisplayString(cat.nombre), 1 /* TEXT */)
+                                  _createElementVNode("span", _hoisted_464, _toDisplayString(cat.nombre), 1 /* TEXT */)
                                 ]))
                               }), 128 /* KEYED_FRAGMENT */))
                             ]),
-                            _cache[175] || (_cache[175] = _createElementVNode("p", { class: "text-[11px] text-gray-400 mt-1" }, "Si dejas todas desmarcadas, se combinará libremente con cualquier otra categoría compatible.", -1 /* CACHED */))
+                            _cache[178] || (_cache[178] = _createElementVNode("p", { class: "text-[11px] text-gray-400 mt-1" }, "Si dejas todas desmarcadas, se combinará libremente con cualquier otra categoría compatible.", -1 /* CACHED */))
                           ]))
                         : _createCommentVNode("v-if", true),
                       _createElementVNode("div", null, [
-                        _cache[176] || (_cache[176] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Alias de importación", -1 /* CACHED */)),
+                        _cache[179] || (_cache[179] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Alias de importación", -1 /* CACHED */)),
                         _withDirectives(_createElementVNode("input", {
                           "onUpdate:modelValue": $event => ((_ctx.adminState.categoryModal.data.aliasesText) = $event),
                           type: "text",
                           maxlength: "400",
                           placeholder: "Ej. Caldos, Sopas",
                           class: "w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                        }, null, 8 /* PROPS */, _hoisted_461), [
+                        }, null, 8 /* PROPS */, _hoisted_465), [
                           [_vModelText, _ctx.adminState.categoryModal.data.aliasesText]
                         ]),
-                        _cache[177] || (_cache[177] = _createElementVNode("p", { class: "text-[11px] text-gray-400 mt-1" }, "Opcional. Separa varios encabezados alternativos con comas.", -1 /* CACHED */))
+                        _cache[180] || (_cache[180] = _createElementVNode("p", { class: "text-[11px] text-gray-400 mt-1" }, "Opcional. Separa varios encabezados alternativos con comas.", -1 /* CACHED */))
                       ])
                     ]),
                     _createCommentVNode(" Form Footer "),
-                    _createElementVNode("div", _hoisted_462, [
+                    _createElementVNode("div", _hoisted_466, [
                       _createElementVNode("button", {
                         onClick: $event => (_ctx.adminState.categoryManagerModal.view = 'LIST'),
                         class: "px-4 py-2 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-200 transition-colors flex items-center gap-1.5",
                         disabled: _ctx.adminState.loading
-                      }, [...(_cache[178] || (_cache[178] = [
+                      }, [...(_cache[181] || (_cache[181] = [
                         _createElementVNode("i", { class: "fa-solid fa-arrow-left" }, null, -1 /* CACHED */),
                         _createTextVNode(" Volver a la lista ", -1 /* CACHED */)
-                      ]))], 8 /* PROPS */, _hoisted_463),
+                      ]))], 8 /* PROPS */, _hoisted_467),
                       _createElementVNode("button", {
                         onClick: _ctx.saveMenuCategory,
                         class: "px-5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-500/20 disabled:opacity-50 flex items-center gap-2 transition-all",
                         disabled: _ctx.adminState.loading
                       }, [
                         (_ctx.adminState.loading)
-                          ? (_openBlock(), _createElementBlock("i", _hoisted_465))
+                          ? (_openBlock(), _createElementBlock("i", _hoisted_469))
                           : _createCommentVNode("v-if", true),
-                        _cache[179] || (_cache[179] = _createTextVNode(" Guardar Categoría ", -1 /* CACHED */))
-                      ], 8 /* PROPS */, _hoisted_464)
+                        _cache[182] || (_cache[182] = _createTextVNode(" Guardar Categoría ", -1 /* CACHED */))
+                      ], 8 /* PROPS */, _hoisted_468)
                     ])
                   ])
                 ], 2112 /* STABLE_FRAGMENT, DEV_ROOT_FRAGMENT */))
@@ -3600,120 +3644,120 @@ return function render(_ctx, _cache) {
       : _createCommentVNode("v-if", true),
     _createCommentVNode(" Menu Modal (New) "),
     (_ctx.adminState.menuModal.open)
-      ? (_openBlock(), _createElementBlock("div", _hoisted_466, [
+      ? (_openBlock(), _createElementBlock("div", _hoisted_470, [
           _createElementVNode("div", {
             class: "absolute inset-0 bg-gray-900/50 backdrop-blur-sm",
             onClick: $event => (_ctx.adminState.menuModal.open = false)
-          }, null, 8 /* PROPS */, _hoisted_467),
-          _createElementVNode("div", _hoisted_468, [
-            _createElementVNode("div", _hoisted_469, [
-              _createElementVNode("h3", _hoisted_470, _toDisplayString(_ctx.adminState.menuModal.isNew ? 'Nuevo Plato' : 'Editar Plato'), 1 /* TEXT */),
+          }, null, 8 /* PROPS */, _hoisted_471),
+          _createElementVNode("div", _hoisted_472, [
+            _createElementVNode("div", _hoisted_473, [
+              _createElementVNode("h3", _hoisted_474, _toDisplayString(_ctx.adminState.menuModal.isNew ? 'Nuevo Plato' : 'Editar Plato'), 1 /* TEXT */),
               _createElementVNode("button", {
                 onClick: $event => (_ctx.adminState.menuModal.open = false),
                 class: "text-gray-400 hover:text-gray-600"
-              }, [...(_cache[180] || (_cache[180] = [
+              }, [...(_cache[183] || (_cache[183] = [
                 _createElementVNode("i", { class: "fa-solid fa-xmark" }, null, -1 /* CACHED */)
-              ]))], 8 /* PROPS */, _hoisted_471)
+              ]))], 8 /* PROPS */, _hoisted_475)
             ]),
-            _createElementVNode("div", _hoisted_472, [
+            _createElementVNode("div", _hoisted_476, [
               _createElementVNode("div", null, [
-                _cache[181] || (_cache[181] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Categoría", -1 /* CACHED */)),
+                _cache[184] || (_cache[184] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Categoría", -1 /* CACHED */)),
                 _createElementVNode("input", {
                   value: _ctx.formatCatName(_ctx.adminState.menuModal.data.cat),
                   disabled: "",
                   class: "w-full bg-gray-100 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none opacity-70 cursor-not-allowed"
-                }, null, 8 /* PROPS */, _hoisted_473)
+                }, null, 8 /* PROPS */, _hoisted_477)
               ]),
               _createElementVNode("div", null, [
-                _cache[182] || (_cache[182] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Nombre del Plato", -1 /* CACHED */)),
+                _cache[185] || (_cache[185] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Nombre del Plato", -1 /* CACHED */)),
                 _withDirectives(_createElementVNode("input", {
                   "onUpdate:modelValue": $event => ((_ctx.adminState.menuModal.data.plato) = $event),
                   type: "text",
                   class: "w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                }, null, 8 /* PROPS */, _hoisted_474), [
+                }, null, 8 /* PROPS */, _hoisted_478), [
                   [_vModelText, _ctx.adminState.menuModal.data.plato]
                 ])
               ]),
               _createElementVNode("div", null, [
-                _cache[183] || (_cache[183] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Descripción", -1 /* CACHED */)),
+                _cache[186] || (_cache[186] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Descripción", -1 /* CACHED */)),
                 _withDirectives(_createElementVNode("textarea", {
                   "onUpdate:modelValue": $event => ((_ctx.adminState.menuModal.data.desc) = $event),
                   rows: "3",
                   class: "w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                }, null, 8 /* PROPS */, _hoisted_475), [
+                }, null, 8 /* PROPS */, _hoisted_479), [
                   [_vModelText, _ctx.adminState.menuModal.data.desc]
                 ])
               ])
             ]),
-            _createElementVNode("div", _hoisted_476, [
+            _createElementVNode("div", _hoisted_480, [
               _createElementVNode("button", {
                 onClick: $event => (_ctx.adminState.menuModal.open = false),
                 class: "px-4 py-2 rounded-lg text-sm font-bold text-gray-500 hover:bg-gray-200 transition-colors",
                 disabled: _ctx.adminState.loading
-              }, "Cancelar", 8 /* PROPS */, _hoisted_477),
+              }, "Cancelar", 8 /* PROPS */, _hoisted_481),
               _createElementVNode("button", {
                 onClick: _ctx.saveMenuItem,
                 class: "px-4 py-2 rounded-lg text-sm font-bold bg-gray-900 text-white hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2",
                 disabled: _ctx.adminState.loading
               }, [
                 (_ctx.adminState.loading)
-                  ? (_openBlock(), _createElementBlock("i", _hoisted_479))
+                  ? (_openBlock(), _createElementBlock("i", _hoisted_483))
                   : _createCommentVNode("v-if", true),
-                _cache[184] || (_cache[184] = _createTextVNode(" Guardar ", -1 /* CACHED */))
-              ], 8 /* PROPS */, _hoisted_478)
+                _cache[187] || (_cache[187] = _createTextVNode(" Guardar ", -1 /* CACHED */))
+              ], 8 /* PROPS */, _hoisted_482)
             ])
           ])
         ]))
       : _createCommentVNode("v-if", true),
     _createCommentVNode(" Menu Import Modal "),
     (_ctx.adminState.menuImportModal.open)
-      ? (_openBlock(), _createElementBlock("div", _hoisted_480, [
+      ? (_openBlock(), _createElementBlock("div", _hoisted_484, [
           _createElementVNode("div", {
             class: "absolute inset-0 bg-gray-900/50 backdrop-blur-sm",
             onClick: $event => (_ctx.adminState.menuImportModal.open = false)
-          }, null, 8 /* PROPS */, _hoisted_481),
-          _createElementVNode("div", _hoisted_482, [
-            _createElementVNode("div", _hoisted_483, [
-              _cache[186] || (_cache[186] = _createElementVNode("h3", { class: "font-bold text-lg text-gray-800" }, "Importar Menú Semanal", -1 /* CACHED */)),
+          }, null, 8 /* PROPS */, _hoisted_485),
+          _createElementVNode("div", _hoisted_486, [
+            _createElementVNode("div", _hoisted_487, [
+              _cache[189] || (_cache[189] = _createElementVNode("h3", { class: "font-bold text-lg text-gray-800" }, "Importar Menú Semanal", -1 /* CACHED */)),
               _createElementVNode("button", {
                 onClick: $event => (_ctx.adminState.menuImportModal.open = false),
                 class: "text-gray-400 hover:text-gray-600"
-              }, [...(_cache[185] || (_cache[185] = [
+              }, [...(_cache[188] || (_cache[188] = [
                 _createElementVNode("i", { class: "fa-solid fa-xmark" }, null, -1 /* CACHED */)
-              ]))], 8 /* PROPS */, _hoisted_484)
+              ]))], 8 /* PROPS */, _hoisted_488)
             ]),
-            _createElementVNode("div", _hoisted_485, [
+            _createElementVNode("div", _hoisted_489, [
               _createCommentVNode(" Step 1: Input "),
               (_ctx.adminState.menuImportModal.step === 1)
-                ? (_openBlock(), _createElementBlock("div", _hoisted_486, [
-                    _cache[190] || (_cache[190] = _createElementVNode("div", { class: "bg-blue-50 p-4 rounded-xl text-blue-800 text-sm mb-4" }, [
+                ? (_openBlock(), _createElementBlock("div", _hoisted_490, [
+                    _cache[193] || (_cache[193] = _createElementVNode("div", { class: "bg-blue-50 p-4 rounded-xl text-blue-800 text-sm mb-4" }, [
                       _createElementVNode("i", { class: "fa-solid fa-circle-info mr-2" }),
                       _createTextVNode(" Copia las celdas del Excel (incluyendo encabezados de categoría) y pégalas aquí. Asegúrate de seleccionar la semana correcta. ")
                     ], -1 /* CACHED */)),
                     _createElementVNode("div", null, [
-                      _cache[187] || (_cache[187] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Inicio de Semana (Lunes)", -1 /* CACHED */)),
+                      _cache[190] || (_cache[190] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Inicio de Semana (Lunes)", -1 /* CACHED */)),
                       _withDirectives(_createElementVNode("input", {
                         "onUpdate:modelValue": $event => ((_ctx.adminState.menuImportModal.weekStart) = $event),
                         type: "date",
                         class: "w-full md:w-1/3 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                      }, null, 8 /* PROPS */, _hoisted_487), [
+                      }, null, 8 /* PROPS */, _hoisted_491), [
                         [_vModelText, _ctx.adminState.menuImportModal.weekStart]
                       ])
                     ]),
                     _createElementVNode("div", null, [
-                      _cache[188] || (_cache[188] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Contenido del Menú", -1 /* CACHED */)),
+                      _cache[191] || (_cache[191] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Contenido del Menú", -1 /* CACHED */)),
                       _withDirectives(_createElementVNode("textarea", {
                         "onUpdate:modelValue": $event => ((_ctx.adminState.menuImportModal.text) = $event),
                         rows: "10",
                         placeholder: "Pega aquí las celdas del Excel...",
                         class: "w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs font-mono focus:ring-2 focus:ring-blue-500 outline-none"
-                      }, null, 8 /* PROPS */, _hoisted_488), [
+                      }, null, 8 /* PROPS */, _hoisted_492), [
                         [_vModelText, _ctx.adminState.menuImportModal.text]
                       ])
                     ]),
                     (_ctx.adminState.menuImportModal.error)
-                      ? (_openBlock(), _createElementBlock("div", _hoisted_489, [
-                          _cache[189] || (_cache[189] = _createElementVNode("i", { class: "fa-solid fa-circle-exclamation mr-1" }, null, -1 /* CACHED */)),
+                      ? (_openBlock(), _createElementBlock("div", _hoisted_493, [
+                          _cache[192] || (_cache[192] = _createElementVNode("i", { class: "fa-solid fa-circle-exclamation mr-1" }, null, -1 /* CACHED */)),
                           _createTextVNode(" " + _toDisplayString(_ctx.adminState.menuImportModal.error), 1 /* TEXT */)
                         ]))
                       : _createCommentVNode("v-if", true)
@@ -3721,22 +3765,22 @@ return function render(_ctx, _cache) {
                 : _createCommentVNode("v-if", true),
               _createCommentVNode(" Step 2: Preview "),
               (_ctx.adminState.menuImportModal.step === 2)
-                ? (_openBlock(), _createElementBlock("div", _hoisted_490, [
-                    _createElementVNode("div", _hoisted_491, [
-                      _cache[191] || (_cache[191] = _createElementVNode("span", null, [
+                ? (_openBlock(), _createElementBlock("div", _hoisted_494, [
+                    _createElementVNode("div", _hoisted_495, [
+                      _cache[194] || (_cache[194] = _createElementVNode("span", null, [
                         _createElementVNode("i", { class: "fa-solid fa-check-circle mr-2" }),
                         _createTextVNode(" Datos procesados correctamente. Verifica antes de guardar.")
                       ], -1 /* CACHED */)),
                       _createElementVNode("button", {
                         onClick: $event => (_ctx.adminState.menuImportModal.step = 1),
                         class: "text-xs font-bold underline hover:text-green-900"
-                      }, "Volver a editar", 8 /* PROPS */, _hoisted_492)
+                      }, "Volver a editar", 8 /* PROPS */, _hoisted_496)
                     ]),
-                    _createElementVNode("div", _hoisted_493, [
-                      _createElementVNode("table", _hoisted_494, [
-                        _createElementVNode("thead", _hoisted_495, [
+                    _createElementVNode("div", _hoisted_497, [
+                      _createElementVNode("table", _hoisted_498, [
+                        _createElementVNode("thead", _hoisted_499, [
                           _createElementVNode("tr", null, [
-                            _cache[192] || (_cache[192] = _createElementVNode("th", { class: "p-3 sticky left-0 bg-gray-50 border-r border-gray-200 z-10 w-24" }, "Categoría", -1 /* CACHED */)),
+                            _cache[195] || (_cache[195] = _createElementVNode("th", { class: "p-3 sticky left-0 bg-gray-50 border-r border-gray-200 z-10 w-24" }, "Categoría", -1 /* CACHED */)),
                             (_openBlock(true), _createElementBlock(_Fragment, null, _renderList(_ctx.adminState.menuImportModal.preview, (d) => {
                               return (_openBlock(), _createElementBlock("th", {
                                 key: d.date,
@@ -3745,22 +3789,22 @@ return function render(_ctx, _cache) {
                             }), 128 /* KEYED_FRAGMENT */))
                           ])
                         ]),
-                        _createElementVNode("tbody", _hoisted_496, [
+                        _createElementVNode("tbody", _hoisted_500, [
                           (_openBlock(true), _createElementBlock(_Fragment, null, _renderList(_ctx.summaryHeaders, (cat) => {
                             return (_openBlock(), _createElementBlock("tr", { key: cat }, [
-                              _createElementVNode("td", _hoisted_497, _toDisplayString(_ctx.formatCatName(cat)), 1 /* TEXT */),
+                              _createElementVNode("td", _hoisted_501, _toDisplayString(_ctx.formatCatName(cat)), 1 /* TEXT */),
                               (_openBlock(true), _createElementBlock(_Fragment, null, _renderList(_ctx.adminState.menuImportModal.preview, (d) => {
                                 return (_openBlock(), _createElementBlock("td", {
                                   key: d.date,
                                   class: "p-3 align-top"
                                 }, [
                                   (d.items[cat] && d.items[cat].length)
-                                    ? (_openBlock(), _createElementBlock("ul", _hoisted_498, [
+                                    ? (_openBlock(), _createElementBlock("ul", _hoisted_502, [
                                         (_openBlock(true), _createElementBlock(_Fragment, null, _renderList(d.items[cat], (item) => {
                                           return (_openBlock(), _createElementBlock("li", { key: item }, _toDisplayString(_ctx.formatMenuText(item)), 1 /* TEXT */))
                                         }), 128 /* KEYED_FRAGMENT */))
                                       ]))
-                                    : (_openBlock(), _createElementBlock("span", _hoisted_499, "-"))
+                                    : (_openBlock(), _createElementBlock("span", _hoisted_503, "-"))
                                 ]))
                               }), 128 /* KEYED_FRAGMENT */))
                             ]))
@@ -3771,21 +3815,21 @@ return function render(_ctx, _cache) {
                   ]))
                 : _createCommentVNode("v-if", true)
             ]),
-            _createElementVNode("div", _hoisted_500, [
+            _createElementVNode("div", _hoisted_504, [
               _createElementVNode("button", {
                 onClick: $event => (_ctx.adminState.menuImportModal.open = false),
                 class: "px-4 py-2 rounded-lg text-sm font-bold text-gray-500 hover:bg-gray-200 transition-colors",
                 disabled: _ctx.adminState.loading
-              }, "Cancelar", 8 /* PROPS */, _hoisted_501),
+              }, "Cancelar", 8 /* PROPS */, _hoisted_505),
               (_ctx.adminState.menuImportModal.step === 1)
                 ? (_openBlock(), _createElementBlock("button", {
                     key: 0,
                     onClick: _ctx.processMenuImport,
                     class: "px-6 py-2 rounded-lg text-sm font-bold bg-gray-900 text-white hover:bg-black transition-colors flex items-center gap-2"
-                  }, [...(_cache[193] || (_cache[193] = [
+                  }, [...(_cache[196] || (_cache[196] = [
                     _createTextVNode(" Procesar ", -1 /* CACHED */),
                     _createElementVNode("i", { class: "fa-solid fa-arrow-right" }, null, -1 /* CACHED */)
-                  ]))], 8 /* PROPS */, _hoisted_502))
+                  ]))], 8 /* PROPS */, _hoisted_506))
                 : _createCommentVNode("v-if", true),
               (_ctx.adminState.menuImportModal.step === 2)
                 ? (_openBlock(), _createElementBlock("button", {
@@ -3795,76 +3839,76 @@ return function render(_ctx, _cache) {
                     disabled: _ctx.adminState.loading
                   }, [
                     (_ctx.adminState.loading)
-                      ? (_openBlock(), _createElementBlock("i", _hoisted_504))
+                      ? (_openBlock(), _createElementBlock("i", _hoisted_508))
                       : _createCommentVNode("v-if", true),
-                    _cache[194] || (_cache[194] = _createTextVNode(" Confirmar e Importar ", -1 /* CACHED */))
-                  ], 8 /* PROPS */, _hoisted_503))
+                    _cache[197] || (_cache[197] = _createTextVNode(" Confirmar e Importar ", -1 /* CACHED */))
+                  ], 8 /* PROPS */, _hoisted_507))
                 : _createCommentVNode("v-if", true)
             ])
           ])
         ]))
       : _createCommentVNode("v-if", true),
     _createCommentVNode(" Footer "),
-    _createElementVNode("footer", _hoisted_505, [
-      _createElementVNode("div", _hoisted_506, [
-        _cache[195] || (_cache[195] = _createElementVNode("div", null, null, -1 /* CACHED */)),
-        _createElementVNode("div", _hoisted_507, _toDisplayString(_ctx.footerText), 1 /* TEXT */),
-        _createElementVNode("div", _hoisted_508, [
+    _createElementVNode("footer", _hoisted_509, [
+      _createElementVNode("div", _hoisted_510, [
+        _cache[198] || (_cache[198] = _createElementVNode("div", null, null, -1 /* CACHED */)),
+        _createElementVNode("div", _hoisted_511, _toDisplayString(_ctx.footerText), 1 /* TEXT */),
+        _createElementVNode("div", _hoisted_512, [
           (_ctx.footerSignatureUrl)
             ? (_openBlock(), _createElementBlock("img", {
                 key: 0,
                 src: _ctx.footerSignatureUrl,
                 alt: "Sello institucional",
                 class: "h-8 w-auto object-contain opacity-50 grayscale hover:grayscale-0 transition-all duration-500"
-              }, null, 8 /* PROPS */, _hoisted_509))
+              }, null, 8 /* PROPS */, _hoisted_513))
             : _createCommentVNode("v-if", true)
         ])
       ])
     ]),
     _createCommentVNode(" General Announcement Modal (Slides + Cover) "),
     (_ctx.showAnnouncementModal && _ctx.announcementConfig.slides && _ctx.announcementConfig.slides.length > 0)
-      ? (_openBlock(), _createElementBlock("div", _hoisted_510, [
+      ? (_openBlock(), _createElementBlock("div", _hoisted_514, [
           _createElementVNode("div", {
             class: "absolute inset-0 bg-gray-950/70 backdrop-blur-sm transition-opacity",
             onClick: _ctx.dismissAnnouncement
-          }, null, 8 /* PROPS */, _hoisted_511),
-          _createElementVNode("div", _hoisted_512, [
+          }, null, 8 /* PROPS */, _hoisted_515),
+          _createElementVNode("div", _hoisted_516, [
             _createCommentVNode(" Cover Banner Header "),
-            _createElementVNode("div", _hoisted_513, [
-              _cache[198] || (_cache[198] = _createElementVNode("div", { class: "absolute -right-8 -bottom-8 w-36 h-36 bg-white/10 rounded-full blur-2xl pointer-events-none" }, null, -1 /* CACHED */)),
-              _cache[199] || (_cache[199] = _createElementVNode("div", { class: "absolute -left-6 -top-6 w-28 h-28 bg-white/10 rounded-full blur-xl pointer-events-none" }, null, -1 /* CACHED */)),
-              _createElementVNode("div", _hoisted_514, [
-                _createElementVNode("span", _hoisted_515, [
-                  _cache[196] || (_cache[196] = _createElementVNode("i", { class: "fa-solid fa-sparkles mr-1" }, null, -1 /* CACHED */)),
+            _createElementVNode("div", _hoisted_517, [
+              _cache[201] || (_cache[201] = _createElementVNode("div", { class: "absolute -right-8 -bottom-8 w-36 h-36 bg-white/10 rounded-full blur-2xl pointer-events-none" }, null, -1 /* CACHED */)),
+              _cache[202] || (_cache[202] = _createElementVNode("div", { class: "absolute -left-6 -top-6 w-28 h-28 bg-white/10 rounded-full blur-xl pointer-events-none" }, null, -1 /* CACHED */)),
+              _createElementVNode("div", _hoisted_518, [
+                _createElementVNode("span", _hoisted_519, [
+                  _cache[199] || (_cache[199] = _createElementVNode("i", { class: "fa-solid fa-sparkles mr-1" }, null, -1 /* CACHED */)),
                   _createTextVNode(" " + _toDisplayString(_ctx.announcementConfig.slides[_ctx.announcementSlideIndex]?.badge || 'Novedad'), 1 /* TEXT */)
                 ]),
                 _createElementVNode("button", {
                   onClick: _ctx.dismissAnnouncement,
                   class: "w-8 h-8 rounded-full bg-black/20 hover:bg-black/40 text-white/80 hover:text-white flex items-center justify-center transition-all"
-                }, [...(_cache[197] || (_cache[197] = [
+                }, [...(_cache[200] || (_cache[200] = [
                   _createElementVNode("i", { class: "fa-solid fa-xmark text-sm" }, null, -1 /* CACHED */)
-                ]))], 8 /* PROPS */, _hoisted_516)
+                ]))], 8 /* PROPS */, _hoisted_520)
               ]),
-              _createElementVNode("div", _hoisted_517, [
-                _createElementVNode("div", _hoisted_518, [
+              _createElementVNode("div", _hoisted_521, [
+                _createElementVNode("div", _hoisted_522, [
                   _createElementVNode("i", {
                     class: _normalizeClass(['fa-solid', _ctx.announcementConfig.slides[_ctx.announcementSlideIndex]?.icon || 'fa-bullhorn'])
                   }, null, 2 /* CLASS */)
                 ]),
                 _createElementVNode("div", null, [
-                  _createElementVNode("h2", _hoisted_519, _toDisplayString(_ctx.announcementConfig.slides[_ctx.announcementSlideIndex]?.title || 'Aviso Importante'), 1 /* TEXT */)
+                  _createElementVNode("h2", _hoisted_523, _toDisplayString(_ctx.announcementConfig.slides[_ctx.announcementSlideIndex]?.title || 'Aviso Importante'), 1 /* TEXT */)
                 ])
               ])
             ]),
             _createCommentVNode(" Slide Body "),
-            _createElementVNode("div", _hoisted_520, [
-              _createElementVNode("p", _hoisted_521, _toDisplayString(_ctx.announcementConfig.slides[_ctx.announcementSlideIndex]?.description), 1 /* TEXT */)
+            _createElementVNode("div", _hoisted_524, [
+              _createElementVNode("p", _hoisted_525, _toDisplayString(_ctx.announcementConfig.slides[_ctx.announcementSlideIndex]?.description), 1 /* TEXT */)
             ]),
             _createCommentVNode(" Carousel Navigation / Footer "),
-            _createElementVNode("div", _hoisted_522, [
+            _createElementVNode("div", _hoisted_526, [
               _createCommentVNode(" Dots "),
               (_ctx.announcementConfig.slides.length > 1)
-                ? (_openBlock(), _createElementBlock("div", _hoisted_523, [
+                ? (_openBlock(), _createElementBlock("div", _hoisted_527, [
                     (_openBlock(true), _createElementBlock(_Fragment, null, _renderList(_ctx.announcementConfig.slides, (slide, idx) => {
                       return (_openBlock(), _createElementBlock("span", {
                         key: idx,
@@ -3872,14 +3916,14 @@ return function render(_ctx, _cache) {
                       }, null, 2 /* CLASS */))
                     }), 128 /* KEYED_FRAGMENT */))
                   ]))
-                : (_openBlock(), _createElementBlock("div", _hoisted_524)),
-              _createElementVNode("div", _hoisted_525, [
+                : (_openBlock(), _createElementBlock("div", _hoisted_528)),
+              _createElementVNode("div", _hoisted_529, [
                 (_ctx.announcementSlideIndex > 0)
                   ? (_openBlock(), _createElementBlock("button", {
                       key: 0,
                       onClick: _ctx.prevAnnouncementSlide,
                       class: "px-3 py-2 text-xs font-bold text-gray-500 hover:text-gray-800 hover:bg-gray-200 rounded-xl transition-all"
-                    }, " Anterior ", 8 /* PROPS */, _hoisted_526))
+                    }, " Anterior ", 8 /* PROPS */, _hoisted_530))
                   : _createCommentVNode("v-if", true),
                 _createElementVNode("button", {
                   onClick: _ctx.nextAnnouncementSlide,
@@ -3887,9 +3931,9 @@ return function render(_ctx, _cache) {
                 }, [
                   _createElementVNode("span", null, _toDisplayString(_ctx.announcementSlideIndex === _ctx.announcementConfig.slides.length - 1 ? 'Entendido' : 'Siguiente'), 1 /* TEXT */),
                   (_ctx.announcementSlideIndex < _ctx.announcementConfig.slides.length - 1)
-                    ? (_openBlock(), _createElementBlock("i", _hoisted_528))
-                    : (_openBlock(), _createElementBlock("i", _hoisted_529))
-                ], 8 /* PROPS */, _hoisted_527)
+                    ? (_openBlock(), _createElementBlock("i", _hoisted_532))
+                    : (_openBlock(), _createElementBlock("i", _hoisted_533))
+                ], 8 /* PROPS */, _hoisted_531)
               ])
             ])
           ])
@@ -3897,37 +3941,37 @@ return function render(_ctx, _cache) {
       : _createCommentVNode("v-if", true),
     _createCommentVNode(" Meal Rating Modal "),
     (_ctx.mealRatingModal.open)
-      ? (_openBlock(), _createElementBlock("div", _hoisted_530, [
+      ? (_openBlock(), _createElementBlock("div", _hoisted_534, [
           _createElementVNode("div", {
             class: "absolute inset-0 bg-gray-900/60 backdrop-blur-sm",
             onClick: $event => (_ctx.mealRatingModal.open = false)
-          }, null, 8 /* PROPS */, _hoisted_531),
-          _createElementVNode("div", _hoisted_532, [
-            _createElementVNode("div", _hoisted_533, [
-              _createElementVNode("div", _hoisted_534, [
-                _cache[201] || (_cache[201] = _createElementVNode("i", { class: "fa-solid fa-utensils text-amber-200 text-lg" }, null, -1 /* CACHED */)),
+          }, null, 8 /* PROPS */, _hoisted_535),
+          _createElementVNode("div", _hoisted_536, [
+            _createElementVNode("div", _hoisted_537, [
+              _createElementVNode("div", _hoisted_538, [
+                _cache[204] || (_cache[204] = _createElementVNode("i", { class: "fa-solid fa-utensils text-amber-200 text-lg" }, null, -1 /* CACHED */)),
                 _createElementVNode("div", null, [
-                  _cache[200] || (_cache[200] = _createElementVNode("h3", { class: "font-bold text-base text-white" }, "Valorar tu almuerzo", -1 /* CACHED */)),
-                  _createElementVNode("p", _hoisted_535, _toDisplayString(_ctx.mealRatingModal.dateLabel), 1 /* TEXT */)
+                  _cache[203] || (_cache[203] = _createElementVNode("h3", { class: "font-bold text-base text-white" }, "Valorar tu almuerzo", -1 /* CACHED */)),
+                  _createElementVNode("p", _hoisted_539, _toDisplayString(_ctx.mealRatingModal.dateLabel), 1 /* TEXT */)
                 ])
               ]),
               _createElementVNode("button", {
                 onClick: $event => (_ctx.mealRatingModal.open = false),
                 class: "text-white/80 hover:text-white"
-              }, [...(_cache[202] || (_cache[202] = [
+              }, [...(_cache[205] || (_cache[205] = [
                 _createElementVNode("i", { class: "fa-solid fa-xmark" }, null, -1 /* CACHED */)
-              ]))], 8 /* PROPS */, _hoisted_536)
+              ]))], 8 /* PROPS */, _hoisted_540)
             ]),
-            _createElementVNode("div", _hoisted_537, [
+            _createElementVNode("div", _hoisted_541, [
               (_ctx.mealRatingModal.dishes)
-                ? (_openBlock(), _createElementBlock("div", _hoisted_538, [
-                    _cache[203] || (_cache[203] = _createElementVNode("span", { class: "font-bold text-gray-800" }, "Platos ordenados:", -1 /* CACHED */)),
+                ? (_openBlock(), _createElementBlock("div", _hoisted_542, [
+                    _cache[206] || (_cache[206] = _createElementVNode("span", { class: "font-bold text-gray-800" }, "Platos ordenados:", -1 /* CACHED */)),
                     _createTextVNode(" " + _toDisplayString(_ctx.mealRatingModal.dishes), 1 /* TEXT */)
                   ]))
                 : _createCommentVNode("v-if", true),
-              _createElementVNode("div", _hoisted_539, [
-                _cache[204] || (_cache[204] = _createElementVNode("label", { class: "block text-xs font-bold uppercase tracking-wider text-gray-500" }, "¿Qué tal estuvo la comida?", -1 /* CACHED */)),
-                _createElementVNode("div", _hoisted_540, [
+              _createElementVNode("div", _hoisted_543, [
+                _cache[207] || (_cache[207] = _createElementVNode("label", { class: "block text-xs font-bold uppercase tracking-wider text-gray-500" }, "¿Qué tal estuvo la comida?", -1 /* CACHED */)),
+                _createElementVNode("div", _hoisted_544, [
                   (_openBlock(), _createElementBlock(_Fragment, null, _renderList(5, (star) => {
                     return _createElementVNode("button", {
                       key: star,
@@ -3938,79 +3982,79 @@ return function render(_ctx, _cache) {
                       _createElementVNode("i", {
                         class: _normalizeClass(star <= _ctx.mealRatingModal.rating ? 'fa-solid fa-star text-amber-400' : 'fa-regular fa-star text-gray-300 hover:text-amber-200')
                       }, null, 2 /* CLASS */)
-                    ], 8 /* PROPS */, _hoisted_541)
+                    ], 8 /* PROPS */, _hoisted_545)
                   }), 64 /* STABLE_FRAGMENT */))
                 ]),
-                _createElementVNode("p", _hoisted_542, _toDisplayString(['Muy mala', 'Regular', 'Aceptable', 'Muy buena', 'Excelente'][_ctx.mealRatingModal.rating - 1]), 1 /* TEXT */)
+                _createElementVNode("p", _hoisted_546, _toDisplayString(['Muy mala', 'Regular', 'Aceptable', 'Muy buena', 'Excelente'][_ctx.mealRatingModal.rating - 1]), 1 /* TEXT */)
               ]),
               _createElementVNode("div", null, [
-                _cache[205] || (_cache[205] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Comentario u opinión (opcional)", -1 /* CACHED */)),
+                _cache[208] || (_cache[208] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Comentario u opinión (opcional)", -1 /* CACHED */)),
                 _withDirectives(_createElementVNode("textarea", {
                   "onUpdate:modelValue": $event => ((_ctx.mealRatingModal.comment) = $event),
                   rows: "3",
                   maxlength: "500",
                   placeholder: "¿Qué te gustó? ¿Algo que mejorar en el sabor o porción?",
                   class: "w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-amber-500 outline-none resize-none"
-                }, null, 8 /* PROPS */, _hoisted_543), [
+                }, null, 8 /* PROPS */, _hoisted_547), [
                   [_vModelText, _ctx.mealRatingModal.comment]
                 ]),
-                _createElementVNode("div", _hoisted_544, _toDisplayString((_ctx.mealRatingModal.comment || '').length) + "/500", 1 /* TEXT */)
+                _createElementVNode("div", _hoisted_548, _toDisplayString((_ctx.mealRatingModal.comment || '').length) + "/500", 1 /* TEXT */)
               ]),
               (_ctx.mealRatingModal.error)
-                ? (_openBlock(), _createElementBlock("div", _hoisted_545, [
-                    _cache[206] || (_cache[206] = _createElementVNode("i", { class: "fa-solid fa-circle-exclamation" }, null, -1 /* CACHED */)),
+                ? (_openBlock(), _createElementBlock("div", _hoisted_549, [
+                    _cache[209] || (_cache[209] = _createElementVNode("i", { class: "fa-solid fa-circle-exclamation" }, null, -1 /* CACHED */)),
                     _createElementVNode("span", null, _toDisplayString(_ctx.mealRatingModal.error), 1 /* TEXT */)
                   ]))
                 : _createCommentVNode("v-if", true)
             ]),
-            _createElementVNode("div", _hoisted_546, [
+            _createElementVNode("div", _hoisted_550, [
               _createElementVNode("button", {
                 onClick: $event => (_ctx.mealRatingModal.open = false),
                 class: "px-4 py-2 text-xs font-bold text-gray-500 hover:bg-gray-200 rounded-xl transition-all",
                 disabled: _ctx.mealRatingModal.saving
-              }, "Cancelar", 8 /* PROPS */, _hoisted_547),
+              }, "Cancelar", 8 /* PROPS */, _hoisted_551),
               _createElementVNode("button", {
                 onClick: _ctx.saveMealRating,
                 class: "px-5 py-2 text-xs font-bold bg-amber-600 hover:bg-amber-700 text-white rounded-xl shadow-md shadow-amber-500/20 transition-all flex items-center gap-2 disabled:opacity-50",
                 disabled: _ctx.mealRatingModal.saving
               }, [
                 (_ctx.mealRatingModal.saving)
-                  ? (_openBlock(), _createElementBlock("i", _hoisted_549))
+                  ? (_openBlock(), _createElementBlock("i", _hoisted_553))
                   : _createCommentVNode("v-if", true),
-                _cache[207] || (_cache[207] = _createTextVNode(" Guardar Valoración ", -1 /* CACHED */))
-              ], 8 /* PROPS */, _hoisted_548)
+                _cache[210] || (_cache[210] = _createTextVNode(" Guardar Valoración ", -1 /* CACHED */))
+              ], 8 /* PROPS */, _hoisted_552)
             ])
           ])
         ]))
       : _createCommentVNode("v-if", true),
     _createCommentVNode(" Provider Rating Modal "),
     (_ctx.providerRatingModal.open)
-      ? (_openBlock(), _createElementBlock("div", _hoisted_550, [
+      ? (_openBlock(), _createElementBlock("div", _hoisted_554, [
           _createElementVNode("div", {
             class: "absolute inset-0 bg-gray-900/60 backdrop-blur-sm",
             onClick: $event => (_ctx.providerRatingModal.open = false)
-          }, null, 8 /* PROPS */, _hoisted_551),
-          _createElementVNode("div", _hoisted_552, [
-            _createElementVNode("div", _hoisted_553, [
-              _createElementVNode("div", _hoisted_554, [
-                _cache[209] || (_cache[209] = _createElementVNode("i", { class: "fa-solid fa-award text-amber-200 text-lg" }, null, -1 /* CACHED */)),
+          }, null, 8 /* PROPS */, _hoisted_555),
+          _createElementVNode("div", _hoisted_556, [
+            _createElementVNode("div", _hoisted_557, [
+              _createElementVNode("div", _hoisted_558, [
+                _cache[212] || (_cache[212] = _createElementVNode("i", { class: "fa-solid fa-award text-amber-200 text-lg" }, null, -1 /* CACHED */)),
                 _createElementVNode("div", null, [
-                  _cache[208] || (_cache[208] = _createElementVNode("h3", { class: "font-bold text-base text-white" }, "Calificar al Proveedor", -1 /* CACHED */)),
-                  _createElementVNode("p", _hoisted_555, _toDisplayString(_ctx.providerInfo.name), 1 /* TEXT */)
+                  _cache[211] || (_cache[211] = _createElementVNode("h3", { class: "font-bold text-base text-white" }, "Calificar al Proveedor", -1 /* CACHED */)),
+                  _createElementVNode("p", _hoisted_559, _toDisplayString(_ctx.providerInfo.name), 1 /* TEXT */)
                 ])
               ]),
               _createElementVNode("button", {
                 onClick: $event => (_ctx.providerRatingModal.open = false),
                 class: "text-white/80 hover:text-white"
-              }, [...(_cache[210] || (_cache[210] = [
+              }, [...(_cache[213] || (_cache[213] = [
                 _createElementVNode("i", { class: "fa-solid fa-xmark" }, null, -1 /* CACHED */)
-              ]))], 8 /* PROPS */, _hoisted_556)
+              ]))], 8 /* PROPS */, _hoisted_560)
             ]),
-            _createElementVNode("div", _hoisted_557, [
-              _cache[214] || (_cache[214] = _createElementVNode("p", { class: "text-xs text-gray-500 leading-relaxed" }, " Tu opinión nos ayuda a supervisar la calidad del servicio contratado. Puedes actualizar tu calificación cuantas veces quieras a lo largo del tiempo. ", -1 /* CACHED */)),
-              _createElementVNode("div", _hoisted_558, [
-                _cache[211] || (_cache[211] = _createElementVNode("label", { class: "block text-xs font-bold uppercase tracking-wider text-gray-500" }, "Satisfacción general con el proveedor", -1 /* CACHED */)),
-                _createElementVNode("div", _hoisted_559, [
+            _createElementVNode("div", _hoisted_561, [
+              _cache[217] || (_cache[217] = _createElementVNode("p", { class: "text-xs text-gray-500 leading-relaxed" }, " Tu opinión nos ayuda a supervisar la calidad del servicio contratado. Puedes actualizar tu calificación cuantas veces quieras a lo largo del tiempo. ", -1 /* CACHED */)),
+              _createElementVNode("div", _hoisted_562, [
+                _cache[214] || (_cache[214] = _createElementVNode("label", { class: "block text-xs font-bold uppercase tracking-wider text-gray-500" }, "Satisfacción general con el proveedor", -1 /* CACHED */)),
+                _createElementVNode("div", _hoisted_563, [
                   (_openBlock(), _createElementBlock(_Fragment, null, _renderList(5, (star) => {
                     return _createElementVNode("button", {
                       key: star,
@@ -4021,87 +4065,87 @@ return function render(_ctx, _cache) {
                       _createElementVNode("i", {
                         class: _normalizeClass(star <= _ctx.providerRatingModal.rating ? 'fa-solid fa-star text-amber-400' : 'fa-regular fa-star text-gray-300 hover:text-amber-200')
                       }, null, 2 /* CLASS */)
-                    ], 8 /* PROPS */, _hoisted_560)
+                    ], 8 /* PROPS */, _hoisted_564)
                   }), 64 /* STABLE_FRAGMENT */))
                 ]),
-                _createElementVNode("p", _hoisted_561, _toDisplayString(['Muy Insatisfecho', 'Insatisfecho', 'Neutral / Regular', 'Satisfecho', 'Muy Satisfecho'][_ctx.providerRatingModal.rating - 1]), 1 /* TEXT */)
+                _createElementVNode("p", _hoisted_565, _toDisplayString(['Muy Insatisfecho', 'Insatisfecho', 'Neutral / Regular', 'Satisfecho', 'Muy Satisfecho'][_ctx.providerRatingModal.rating - 1]), 1 /* TEXT */)
               ]),
               _createElementVNode("div", null, [
-                _cache[212] || (_cache[212] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Comentario o sugerencia (opcional)", -1 /* CACHED */)),
+                _cache[215] || (_cache[215] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Comentario o sugerencia (opcional)", -1 /* CACHED */)),
                 _withDirectives(_createElementVNode("textarea", {
                   "onUpdate:modelValue": $event => ((_ctx.providerRatingModal.comment) = $event),
                   rows: "3",
                   maxlength: "500",
                   placeholder: "Comenta sobre la puntualidad, higiene, variedad o sazón general...",
                   class: "w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-amber-500 outline-none resize-none"
-                }, null, 8 /* PROPS */, _hoisted_562), [
+                }, null, 8 /* PROPS */, _hoisted_566), [
                   [_vModelText, _ctx.providerRatingModal.comment]
                 ]),
-                _createElementVNode("div", _hoisted_563, _toDisplayString((_ctx.providerRatingModal.comment || '').length) + "/500", 1 /* TEXT */)
+                _createElementVNode("div", _hoisted_567, _toDisplayString((_ctx.providerRatingModal.comment || '').length) + "/500", 1 /* TEXT */)
               ]),
               (_ctx.providerRatingModal.error)
-                ? (_openBlock(), _createElementBlock("div", _hoisted_564, [
-                    _cache[213] || (_cache[213] = _createElementVNode("i", { class: "fa-solid fa-circle-exclamation" }, null, -1 /* CACHED */)),
+                ? (_openBlock(), _createElementBlock("div", _hoisted_568, [
+                    _cache[216] || (_cache[216] = _createElementVNode("i", { class: "fa-solid fa-circle-exclamation" }, null, -1 /* CACHED */)),
                     _createElementVNode("span", null, _toDisplayString(_ctx.providerRatingModal.error), 1 /* TEXT */)
                   ]))
                 : _createCommentVNode("v-if", true)
             ]),
-            _createElementVNode("div", _hoisted_565, [
+            _createElementVNode("div", _hoisted_569, [
               _createElementVNode("button", {
                 onClick: $event => (_ctx.providerRatingModal.open = false),
                 class: "px-4 py-2 text-xs font-bold text-gray-500 hover:bg-gray-200 rounded-xl transition-all",
                 disabled: _ctx.providerRatingModal.saving
-              }, "Cancelar", 8 /* PROPS */, _hoisted_566),
+              }, "Cancelar", 8 /* PROPS */, _hoisted_570),
               _createElementVNode("button", {
                 onClick: _ctx.saveProviderRating,
                 class: "px-5 py-2 text-xs font-bold bg-amber-600 hover:bg-amber-700 text-white rounded-xl shadow-md shadow-amber-500/20 transition-all flex items-center gap-2 disabled:opacity-50",
                 disabled: _ctx.providerRatingModal.saving
               }, [
                 (_ctx.providerRatingModal.saving)
-                  ? (_openBlock(), _createElementBlock("i", _hoisted_568))
+                  ? (_openBlock(), _createElementBlock("i", _hoisted_572))
                   : _createCommentVNode("v-if", true),
-                _cache[215] || (_cache[215] = _createTextVNode(" Guardar Calificación ", -1 /* CACHED */))
-              ], 8 /* PROPS */, _hoisted_567)
+                _cache[218] || (_cache[218] = _createTextVNode(" Guardar Calificación ", -1 /* CACHED */))
+              ], 8 /* PROPS */, _hoisted_571)
             ])
           ])
         ]))
       : _createCommentVNode("v-if", true),
     _createCommentVNode(" Provider Reset Modal (Admin) "),
     (_ctx.providerResetModal.open)
-      ? (_openBlock(), _createElementBlock("div", _hoisted_569, [
+      ? (_openBlock(), _createElementBlock("div", _hoisted_573, [
           _createElementVNode("div", {
             class: "absolute inset-0 bg-gray-900/60 backdrop-blur-sm",
             onClick: $event => (_ctx.providerResetModal.open = false)
-          }, null, 8 /* PROPS */, _hoisted_570),
-          _createElementVNode("div", _hoisted_571, [
-            _createElementVNode("div", _hoisted_572, [
-              _cache[217] || (_cache[217] = _createElementVNode("div", { class: "flex items-center gap-2.5" }, [
+          }, null, 8 /* PROPS */, _hoisted_574),
+          _createElementVNode("div", _hoisted_575, [
+            _createElementVNode("div", _hoisted_576, [
+              _cache[220] || (_cache[220] = _createElementVNode("div", { class: "flex items-center gap-2.5" }, [
                 _createElementVNode("i", { class: "fa-solid fa-arrows-rotate text-blue-400" }),
                 _createElementVNode("h3", { class: "font-bold text-base text-white" }, "Cambiar Proveedor / Reiniciar Votos")
               ], -1 /* CACHED */)),
               _createElementVNode("button", {
                 onClick: $event => (_ctx.providerResetModal.open = false),
                 class: "text-white/80 hover:text-white"
-              }, [...(_cache[216] || (_cache[216] = [
+              }, [...(_cache[219] || (_cache[219] = [
                 _createElementVNode("i", { class: "fa-solid fa-xmark" }, null, -1 /* CACHED */)
-              ]))], 8 /* PROPS */, _hoisted_573)
+              ]))], 8 /* PROPS */, _hoisted_577)
             ]),
-            _createElementVNode("div", _hoisted_574, [
-              _cache[222] || (_cache[222] = _createElementVNode("p", { class: "text-xs text-gray-600 leading-relaxed" }, " Al cambiar el proveedor o iniciar un nuevo ciclo, se creará un nuevo período de evaluación. Las valoraciones anteriores quedarán archivadas en el historial. ", -1 /* CACHED */)),
+            _createElementVNode("div", _hoisted_578, [
+              _cache[225] || (_cache[225] = _createElementVNode("p", { class: "text-xs text-gray-600 leading-relaxed" }, " Al cambiar el proveedor o iniciar un nuevo ciclo, se creará un nuevo período de evaluación. Las valoraciones anteriores quedarán archivadas en el historial. ", -1 /* CACHED */)),
               _createElementVNode("div", null, [
-                _cache[218] || (_cache[218] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Nombre del nuevo proveedor", -1 /* CACHED */)),
+                _cache[221] || (_cache[221] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Nombre del nuevo proveedor", -1 /* CACHED */)),
                 _withDirectives(_createElementVNode("input", {
                   "onUpdate:modelValue": $event => ((_ctx.providerResetModal.providerName) = $event),
                   type: "text",
                   maxlength: "100",
                   placeholder: "Ej. Delicias Gourmet SRL",
                   class: "w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                }, null, 8 /* PROPS */, _hoisted_575), [
+                }, null, 8 /* PROPS */, _hoisted_579), [
                   [_vModelText, _ctx.providerResetModal.providerName]
                 ])
               ]),
               _createElementVNode("div", null, [
-                _cache[219] || (_cache[219] = _createElementVNode("label", {
+                _cache[222] || (_cache[222] = _createElementVNode("label", {
                   for: "new-provider-price",
                   class: "block text-xs font-bold text-gray-500 uppercase mb-2"
                 }, "Precio del almuerzo (RD$) · obligatorio", -1 /* CACHED */)),
@@ -4114,61 +4158,61 @@ return function render(_ctx, _cache) {
                   step: "0.01",
                   required: "",
                   class: "w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm"
-                }, null, 8 /* PROPS */, _hoisted_576), [
+                }, null, 8 /* PROPS */, _hoisted_580), [
                   [_vModelText, _ctx.providerResetModal.price]
                 ]),
-                _cache[220] || (_cache[220] = _createElementVNode("p", { class: "text-xs text-gray-500 mt-2" }, "Confirma el importe aunque coincida con el anterior. Proveedor y precio se guardan juntos para esta regional.", -1 /* CACHED */))
+                _cache[223] || (_cache[223] = _createElementVNode("p", { class: "text-xs text-gray-500 mt-2" }, "Confirma el importe aunque coincida con el anterior. Proveedor y precio se guardan juntos para esta regional.", -1 /* CACHED */))
               ]),
               (_ctx.providerResetModal.error)
-                ? (_openBlock(), _createElementBlock("div", _hoisted_577, [
-                    _cache[221] || (_cache[221] = _createElementVNode("i", { class: "fa-solid fa-circle-exclamation" }, null, -1 /* CACHED */)),
+                ? (_openBlock(), _createElementBlock("div", _hoisted_581, [
+                    _cache[224] || (_cache[224] = _createElementVNode("i", { class: "fa-solid fa-circle-exclamation" }, null, -1 /* CACHED */)),
                     _createElementVNode("span", null, _toDisplayString(_ctx.providerResetModal.error), 1 /* TEXT */)
                   ]))
                 : _createCommentVNode("v-if", true)
             ]),
-            _createElementVNode("div", _hoisted_578, [
+            _createElementVNode("div", _hoisted_582, [
               _createElementVNode("button", {
                 onClick: $event => (_ctx.providerResetModal.open = false),
                 class: "px-4 py-2 text-xs font-bold text-gray-500 hover:bg-gray-200 rounded-xl transition-all",
                 disabled: _ctx.providerResetModal.saving
-              }, "Cancelar", 8 /* PROPS */, _hoisted_579),
+              }, "Cancelar", 8 /* PROPS */, _hoisted_583),
               _createElementVNode("button", {
                 onClick: _ctx.saveProviderReset,
                 class: "px-5 py-2 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-md shadow-blue-500/20 transition-all flex items-center gap-2 disabled:opacity-50",
                 disabled: _ctx.providerResetModal.saving
               }, [
                 (_ctx.providerResetModal.saving)
-                  ? (_openBlock(), _createElementBlock("i", _hoisted_581))
+                  ? (_openBlock(), _createElementBlock("i", _hoisted_585))
                   : _createCommentVNode("v-if", true),
-                _cache[223] || (_cache[223] = _createTextVNode(" Iniciar Nuevo Período ", -1 /* CACHED */))
-              ], 8 /* PROPS */, _hoisted_580)
+                _cache[226] || (_cache[226] = _createTextVNode(" Iniciar Nuevo Período ", -1 /* CACHED */))
+              ], 8 /* PROPS */, _hoisted_584)
             ])
           ])
         ]))
       : _createCommentVNode("v-if", true),
     _createCommentVNode(" Announcement Config Modal (Admin) "),
     (_ctx.announcementEditModal.open)
-      ? (_openBlock(), _createElementBlock("div", _hoisted_582, [
+      ? (_openBlock(), _createElementBlock("div", _hoisted_586, [
           _createElementVNode("div", {
             class: "absolute inset-0 bg-gray-900/60 backdrop-blur-sm",
             onClick: $event => (_ctx.announcementEditModal.open = false)
-          }, null, 8 /* PROPS */, _hoisted_583),
-          _createElementVNode("div", _hoisted_584, [
-            _createElementVNode("div", _hoisted_585, [
-              _cache[225] || (_cache[225] = _createElementVNode("div", { class: "flex items-center gap-2.5" }, [
+          }, null, 8 /* PROPS */, _hoisted_587),
+          _createElementVNode("div", _hoisted_588, [
+            _createElementVNode("div", _hoisted_589, [
+              _cache[228] || (_cache[228] = _createElementVNode("div", { class: "flex items-center gap-2.5" }, [
                 _createElementVNode("i", { class: "fa-solid fa-bullhorn text-indigo-200" }),
                 _createElementVNode("h3", { class: "font-bold text-base text-white" }, "Configurar Aviso General")
               ], -1 /* CACHED */)),
               _createElementVNode("button", {
                 onClick: $event => (_ctx.announcementEditModal.open = false),
                 class: "text-white/80 hover:text-white"
-              }, [...(_cache[224] || (_cache[224] = [
+              }, [...(_cache[227] || (_cache[227] = [
                 _createElementVNode("i", { class: "fa-solid fa-xmark" }, null, -1 /* CACHED */)
-              ]))], 8 /* PROPS */, _hoisted_586)
+              ]))], 8 /* PROPS */, _hoisted_590)
             ]),
-            _createElementVNode("div", _hoisted_587, [
-              _createElementVNode("div", _hoisted_588, [
-                _cache[226] || (_cache[226] = _createElementVNode("div", null, [
+            _createElementVNode("div", _hoisted_591, [
+              _createElementVNode("div", _hoisted_592, [
+                _cache[229] || (_cache[229] = _createElementVNode("div", null, [
                   _createElementVNode("div", { class: "font-bold text-xs text-indigo-950" }, "Estado del aviso"),
                   _createElementVNode("div", { class: "text-[11px] text-indigo-700" }, "Habilita o deshabilita la visualización del aviso general.")
                 ], -1 /* CACHED */)),
@@ -4176,30 +4220,30 @@ return function render(_ctx, _cache) {
                   "onUpdate:modelValue": $event => ((_ctx.announcementEditModal.enabled) = $event),
                   type: "checkbox",
                   class: "w-5 h-5 text-indigo-600 rounded"
-                }, null, 8 /* PROPS */, _hoisted_589), [
+                }, null, 8 /* PROPS */, _hoisted_593), [
                   [_vModelCheckbox, _ctx.announcementEditModal.enabled]
                 ])
               ]),
-              _createElementVNode("div", _hoisted_590, [
+              _createElementVNode("div", _hoisted_594, [
                 _createElementVNode("div", null, [
-                  _cache[227] || (_cache[227] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Fecha de Expiración", -1 /* CACHED */)),
+                  _cache[230] || (_cache[230] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Fecha de Expiración", -1 /* CACHED */)),
                   _withDirectives(_createElementVNode("input", {
                     "onUpdate:modelValue": $event => ((_ctx.announcementEditModal.expiresOn) = $event),
                     type: "date",
                     class: "w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
-                  }, null, 8 /* PROPS */, _hoisted_591), [
+                  }, null, 8 /* PROPS */, _hoisted_595), [
                     [_vModelText, _ctx.announcementEditModal.expiresOn]
                   ])
                 ]),
                 _createElementVNode("div", null, [
-                  _cache[228] || (_cache[228] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Máx. Veces Cierre", -1 /* CACHED */)),
+                  _cache[231] || (_cache[231] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Máx. Veces Cierre", -1 /* CACHED */)),
                   _withDirectives(_createElementVNode("input", {
                     "onUpdate:modelValue": $event => ((_ctx.announcementEditModal.maxDismiss) = $event),
                     type: "number",
                     min: "1",
                     max: "100",
                     class: "w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
-                  }, null, 8 /* PROPS */, _hoisted_592), [
+                  }, null, 8 /* PROPS */, _hoisted_596), [
                     [
                       _vModelText,
                       _ctx.announcementEditModal.maxDismiss,
@@ -4209,83 +4253,83 @@ return function render(_ctx, _cache) {
                   ])
                 ])
               ]),
-              _createElementVNode("div", _hoisted_593, [
+              _createElementVNode("div", _hoisted_597, [
                 _withDirectives(_createElementVNode("input", {
                   id: "forceNewId",
                   "onUpdate:modelValue": $event => ((_ctx.announcementEditModal.forceNewId) = $event),
                   type: "checkbox",
                   class: "w-4 h-4 text-indigo-600 rounded"
-                }, null, 8 /* PROPS */, _hoisted_594), [
+                }, null, 8 /* PROPS */, _hoisted_598), [
                   [_vModelCheckbox, _ctx.announcementEditModal.forceNewId]
                 ]),
-                _cache[229] || (_cache[229] = _createElementVNode("label", {
+                _cache[232] || (_cache[232] = _createElementVNode("label", {
                   for: "forceNewId",
                   class: "text-xs font-bold text-gray-700 cursor-pointer"
                 }, "Forzar que todos los usuarios lo vean de nuevo (Nuevo ID)", -1 /* CACHED */))
               ]),
               _createCommentVNode(" Slides Editor "),
-              _createElementVNode("div", _hoisted_595, [
-                _createElementVNode("div", _hoisted_596, [
-                  _createElementVNode("label", _hoisted_597, "Slides del Aviso (" + _toDisplayString(_ctx.announcementEditModal.slides.length) + ")", 1 /* TEXT */),
+              _createElementVNode("div", _hoisted_599, [
+                _createElementVNode("div", _hoisted_600, [
+                  _createElementVNode("label", _hoisted_601, "Slides del Aviso (" + _toDisplayString(_ctx.announcementEditModal.slides.length) + ")", 1 /* TEXT */),
                   _createElementVNode("button", {
                     onClick: _ctx.addAnnouncementSlide,
                     type: "button",
                     class: "px-3 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold flex items-center gap-1"
-                  }, [...(_cache[230] || (_cache[230] = [
+                  }, [...(_cache[233] || (_cache[233] = [
                     _createElementVNode("i", { class: "fa-solid fa-plus text-[10px]" }, null, -1 /* CACHED */),
                     _createTextVNode(" Agregar Slide ", -1 /* CACHED */)
-                  ]))], 8 /* PROPS */, _hoisted_598)
+                  ]))], 8 /* PROPS */, _hoisted_602)
                 ]),
                 (_openBlock(true), _createElementBlock(_Fragment, null, _renderList(_ctx.announcementEditModal.slides, (slide, sIdx) => {
                   return (_openBlock(), _createElementBlock("div", {
                     key: sIdx,
                     class: "p-4 bg-gray-50 rounded-2xl border border-gray-200/80 space-y-3 relative group"
                   }, [
-                    _createElementVNode("div", _hoisted_599, [
-                      _createElementVNode("span", _hoisted_600, "Slide #" + _toDisplayString(sIdx + 1), 1 /* TEXT */),
+                    _createElementVNode("div", _hoisted_603, [
+                      _createElementVNode("span", _hoisted_604, "Slide #" + _toDisplayString(sIdx + 1), 1 /* TEXT */),
                       (_ctx.announcementEditModal.slides.length > 1)
                         ? (_openBlock(), _createElementBlock("button", {
                             key: 0,
                             onClick: $event => (_ctx.removeAnnouncementSlide(sIdx)),
                             type: "button",
                             class: "text-red-500 hover:text-red-700 text-xs font-bold"
-                          }, [...(_cache[231] || (_cache[231] = [
+                          }, [...(_cache[234] || (_cache[234] = [
                             _createElementVNode("i", { class: "fa-solid fa-trash-can" }, null, -1 /* CACHED */)
-                          ]))], 8 /* PROPS */, _hoisted_601))
+                          ]))], 8 /* PROPS */, _hoisted_605))
                         : _createCommentVNode("v-if", true)
                     ]),
-                    _createElementVNode("div", _hoisted_602, [
-                      _createElementVNode("div", _hoisted_603, [
-                        _cache[232] || (_cache[232] = _createElementVNode("label", { class: "block text-[11px] font-bold text-gray-500 uppercase mb-1" }, "Título", -1 /* CACHED */)),
+                    _createElementVNode("div", _hoisted_606, [
+                      _createElementVNode("div", _hoisted_607, [
+                        _cache[235] || (_cache[235] = _createElementVNode("label", { class: "block text-[11px] font-bold text-gray-500 uppercase mb-1" }, "Título", -1 /* CACHED */)),
                         _withDirectives(_createElementVNode("input", {
                           "onUpdate:modelValue": $event => ((slide.title) = $event),
                           type: "text",
                           placeholder: "Ej. ¡Nueva función de votaciones!",
                           class: "w-full bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs outline-none focus:ring-2 focus:ring-indigo-500"
-                        }, null, 8 /* PROPS */, _hoisted_604), [
+                        }, null, 8 /* PROPS */, _hoisted_608), [
                           [_vModelText, slide.title]
                         ])
                       ]),
                       _createElementVNode("div", null, [
-                        _cache[233] || (_cache[233] = _createElementVNode("label", { class: "block text-[11px] font-bold text-gray-500 uppercase mb-1" }, "Badge", -1 /* CACHED */)),
+                        _cache[236] || (_cache[236] = _createElementVNode("label", { class: "block text-[11px] font-bold text-gray-500 uppercase mb-1" }, "Badge", -1 /* CACHED */)),
                         _withDirectives(_createElementVNode("input", {
                           "onUpdate:modelValue": $event => ((slide.badge) = $event),
                           type: "text",
                           placeholder: "Ej. ¡Novedad!",
                           class: "w-full bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs outline-none focus:ring-2 focus:ring-indigo-500"
-                        }, null, 8 /* PROPS */, _hoisted_605), [
+                        }, null, 8 /* PROPS */, _hoisted_609), [
                           [_vModelText, slide.badge]
                         ])
                       ])
                     ]),
                     _createElementVNode("div", null, [
-                      _cache[234] || (_cache[234] = _createElementVNode("label", { class: "block text-[11px] font-bold text-gray-500 uppercase mb-1" }, "Descripción", -1 /* CACHED */)),
+                      _cache[237] || (_cache[237] = _createElementVNode("label", { class: "block text-[11px] font-bold text-gray-500 uppercase mb-1" }, "Descripción", -1 /* CACHED */)),
                       _withDirectives(_createElementVNode("textarea", {
                         "onUpdate:modelValue": $event => ((slide.description) = $event),
                         rows: "3",
                         placeholder: "Detalla aquí la información que deseas comunicar...",
                         class: "w-full bg-white border border-gray-200 rounded-lg p-2.5 text-xs outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
-                      }, null, 8 /* PROPS */, _hoisted_606), [
+                      }, null, 8 /* PROPS */, _hoisted_610), [
                         [_vModelText, slide.description]
                       ])
                     ])
@@ -4293,86 +4337,86 @@ return function render(_ctx, _cache) {
                 }), 128 /* KEYED_FRAGMENT */))
               ])
             ]),
-            _createElementVNode("div", _hoisted_607, [
+            _createElementVNode("div", _hoisted_611, [
               _createElementVNode("button", {
                 onClick: $event => (_ctx.announcementEditModal.open = false),
                 class: "px-4 py-2 text-xs font-bold text-gray-500 hover:bg-gray-200 rounded-xl transition-all",
                 disabled: _ctx.announcementEditModal.saving
-              }, "Cancelar", 8 /* PROPS */, _hoisted_608),
+              }, "Cancelar", 8 /* PROPS */, _hoisted_612),
               _createElementVNode("button", {
                 onClick: _ctx.saveAnnouncementConfig,
                 class: "px-5 py-2 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-md shadow-indigo-500/20 transition-all flex items-center gap-2 disabled:opacity-50",
                 disabled: _ctx.announcementEditModal.saving
               }, [
                 (_ctx.announcementEditModal.saving)
-                  ? (_openBlock(), _createElementBlock("i", _hoisted_610))
+                  ? (_openBlock(), _createElementBlock("i", _hoisted_614))
                   : _createCommentVNode("v-if", true),
-                _cache[235] || (_cache[235] = _createTextVNode(" Guardar Aviso ", -1 /* CACHED */))
-              ], 8 /* PROPS */, _hoisted_609)
+                _cache[238] || (_cache[238] = _createTextVNode(" Guardar Aviso ", -1 /* CACHED */))
+              ], 8 /* PROPS */, _hoisted_613)
             ])
           ])
         ]))
       : _createCommentVNode("v-if", true),
     _createCommentVNode(" Community Satisfaction Modal "),
     (_ctx.satisfactionCommunityModal.open)
-      ? (_openBlock(), _createElementBlock("div", _hoisted_611, [
+      ? (_openBlock(), _createElementBlock("div", _hoisted_615, [
           _createElementVNode("div", {
             class: "absolute inset-0 bg-gray-900/50 backdrop-blur-sm",
             onClick: $event => (_ctx.satisfactionCommunityModal.open = false)
-          }, null, 8 /* PROPS */, _hoisted_612),
-          _createElementVNode("div", _hoisted_613, [
+          }, null, 8 /* PROPS */, _hoisted_616),
+          _createElementVNode("div", _hoisted_617, [
             _createCommentVNode(" Header "),
-            _createElementVNode("div", _hoisted_614, [
-              _cache[237] || (_cache[237] = _createStaticVNode("<div class=\"flex items-center gap-3\"><div class=\"w-11 h-11 rounded-2xl bg-amber-500 text-white flex items-center justify-center font-bold text-xl shadow-md shadow-amber-500/30 shrink-0\"><i class=\"fa-solid fa-ranking-star\"></i></div><div><h3 class=\"font-black text-lg text-gray-900 leading-tight\">Satisfacción de la Comunidad</h3><p class=\"text-xs text-gray-500 mt-0.5\">Opiniones y promedios de calidad del servicio de comedor</p></div></div>", 1)),
+            _createElementVNode("div", _hoisted_618, [
+              _cache[240] || (_cache[240] = _createStaticVNode("<div class=\"flex items-center gap-3\"><div class=\"w-11 h-11 rounded-2xl bg-amber-500 text-white flex items-center justify-center font-bold text-xl shadow-md shadow-amber-500/30 shrink-0\"><i class=\"fa-solid fa-ranking-star\"></i></div><div><h3 class=\"font-black text-lg text-gray-900 leading-tight\">Satisfacción de la Comunidad</h3><p class=\"text-xs text-gray-500 mt-0.5\">Opiniones y promedios de calidad del servicio de comedor</p></div></div>", 1)),
               _createElementVNode("button", {
                 onClick: $event => (_ctx.satisfactionCommunityModal.open = false),
                 class: "text-gray-400 hover:text-gray-600 p-2 rounded-xl"
-              }, [...(_cache[236] || (_cache[236] = [
+              }, [...(_cache[239] || (_cache[239] = [
                 _createElementVNode("i", { class: "fa-solid fa-xmark text-lg" }, null, -1 /* CACHED */)
-              ]))], 8 /* PROPS */, _hoisted_615)
+              ]))], 8 /* PROPS */, _hoisted_619)
             ]),
             _createCommentVNode(" Tabs Switcher "),
-            _createElementVNode("div", _hoisted_616, [
+            _createElementVNode("div", _hoisted_620, [
               _createElementVNode("button", {
                 onClick: $event => (_ctx.satisfactionCommunityModal.activeTab = 'PROVIDER'),
                 class: _normalizeClass(['px-4 py-2.5 rounded-t-xl text-xs font-bold transition-all border-b-2 flex items-center gap-2', _ctx.satisfactionCommunityModal.activeTab === 'PROVIDER' ? 'border-amber-500 text-amber-700 bg-white shadow-sm' : 'border-transparent text-gray-500 hover:text-gray-800 hover:bg-white/50'])
-              }, [...(_cache[238] || (_cache[238] = [
+              }, [...(_cache[241] || (_cache[241] = [
                 _createElementVNode("i", { class: "fa-solid fa-award text-amber-500" }, null, -1 /* CACHED */),
                 _createElementVNode("span", null, "Proveedor de Alimentos", -1 /* CACHED */)
-              ]))], 10 /* CLASS, PROPS */, _hoisted_617),
+              ]))], 10 /* CLASS, PROPS */, _hoisted_621),
               _createElementVNode("button", {
                 onClick: $event => (_ctx.satisfactionCommunityModal.activeTab = 'MEALS'),
                 class: _normalizeClass(['px-4 py-2.5 rounded-t-xl text-xs font-bold transition-all border-b-2 flex items-center gap-2', _ctx.satisfactionCommunityModal.activeTab === 'MEALS' ? 'border-amber-500 text-amber-700 bg-white shadow-sm' : 'border-transparent text-gray-500 hover:text-gray-800 hover:bg-white/50'])
-              }, [...(_cache[239] || (_cache[239] = [
+              }, [...(_cache[242] || (_cache[242] = [
                 _createElementVNode("i", { class: "fa-solid fa-utensils text-orange-500" }, null, -1 /* CACHED */),
                 _createElementVNode("span", null, "Almuerzos Diarios", -1 /* CACHED */)
-              ]))], 10 /* CLASS, PROPS */, _hoisted_618)
+              ]))], 10 /* CLASS, PROPS */, _hoisted_622)
             ]),
             _createCommentVNode(" Body "),
-            _createElementVNode("div", _hoisted_619, [
+            _createElementVNode("div", _hoisted_623, [
               (_ctx.satisfactionCommunityModal.loading)
-                ? (_openBlock(), _createElementBlock("div", _hoisted_620, [...(_cache[240] || (_cache[240] = [
+                ? (_openBlock(), _createElementBlock("div", _hoisted_624, [...(_cache[243] || (_cache[243] = [
                     _createElementVNode("i", { class: "fa-solid fa-circle-notch fa-spin text-3xl text-amber-500" }, null, -1 /* CACHED */),
                     _createElementVNode("p", { class: "text-xs font-medium" }, "Cargando métricas de satisfacción...", -1 /* CACHED */)
                   ]))]))
                 : (_ctx.satisfactionCommunityModal.data)
-                  ? (_openBlock(), _createElementBlock("div", _hoisted_621, [
+                  ? (_openBlock(), _createElementBlock("div", _hoisted_625, [
                       _createCommentVNode(" TAB 1: PROVEEDOR "),
                       (_ctx.satisfactionCommunityModal.activeTab === 'PROVIDER')
-                        ? (_openBlock(), _createElementBlock("div", _hoisted_622, [
+                        ? (_openBlock(), _createElementBlock("div", _hoisted_626, [
                             _createCommentVNode(" KPI Card "),
-                            _createElementVNode("div", _hoisted_623, [
-                              _createElementVNode("div", _hoisted_624, [
+                            _createElementVNode("div", _hoisted_627, [
+                              _createElementVNode("div", _hoisted_628, [
                                 _createElementVNode("div", null, [
-                                  _cache[242] || (_cache[242] = _createElementVNode("span", { class: "text-[11px] font-black uppercase tracking-wider text-amber-800 bg-amber-100/80 px-2.5 py-1 rounded-full" }, "Proveedor Evaluado", -1 /* CACHED */)),
-                                  _createElementVNode("h4", _hoisted_625, _toDisplayString(_ctx.satisfactionCommunityModal.data.providerStats?.providerInfo?.name || _ctx.providerInfo.name), 1 /* TEXT */),
-                                  _createElementVNode("p", _hoisted_626, [
-                                    _cache[241] || (_cache[241] = _createTextVNode("Período activo: ", -1 /* CACHED */)),
-                                    _createElementVNode("span", _hoisted_627, _toDisplayString(_ctx.satisfactionCommunityModal.data.providerStats?.providerInfo?.periodId), 1 /* TEXT */)
+                                  _cache[245] || (_cache[245] = _createElementVNode("span", { class: "text-[11px] font-black uppercase tracking-wider text-amber-800 bg-amber-100/80 px-2.5 py-1 rounded-full" }, "Proveedor Evaluado", -1 /* CACHED */)),
+                                  _createElementVNode("h4", _hoisted_629, _toDisplayString(_ctx.satisfactionCommunityModal.data.providerStats?.providerInfo?.name || _ctx.providerInfo.name), 1 /* TEXT */),
+                                  _createElementVNode("p", _hoisted_630, [
+                                    _cache[244] || (_cache[244] = _createTextVNode("Período activo: ", -1 /* CACHED */)),
+                                    _createElementVNode("span", _hoisted_631, _toDisplayString(_ctx.satisfactionCommunityModal.data.providerStats?.providerInfo?.periodId), 1 /* TEXT */)
                                   ])
                                 ]),
-                                _createElementVNode("div", _hoisted_628, [
-                                  _createElementVNode("div", _hoisted_629, [
+                                _createElementVNode("div", _hoisted_632, [
+                                  _createElementVNode("div", _hoisted_633, [
                                     (_openBlock(), _createElementBlock(_Fragment, null, _renderList(5, (star) => {
                                       return _createElementVNode("i", {
                                         key: star,
@@ -4380,38 +4424,38 @@ return function render(_ctx, _cache) {
                                       }, null, 2 /* CLASS */)
                                     }), 64 /* STABLE_FRAGMENT */))
                                   ]),
-                                  _createElementVNode("div", _hoisted_630, [
-                                    _createElementVNode("span", _hoisted_631, _toDisplayString(_ctx.satisfactionCommunityModal.data.providerStats?.average || 0), 1 /* TEXT */),
-                                    _cache[243] || (_cache[243] = _createElementVNode("span", { class: "text-xs text-gray-400 font-bold" }, " / 5.0", -1 /* CACHED */))
+                                  _createElementVNode("div", _hoisted_634, [
+                                    _createElementVNode("span", _hoisted_635, _toDisplayString(_ctx.satisfactionCommunityModal.data.providerStats?.average || 0), 1 /* TEXT */),
+                                    _cache[246] || (_cache[246] = _createElementVNode("span", { class: "text-xs text-gray-400 font-bold" }, " / 5.0", -1 /* CACHED */))
                                   ]),
-                                  _createElementVNode("span", _hoisted_632, "(" + _toDisplayString(_ctx.satisfactionCommunityModal.data.providerStats?.total || 0) + " colaboradores)", 1 /* TEXT */)
+                                  _createElementVNode("span", _hoisted_636, "(" + _toDisplayString(_ctx.satisfactionCommunityModal.data.providerStats?.total || 0) + " colaboradores)", 1 /* TEXT */)
                                 ])
                               ]),
                               _createCommentVNode(" Star Bars Breakdown "),
-                              _createElementVNode("div", _hoisted_633, [
+                              _createElementVNode("div", _hoisted_637, [
                                 (_openBlock(), _createElementBlock(_Fragment, null, _renderList([5, 4, 3, 2, 1], (star) => {
                                   return _createElementVNode("div", {
                                     key: star,
                                     class: "flex items-center gap-3 text-xs"
                                   }, [
-                                    _createElementVNode("span", _hoisted_634, [
+                                    _createElementVNode("span", _hoisted_638, [
                                       _createTextVNode(_toDisplayString(star) + " ", 1 /* TEXT */),
-                                      _cache[244] || (_cache[244] = _createElementVNode("i", { class: "fa-solid fa-star text-amber-400 text-[10px]" }, null, -1 /* CACHED */))
+                                      _cache[247] || (_cache[247] = _createElementVNode("i", { class: "fa-solid fa-star text-amber-400 text-[10px]" }, null, -1 /* CACHED */))
                                     ]),
-                                    _createElementVNode("div", _hoisted_635, [
+                                    _createElementVNode("div", _hoisted_639, [
                                       _createElementVNode("div", {
                                         class: "bg-amber-400 h-full rounded-full transition-all",
                                         style: _normalizeStyle({ width: ((_ctx.satisfactionCommunityModal.data.providerStats?.starsCount?.[star] || 0) / (_ctx.satisfactionCommunityModal.data.providerStats?.total || 1) * 100) + '%' })
                                       }, null, 4 /* STYLE */)
                                     ]),
-                                    _createElementVNode("span", _hoisted_636, _toDisplayString(_ctx.satisfactionCommunityModal.data.providerStats?.starsCount?.[star] || 0), 1 /* TEXT */)
+                                    _createElementVNode("span", _hoisted_640, _toDisplayString(_ctx.satisfactionCommunityModal.data.providerStats?.starsCount?.[star] || 0), 1 /* TEXT */)
                                   ])
                                 }), 64 /* STABLE_FRAGMENT */))
                               ])
                             ]),
                             _createCommentVNode(" Recent Comments (Top 5) "),
                             _createElementVNode("div", null, [
-                              _cache[245] || (_cache[245] = _createElementVNode("div", { class: "flex justify-between items-center mb-3" }, [
+                              _cache[248] || (_cache[248] = _createElementVNode("div", { class: "flex justify-between items-center mb-3" }, [
                                 _createElementVNode("h4", { class: "font-bold text-sm text-gray-800 flex items-center gap-2" }, [
                                   _createElementVNode("i", { class: "fa-solid fa-comments text-amber-500" }),
                                   _createTextVNode(" Últimas Opiniones sobre el Proveedor ")
@@ -4419,18 +4463,18 @@ return function render(_ctx, _cache) {
                                 _createElementVNode("span", { class: "text-[11px] font-bold text-gray-400" }, "5 más recientes")
                               ], -1 /* CACHED */)),
                               (_ctx.satisfactionCommunityModal.data.providerStats?.recentFeedback && _ctx.satisfactionCommunityModal.data.providerStats.recentFeedback.filter(f => f.comentario).length > 0)
-                                ? (_openBlock(), _createElementBlock("div", _hoisted_637, [
+                                ? (_openBlock(), _createElementBlock("div", _hoisted_641, [
                                     (_openBlock(true), _createElementBlock(_Fragment, null, _renderList(_ctx.satisfactionCommunityModal.data.providerStats.recentFeedback.filter(f => f.comentario).slice(0, 5), (feedback, idx) => {
                                       return (_openBlock(), _createElementBlock("div", {
                                         key: idx,
                                         class: "bg-gray-50/80 hover:bg-gray-50 border border-gray-100 rounded-2xl p-4 transition-all"
                                       }, [
-                                        _createElementVNode("div", _hoisted_638, [
+                                        _createElementVNode("div", _hoisted_642, [
                                           _createElementVNode("div", null, [
-                                            _createElementVNode("div", _hoisted_639, _toDisplayString(feedback.nombre), 1 /* TEXT */),
-                                            _createElementVNode("div", _hoisted_640, _toDisplayString(feedback.departamento), 1 /* TEXT */)
+                                            _createElementVNode("div", _hoisted_643, _toDisplayString(feedback.nombre), 1 /* TEXT */),
+                                            _createElementVNode("div", _hoisted_644, _toDisplayString(feedback.departamento), 1 /* TEXT */)
                                           ]),
-                                          _createElementVNode("div", _hoisted_641, [
+                                          _createElementVNode("div", _hoisted_645, [
                                             (_openBlock(), _createElementBlock(_Fragment, null, _renderList(5, (star) => {
                                               return _createElementVNode("i", {
                                                 key: star,
@@ -4439,26 +4483,26 @@ return function render(_ctx, _cache) {
                                             }), 64 /* STABLE_FRAGMENT */))
                                           ])
                                         ]),
-                                        _createElementVNode("p", _hoisted_642, " \"" + _toDisplayString(feedback.comentario) + "\" ", 1 /* TEXT */)
+                                        _createElementVNode("p", _hoisted_646, " \"" + _toDisplayString(feedback.comentario) + "\" ", 1 /* TEXT */)
                                       ]))
                                     }), 128 /* KEYED_FRAGMENT */))
                                   ]))
-                                : (_openBlock(), _createElementBlock("div", _hoisted_643, " Aún no hay comentarios detallados sobre el proveedor actual. "))
+                                : (_openBlock(), _createElementBlock("div", _hoisted_647, " Aún no hay comentarios detallados sobre el proveedor actual. "))
                             ])
                           ]))
                         : (_openBlock(), _createElementBlock(_Fragment, { key: 1 }, [
                             _createCommentVNode(" TAB 2: COMIDAS "),
-                            _createElementVNode("div", _hoisted_644, [
+                            _createElementVNode("div", _hoisted_648, [
                               _createCommentVNode(" KPI Card "),
-                              _createElementVNode("div", _hoisted_645, [
-                                _createElementVNode("div", _hoisted_646, [
-                                  _cache[247] || (_cache[247] = _createElementVNode("div", null, [
+                              _createElementVNode("div", _hoisted_649, [
+                                _createElementVNode("div", _hoisted_650, [
+                                  _cache[250] || (_cache[250] = _createElementVNode("div", null, [
                                     _createElementVNode("span", { class: "text-[11px] font-black uppercase tracking-wider text-orange-800 bg-orange-100/80 px-2.5 py-1 rounded-full" }, "Calidad de Almuerzos"),
                                     _createElementVNode("h4", { class: "text-xl font-bold text-gray-900 mt-2" }, "Satisfacción de Comidas"),
                                     _createElementVNode("p", { class: "text-xs text-gray-500 mt-0.5" }, "Evaluaciones diarias otorgadas por colaboradores")
                                   ], -1 /* CACHED */)),
-                                  _createElementVNode("div", _hoisted_647, [
-                                    _createElementVNode("div", _hoisted_648, [
+                                  _createElementVNode("div", _hoisted_651, [
+                                    _createElementVNode("div", _hoisted_652, [
                                       (_openBlock(), _createElementBlock(_Fragment, null, _renderList(5, (star) => {
                                         return _createElementVNode("i", {
                                           key: star,
@@ -4466,38 +4510,38 @@ return function render(_ctx, _cache) {
                                         }, null, 2 /* CLASS */)
                                       }), 64 /* STABLE_FRAGMENT */))
                                     ]),
-                                    _createElementVNode("div", _hoisted_649, [
-                                      _createElementVNode("span", _hoisted_650, _toDisplayString(_ctx.satisfactionCommunityModal.data.mealStats?.average || 0), 1 /* TEXT */),
-                                      _cache[246] || (_cache[246] = _createElementVNode("span", { class: "text-xs text-gray-400 font-bold" }, " / 5.0", -1 /* CACHED */))
+                                    _createElementVNode("div", _hoisted_653, [
+                                      _createElementVNode("span", _hoisted_654, _toDisplayString(_ctx.satisfactionCommunityModal.data.mealStats?.average || 0), 1 /* TEXT */),
+                                      _cache[249] || (_cache[249] = _createElementVNode("span", { class: "text-xs text-gray-400 font-bold" }, " / 5.0", -1 /* CACHED */))
                                     ]),
-                                    _createElementVNode("span", _hoisted_651, "(" + _toDisplayString(_ctx.satisfactionCommunityModal.data.mealStats?.total || 0) + " platos calificados)", 1 /* TEXT */)
+                                    _createElementVNode("span", _hoisted_655, "(" + _toDisplayString(_ctx.satisfactionCommunityModal.data.mealStats?.total || 0) + " platos calificados)", 1 /* TEXT */)
                                   ])
                                 ]),
                                 _createCommentVNode(" Star Bars Breakdown "),
-                                _createElementVNode("div", _hoisted_652, [
+                                _createElementVNode("div", _hoisted_656, [
                                   (_openBlock(), _createElementBlock(_Fragment, null, _renderList([5, 4, 3, 2, 1], (star) => {
                                     return _createElementVNode("div", {
                                       key: star,
                                       class: "flex items-center gap-3 text-xs"
                                     }, [
-                                      _createElementVNode("span", _hoisted_653, [
+                                      _createElementVNode("span", _hoisted_657, [
                                         _createTextVNode(_toDisplayString(star) + " ", 1 /* TEXT */),
-                                        _cache[248] || (_cache[248] = _createElementVNode("i", { class: "fa-solid fa-star text-orange-400 text-[10px]" }, null, -1 /* CACHED */))
+                                        _cache[251] || (_cache[251] = _createElementVNode("i", { class: "fa-solid fa-star text-orange-400 text-[10px]" }, null, -1 /* CACHED */))
                                       ]),
-                                      _createElementVNode("div", _hoisted_654, [
+                                      _createElementVNode("div", _hoisted_658, [
                                         _createElementVNode("div", {
                                           class: "bg-orange-400 h-full rounded-full transition-all",
                                           style: _normalizeStyle({ width: ((_ctx.satisfactionCommunityModal.data.mealStats?.starsCount?.[star] || 0) / (_ctx.satisfactionCommunityModal.data.mealStats?.total || 1) * 100) + '%' })
                                         }, null, 4 /* STYLE */)
                                       ]),
-                                      _createElementVNode("span", _hoisted_655, _toDisplayString(_ctx.satisfactionCommunityModal.data.mealStats?.starsCount?.[star] || 0), 1 /* TEXT */)
+                                      _createElementVNode("span", _hoisted_659, _toDisplayString(_ctx.satisfactionCommunityModal.data.mealStats?.starsCount?.[star] || 0), 1 /* TEXT */)
                                     ])
                                   }), 64 /* STABLE_FRAGMENT */))
                                 ])
                               ]),
                               _createCommentVNode(" Recent Meal Comments (Top 5) "),
                               _createElementVNode("div", null, [
-                                _cache[250] || (_cache[250] = _createElementVNode("div", { class: "flex justify-between items-center mb-3" }, [
+                                _cache[253] || (_cache[253] = _createElementVNode("div", { class: "flex justify-between items-center mb-3" }, [
                                   _createElementVNode("h4", { class: "font-bold text-sm text-gray-800 flex items-center gap-2" }, [
                                     _createElementVNode("i", { class: "fa-solid fa-comments text-orange-500" }),
                                     _createTextVNode(" Últimas Opiniones sobre Almuerzos ")
@@ -4505,25 +4549,25 @@ return function render(_ctx, _cache) {
                                   _createElementVNode("span", { class: "text-[11px] font-bold text-gray-400" }, "5 más recientes")
                                 ], -1 /* CACHED */)),
                                 (_ctx.satisfactionCommunityModal.data.mealStats?.recentFeedback && _ctx.satisfactionCommunityModal.data.mealStats.recentFeedback.filter(f => f.comentario).length > 0)
-                                  ? (_openBlock(), _createElementBlock("div", _hoisted_656, [
+                                  ? (_openBlock(), _createElementBlock("div", _hoisted_660, [
                                       (_openBlock(true), _createElementBlock(_Fragment, null, _renderList(_ctx.satisfactionCommunityModal.data.mealStats.recentFeedback.filter(f => f.comentario).slice(0, 5), (feedback, idx) => {
                                         return (_openBlock(), _createElementBlock("div", {
                                           key: idx,
                                           class: "bg-gray-50/80 hover:bg-gray-50 border border-gray-100 rounded-2xl p-4 transition-all"
                                         }, [
-                                          _createElementVNode("div", _hoisted_657, [
+                                          _createElementVNode("div", _hoisted_661, [
                                             _createElementVNode("div", null, [
-                                              _createElementVNode("div", _hoisted_658, [
+                                              _createElementVNode("div", _hoisted_662, [
                                                 _createTextVNode(_toDisplayString(feedback.nombre) + " ", 1 /* TEXT */),
-                                                _createElementVNode("span", _hoisted_659, "(" + _toDisplayString(feedback.departamento) + ")", 1 /* TEXT */)
+                                                _createElementVNode("span", _hoisted_663, "(" + _toDisplayString(feedback.departamento) + ")", 1 /* TEXT */)
                                               ]),
-                                              _createElementVNode("div", _hoisted_660, [
-                                                _cache[249] || (_cache[249] = _createElementVNode("i", { class: "fa-regular fa-calendar text-[10px]" }, null, -1 /* CACHED */)),
+                                              _createElementVNode("div", _hoisted_664, [
+                                                _cache[252] || (_cache[252] = _createElementVNode("i", { class: "fa-regular fa-calendar text-[10px]" }, null, -1 /* CACHED */)),
                                                 _createTextVNode(" " + _toDisplayString(feedback.fechaConsumo) + " • ", 1 /* TEXT */),
-                                                _createElementVNode("span", _hoisted_661, _toDisplayString(feedback.platos), 1 /* TEXT */)
+                                                _createElementVNode("span", _hoisted_665, _toDisplayString(feedback.platos), 1 /* TEXT */)
                                               ])
                                             ]),
-                                            _createElementVNode("div", _hoisted_662, [
+                                            _createElementVNode("div", _hoisted_666, [
                                               (_openBlock(), _createElementBlock(_Fragment, null, _renderList(5, (star) => {
                                                 return _createElementVNode("i", {
                                                   key: star,
@@ -4532,11 +4576,11 @@ return function render(_ctx, _cache) {
                                               }), 64 /* STABLE_FRAGMENT */))
                                             ])
                                           ]),
-                                          _createElementVNode("p", _hoisted_663, " \"" + _toDisplayString(feedback.comentario) + "\" ", 1 /* TEXT */)
+                                          _createElementVNode("p", _hoisted_667, " \"" + _toDisplayString(feedback.comentario) + "\" ", 1 /* TEXT */)
                                         ]))
                                       }), 128 /* KEYED_FRAGMENT */))
                                     ]))
-                                  : (_openBlock(), _createElementBlock("div", _hoisted_664, " Aún no hay comentarios detallados sobre los almuerzos. "))
+                                  : (_openBlock(), _createElementBlock("div", _hoisted_668, " Aún no hay comentarios detallados sobre los almuerzos. "))
                               ])
                             ])
                           ], 2112 /* STABLE_FRAGMENT, DEV_ROOT_FRAGMENT */))
@@ -4544,45 +4588,45 @@ return function render(_ctx, _cache) {
                   : _createCommentVNode("v-if", true)
             ]),
             _createCommentVNode(" Footer "),
-            _createElementVNode("div", _hoisted_665, [
+            _createElementVNode("div", _hoisted_669, [
               _createElementVNode("button", {
                 onClick: $event => (_ctx.satisfactionCommunityModal.open = false),
                 class: "px-5 py-2 rounded-xl text-xs font-bold bg-gray-900 hover:bg-black text-white transition-colors shadow-sm"
-              }, " Cerrar ", 8 /* PROPS */, _hoisted_666)
+              }, " Cerrar ", 8 /* PROPS */, _hoisted_670)
             ])
           ])
         ]))
       : _createCommentVNode("v-if", true),
     _createCommentVNode(" Generic Message Modal "),
     (_ctx.msgModal.open)
-      ? (_openBlock(), _createElementBlock("div", _hoisted_667, [
+      ? (_openBlock(), _createElementBlock("div", _hoisted_671, [
           _createElementVNode("div", {
             class: "absolute inset-0 bg-gray-900/60 backdrop-blur-sm",
             onClick: _ctx.closeMsgModal
-          }, null, 8 /* PROPS */, _hoisted_668),
-          _createElementVNode("div", _hoisted_669, [
-            _createElementVNode("div", _hoisted_670, [
+          }, null, 8 /* PROPS */, _hoisted_672),
+          _createElementVNode("div", _hoisted_673, [
+            _createElementVNode("div", _hoisted_674, [
               (_ctx.msgModal.type === 'CONFIRM')
-                ? (_openBlock(), _createElementBlock("div", _hoisted_671, [...(_cache[251] || (_cache[251] = [
+                ? (_openBlock(), _createElementBlock("div", _hoisted_675, [...(_cache[254] || (_cache[254] = [
                     _createElementVNode("i", { class: "fa-solid fa-question" }, null, -1 /* CACHED */)
                   ]))]))
-                : (_openBlock(), _createElementBlock("div", _hoisted_672, [...(_cache[252] || (_cache[252] = [
+                : (_openBlock(), _createElementBlock("div", _hoisted_676, [...(_cache[255] || (_cache[255] = [
                     _createElementVNode("i", { class: "fa-solid fa-circle-info" }, null, -1 /* CACHED */)
                   ]))])),
-              _createElementVNode("h3", _hoisted_673, _toDisplayString(_ctx.msgModal.title), 1 /* TEXT */),
-              _createElementVNode("p", _hoisted_674, _toDisplayString(_ctx.msgModal.message), 1 /* TEXT */),
-              _createElementVNode("div", _hoisted_675, [
+              _createElementVNode("h3", _hoisted_677, _toDisplayString(_ctx.msgModal.title), 1 /* TEXT */),
+              _createElementVNode("p", _hoisted_678, _toDisplayString(_ctx.msgModal.message), 1 /* TEXT */),
+              _createElementVNode("div", _hoisted_679, [
                 (_ctx.msgModal.type === 'CONFIRM')
                   ? (_openBlock(), _createElementBlock("button", {
                       key: 0,
                       onClick: _ctx.closeMsgModal,
                       class: "px-5 py-2.5 rounded-xl text-sm font-bold text-gray-500 hover:bg-gray-100 transition-colors border border-transparent hover:border-gray-200"
-                    }, " Cancelar ", 8 /* PROPS */, _hoisted_676))
+                    }, " Cancelar ", 8 /* PROPS */, _hoisted_680))
                   : _createCommentVNode("v-if", true),
                 _createElementVNode("button", {
                   onClick: _ctx.confirmMsgModal,
                   class: "px-6 py-2.5 rounded-xl text-sm font-bold bg-gray-900 text-white hover:bg-black transition-colors shadow-lg shadow-gray-900/20"
-                }, _toDisplayString(_ctx.msgModal.type === 'CONFIRM' ? 'Confirmar' : 'Entendido'), 9 /* TEXT, PROPS */, _hoisted_677)
+                }, _toDisplayString(_ctx.msgModal.type === 'CONFIRM' ? 'Confirmar' : 'Entendido'), 9 /* TEXT, PROPS */, _hoisted_681)
               ])
             ])
           ])
@@ -4856,7 +4900,7 @@ createApp({
        holidays: [],
        menuCategories: [],
        userModal: { open: false, isNew: true, data: {} },
-       deptModal: { open: false, isNew: true, data: {} },
+       deptModal: { open: false, isNew: true, saving: false, data: {} },
        configEdit: false,
        filters: {
           orders: { search: '', dateStart: '', dateEnd: '', status: '', open: false },
@@ -4883,12 +4927,12 @@ createApp({
     const regions = ref(window.__INITIAL_DATA__?.regions || []);
     const regionalId = ref(window.__INITIAL_DATA__?.regionalId || 'central');
     const regionalName = ref(window.__INITIAL_DATA__?.regionalName || '');
-    const regionalForm = reactive({ id: '', nombre: '', directoryCode: '', directoryManaged: false, estado: 'ACTIVO' });
+    const regionalForm = reactive({ id: '', nombre: '', alias: '', directoryCode: '', directoryKey: '', directoryManaged: false, estado: 'ACTIVO', ...(regions.value.find(r => r.id === regionalId.value) || {}) });
     const regionalSaving = ref(false);
     const regionalError = ref('');
     const saveRegion = () => {
       if (regionalSaving.value) return; regionalSaving.value = true; regionalError.value = '';
-      almuerzo.run.withSuccessHandler(res => { regionalSaving.value = false; if (res.ok) window.location.assign('/?admin=1'); else regionalError.value = res.msg; }).withFailureHandler(err => { regionalSaving.value = false; regionalError.value = err.message; }).apiSaveRegion({ ...regionalForm });
+      almuerzo.run.withSuccessHandler(res => { regionalSaving.value = false; if (res.ok) { regionalForm.id = res.id; const region = { ...regionalForm, displayName: regionalForm.alias.trim() || regionalForm.nombre }; const index = regions.value.findIndex(r => r.id === res.id); if (index < 0) regions.value.push(region); else regions.value.splice(index, 1, region); if (regionalId.value === res.id) regionalName.value = region.displayName; } else regionalError.value = res.msg; }).withFailureHandler(err => { regionalSaving.value = false; regionalError.value = err.message; }).apiSaveRegion({ ...regionalForm });
     };
     const editRegion = region => Object.assign(regionalForm, { ...region });
     const isAdminGen = computed(() => activeUser.value.rol === 'ADMIN_GEN');
@@ -5589,7 +5633,7 @@ createApp({
 
                // Also populate dept map from list
                const map = {};
-               adminState.departments.forEach(d => map[d.id] = d.nombre);
+               adminState.departments.forEach(d => map[d.id] = d.displayName || d.nombre);
                adminState.deptMap = map;
             } else {
                if (!options.silent) showModal(res.msg, "Error");
@@ -5692,18 +5736,29 @@ createApp({
     // Department Actions
     const openDeptModal = (d = null) => {
        adminState.deptModal.isNew = !d;
-       adminState.deptModal.data = d ? { ...d } : { nombre: '', admins: '', estado: 'ACTIVO' };
+       adminState.deptModal.data = d ? { ...d } : { nombre: '', alias: '', directoryCode: '', admins: '', estado: 'ACTIVO' };
        adminState.deptModal.open = true;
     };
 
     const saveDept = () => {
+       if (adminState.deptModal.saving) return;
        if(!adminState.deptModal.data.nombre) return showModal("El nombre del departamento es obligatorio.");
-       adminState.loading = true;
+       adminState.deptModal.saving = true;
        almuerzo.run.withSuccessHandler(res => {
-          adminState.loading = false;
-          if(res.ok) { adminState.deptModal.open = false; loadAdminData(true); }
+          adminState.deptModal.saving = false;
+           if(res.ok) {
+              const d = res.department; const index = adminState.departments.findIndex(x => x.id === d.id);
+              if (index < 0) adminState.departments.push(d); else adminState.departments.splice(index, 1, d);
+              adminState.deptMap[d.id] = d.displayName;
+              const roles = new Map((res.users || []).map(u => [u.email, u.rol]));
+              adminState.users.forEach(u => { if (u.departamentoId === d.id) u.departamento = d.displayName; if (roles.has(u.email)) u.rol = roles.get(u.email); });
+              adminState.orders.forEach(o => { if (o.deptId === d.id) o.dept = d.displayName; });
+              if (user.value.departamentoId === d.id) user.value.departamento = d.displayName;
+              if (activeUser.value.departamentoId === d.id) activeUser.value.departamento = d.displayName;
+              adminState.deptModal.open = false;
+           }
           else showModal(res.msg, "Error");
-       }).apiSaveDepartment(adminState.deptModal.data);
+       }).withFailureHandler(err => { adminState.deptModal.saving = false; showModal(err.message || 'Error guardando el departamento.', 'Error'); }).apiSaveDepartment(adminState.deptModal.data);
     };
 
     const deleteDept = (id) => {

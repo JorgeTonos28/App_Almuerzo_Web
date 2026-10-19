@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Almuerzo.Web.Services;
 
-public record DirectoryIdentity(string Email, string Name, string EmployeeCode, string? RegionCode = null, string? DepartmentCode = null, string? DepartmentName = null);
+public record DirectoryIdentity(string Email, string Name, string EmployeeCode, string? RegionCode = null, string? DepartmentCode = null, string? DepartmentName = null, string? RegionName = null, string? JobTitle = null);
 public interface IDirectoryIdentityProvider { Task<DirectoryIdentity?> AuthenticateAsync(string username, string password, CancellationToken ct); }
 
 // ASMX HTTP POST contract from ExtraHub PR #15. Credentials never enter our database or logs.
@@ -42,6 +42,21 @@ public class DirectoryIdentityProvider(HttpClient http, IConfiguration config, I
             if (nameColumn.Parent != codeColumn.Parent) throw InvalidResponse();
             var name = nameColumn.Value.Trim(); var code = codeColumn.Value.Trim();
             if (name.Length is 0 or > 150 || name.Any(char.IsControl) || !Regex.IsMatch(code, "^[0-9]{1,4}$", RegexOptions.CultureInvariant)) throw InvalidResponse();
+            if (config["Ad:OrganizationContract"] == "NamesV1")
+            {
+                // The supplied DataTable/diffgram contains names, not stable organization codes.
+                string Field(string column, bool required = true)
+                {
+                    var elements = codeColumn.Parent!.Elements().Where(x => x.Name.LocalName == column).ToArray();
+                    if (elements.Length == 0 && !required) return "";
+                    if (elements.Length != 1 || elements[0].HasElements) throw InvalidResponse();
+                    var value = elements[0].Value.Trim();
+                    if (value.Length > 150 || required && value.Length == 0 || value.Any(char.IsControl)) throw InvalidResponse();
+                    return value;
+                }
+                return new DirectoryIdentity(LunchService.Email(account + "@infotep.gob.do"), name, code.PadLeft(4, '0'),
+                    DepartmentName: Field("Departamento"), RegionName: Field("Regional"), JobTitle: Field("Cargo", false));
+            }
             string? OrganizationColumn(string key)
             {
                 var column = config["Ad:" + key];

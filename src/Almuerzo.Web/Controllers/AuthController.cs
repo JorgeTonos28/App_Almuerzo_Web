@@ -47,9 +47,11 @@ public class AuthController(IDirectoryIdentityProvider directory, AppDbContext d
         db.AllowCrossRegionWrites = true;
         if (user != null)
         {
-            if (string.IsNullOrEmpty(user.DirectoryAccount)) db.Audit.Add(new AuditEvent { Actor = user.Email, Action = "LinkDirectoryAccount", EntityId = user.Email });
+            if (string.IsNullOrEmpty(user.DirectoryAccount)) db.Audit.Add(new AuditEvent { RegionId = user.RegionId, Actor = user.Email, Action = "LinkDirectoryAccount", EntityId = user.Email });
             user.Name = identity.Name; user.EmployeeCode = identity.EmployeeCode; user.DirectoryAccount = identity.Email;
-            await db.SaveChangesAsync(ct);
+            if (identity.JobTitle != null) user.JobTitle = identity.JobTitle;
+            try { await db.SaveChangesAsync(ct); await organization.InitializeCreatedRegion(); }
+            catch (DbUpdateException) { ModelState.AddModelError("", "La vinculación institucional cambió durante el acceso. Intenta nuevamente o contacta a TI."); model.Password = ""; return View(model); }
         }
         await transaction.CommitAsync(ct); db.AllowCrossRegionWrites = false;
         var localEmail = user?.Email ?? identity.Email;
@@ -65,7 +67,7 @@ public class AuthController(IDirectoryIdentityProvider directory, AppDbContext d
         var user = await db.Users.IgnoreQueryFilters().Include(x => x.Department).SingleOrDefaultAsync(x => x.Email == User.FindFirstValue(ClaimTypes.Email));
         var activeRegion = await db.Regions.AnyAsync(x => x.Id == db.RegionId && x.Status == "ACTIVO");
         if (LunchService.Enabled(user) && activeRegion) return RedirectToAction("Index", "Home");
-        ViewBag.RegionalBlocked = user?.RegionalBlocked == true; ViewBag.Pending = user?.Status == "PENDIENTE"; ViewBag.Inactive = user?.Status == "INACTIVO" || !activeRegion; ViewBag.Departments = await db.Departments.Where(x => x.Status == "ACTIVO").OrderBy(x => x.Name).ToListAsync(); return View(new AccessModel { Code = User.FindFirstValue("directory_code") ?? "", SuggestedDepartment = user?.Department?.Name ?? "" });
+        ViewBag.RegionalBlocked = user?.RegionalBlocked == true; ViewBag.Pending = user?.Status == "PENDIENTE"; ViewBag.Inactive = user?.Status == "INACTIVO" || !activeRegion; ViewBag.Departments = await db.Departments.Where(x => x.Status == "ACTIVO").OrderBy(x => x.Name).ToListAsync(); return View(new AccessModel { Code = User.FindFirstValue("directory_code") ?? "", SuggestedDepartment = user?.Department?.DisplayName ?? "" });
     }
     [Authorize, HttpPost, EnableRateLimiting("login")] public async Task<IActionResult> RequestAccess(AccessModel model)
     {

@@ -1,4 +1,4 @@
-# Autoridad de datos y permisos · v0.2.1
+# Autoridad de datos y permisos · v0.2.2
 
 El AD confirma identidad y organización. Almuerzo administra permisos y operación. Autenticarse en el directorio nunca concede un rol administrativo ni retira una suspensión local. La interfaz refleja los permisos; el servidor vuelve a verificarlos en cada petición.
 
@@ -8,7 +8,7 @@ Todos los permisos operativos quedan limitados a la regional seleccionada por AD
 
 | Dato o acción | Autoridad / ADMIN_GEN | ADMIN_REG | ADMIN_DEP |
 |---|---|---|---|
-| Nombre, código de empleado y cuenta institucional | AD; solo consulta en formularios, incluso para ADMIN_GEN | Consulta | Consulta del departamento |
+| Nombre, código, cargo y cuenta institucional | AD; solo consulta en formularios, incluso para ADMIN_GEN | Consulta | Consulta del departamento |
 | Correo de la cuenta importada | Identificador conservado para vincular históricos; no se renombra en el panel | Consulta | Consulta del departamento |
 | Regional y departamento verificados del colaborador | AD; corrección institucional, sin reasignación manual | Consulta | Consulta del departamento |
 | Asignación de departamento mientras el contrato antiguo no lo devuelve | ADMIN_GEN, únicamente para cuentas sin organización verificada | No | No |
@@ -17,7 +17,8 @@ Todos los permisos operativos quedan limitados a la regional seleccionada por AD
 | Roles y responsables ADMIN_DEP | ADMIN_GEN; responsables ya pertenecientes al departamento | Consulta | Consulta |
 | Suspensión regional de USER/ADMIN_DEP | ADMIN_GEN o ADMIN_REG mediante operación específica | Suspender y retirar suspensión en su regional; sin afectar administradores generales/regionales | No |
 | Catálogo de regionales y departamentos, mapeos AD y estados locales | ADMIN_GEN; metadatos verificados protegidos y códigos vinculados sin cambios improvisados | Consulta | Consulta del departamento |
-| Nombre/código de un departamento ya verificado | Nombre sincronizado desde AD; código estable requiere reconciliación con TI | No | No |
+| Nombres/claves de regionales y departamentos verificados | AD; no editables en formularios | No | No |
+| Alias visible de regional/departamento | ADMIN_GEN; etiqueta independiente, nunca usada para vincular o autorizar | Consulta | Consulta del departamento |
 | Platos, disponibilidad e importación semanal del menú | ADMIN_GEN | Sí, en su regional | No |
 | Categorías, aliases y reglas de combinación/selección | ADMIN_GEN | Consulta para cargar menú | No |
 | Calendario y suspensión de fechas | ADMIN_GEN | Sí, en su regional | No |
@@ -36,11 +37,11 @@ Los valores de configuración se conservan por regional para respetar cada conte
 
 Nombre y código de empleado son de solo lectura para todos los administradores. Si un formulario intenta cambiarlos, se rechaza la operación; no se ignora el cambio silenciosamente. Se actualizan únicamente al autenticar un perfil verificado de AD. El correo histórico se conserva como identificador de la cuenta vinculada. Restablecer un vínculo sigue siendo una acción excepcional de ADMIN_GEN, auditada y con revocación de sesión; no permite editar la identidad por formulario.
 
-Con el contrato actual, que todavía no devuelve organización, ADMIN_GEN puede asignar el departamento a cuentas sin organización verificada y aprobar solicitudes. Con `Ad:AutoProvisioningEnabled=true`, regional/departamento son exclusivamente los del perfil verificado. Una cuenta marcada `DirectoryManaged` conserva esa protección aunque la activación del proveedor se deshabilite temporalmente.
+Con el contrato antiguo de compatibilidad, ADMIN_GEN puede asignar el departamento a cuentas sin organización verificada y aprobar solicitudes. Con `Ad:AutoProvisioningEnabled=true`, regional/departamento son exclusivamente los del perfil verificado. Una cuenta marcada `DirectoryManaged` conserva esa protección aunque la activación del proveedor se deshabilite temporalmente.
 
 La sincronización institucional ocurre al iniciar sesión. Cada petición consulta los permisos, ámbito y bloqueos vigentes en la base local; no consulta continuamente el AD. Ante un traslado urgente se debe revocar/deshabilitar el acceso local y coordinar con TI una nueva autenticación y la habilitación correspondiente.
 
-ADMIN_GEN prepara regionales y vincula los códigos departamentales existentes. Cuando un código ya está asociado a colaboradores verificados, no puede sustituirse desde el panel para forzar una reasignación. El nombre de un departamento existente se sincroniza desde el AD y se audita; colisiones con otro departamento se rechazan para reconciliación con TI. El nombre visible de una regional sigue siendo una etiqueta local administrada por ADMIN_GEN, pues el contrato preparado utiliza su código estable.
+NamesV1 incorpora regional/departamento desde el perfil autenticado y admite creación automática con opt-in; solo USER. TI prepara mapeos privados explícitos para conservar IDs de catálogos importados. El primer traslado desde un catálogo importado no vinculado se rechaza. Nombre y clave AD quedan protegidos; ADMIN_GEN solo cambia el alias visible y estados/responsables locales autorizados. No se vincula por alias ni por semejanza. Como el endpoint no devuelve IDs estables, un cambio sustancial de nombre se trata como otra organización y requiere coordinación/reconciliación con TI; ver [contrato y configuración](AD-NAMES-AND-TI.md).
 
 La autoridad del directorio queda marcada de forma persistente en regionales y departamentos. Que el último colaborador verificado sea trasladado no vuelve editables los metadatos. Las semillas reconocen las vinculaciones verificadas anteriores para conservar esta protección al actualizar.
 
@@ -73,4 +74,4 @@ Las valoraciones identificadas para ADMIN_DEP no se autorizan solo por el nombre
 
 La migración de ambos proveedores agrega `RegionalBlocked` con valor inicial false; los estados y permisos existentes no cambian. El arranque aplica la migración automáticamente. Los bloqueos existentes almacenados como INACTIVO se conservan como deshabilitaciones generales: no se reclasifican ni se retiran automáticamente.
 
-La suite comprueba operaciones permitidas y rechazadas, manipulación de payloads, aislamiento regional, CSRF, protección de identidad incluso para ADMIN_GEN, responsables sin traslados implícitos, sesiones revocadas, persistencia de bloqueos frente al AD, solicitudes manipuladas, traslados verificados y conservación de históricos. Las pruebas de AD organizativo son simuladas hasta que TI entregue el contrato real.
+La suite comprueba operaciones permitidas y rechazadas, manipulación de payloads, aislamiento regional, CSRF, protección de identidad incluso para ADMIN_GEN, responsables sin traslados implícitos, sesiones revocadas, persistencia de bloqueos frente al AD, solicitudes manipuladas, traslados verificados y conservación de históricos. El formato NamesV1 se prueba con XML sintético equivalente al contrato recibido. La autenticación institucional real requiere token y cadena de certificados de TI. Las migraciones 0.2.2 agregan Alias/DirectoryKey y Cargo (JobTitle) sin reescribir los históricos; ambos proveedores se actualizan al arrancar.

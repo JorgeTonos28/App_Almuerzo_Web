@@ -41,6 +41,11 @@ namespace Almuerzo.Web.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("JobTitle")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -150,7 +155,16 @@ namespace Almuerzo.Web.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Alias")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("DirectoryCode")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DirectoryKey")
                         .HasMaxLength(64)
                         .HasColumnType("TEXT");
 
@@ -184,6 +198,10 @@ namespace Almuerzo.Web.Data.Migrations
                     b.HasIndex("RegionId", "DirectoryCode")
                         .IsUnique()
                         .HasFilter("DirectoryCode IS NOT NULL");
+
+                    b.HasIndex("RegionId", "DirectoryKey")
+                        .IsUnique()
+                        .HasFilter("DirectoryKey IS NOT NULL");
 
                     b.HasIndex("RegionId", "Name")
                         .IsUnique();
@@ -636,7 +654,16 @@ namespace Almuerzo.Web.Data.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Alias")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("DirectoryCode")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DirectoryKey")
                         .HasMaxLength(64)
                         .HasColumnType("TEXT");
 
@@ -657,6 +684,10 @@ namespace Almuerzo.Web.Data.Migrations
                     b.HasIndex("DirectoryCode")
                         .IsUnique()
                         .HasFilter("DirectoryCode IS NOT NULL");
+
+                    b.HasIndex("DirectoryKey")
+                        .IsUnique()
+                        .HasFilter("DirectoryKey IS NOT NULL");
 
                     b.HasIndex("Name")
                         .IsUnique();

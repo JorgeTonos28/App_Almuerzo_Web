@@ -614,15 +614,15 @@
             <div><span class="rush-eyebrow">Contexto de administración</span><h2>{{ regionalName }}</h2></div>
             <form v-if="isAdminGen" action="/regions/select" method="post" class="regional-selector">
               <input type="hidden" name="__RequestVerificationToken" :value="csrfToken">
-              <label for="regional-select">Regional</label><select id="regional-select" name="regionId" :value="regionalId" @change="$event.target.form.requestSubmit()"><option v-for="region in regions.filter(r => r.estado === 'ACTIVO')" :key="region.id" :value="region.id">{{ region.nombre }}</option></select>
+              <label for="regional-select">Regional</label><select id="regional-select" name="regionId" :value="regionalId" @change="$event.target.form.requestSubmit()"><option v-for="region in regions.filter(r => r.estado === 'ACTIVO')" :key="region.id" :value="region.id">{{ region.displayName || region.nombre }}</option></select>
             </form>
           </div>
-          <details v-if="isAdminGen" class="regional-catalog"><summary>Administrar regionales y códigos AD</summary>
-            <div class="regional-list"><button v-for="region in regions" :key="region.id" @click="editRegion(region)">{{ region.nombre }} · {{ region.estado }}</button></div>
+          <details v-if="isAdminGen" class="regional-catalog"><summary>Regionales: alias y acceso</summary>
+            <div class="regional-list"><button v-for="region in regions" :key="region.id" @click="editRegion(region)">{{ region.displayName || region.nombre }} · {{ region.estado }}</button></div>
             <form @submit.prevent="saveRegion" class="regional-form">
-              <label>Nombre<input v-model="regionalForm.nombre" maxlength="150" required></label><label>Código regional AD<input v-model="regionalForm.directoryCode" :readonly="regionalForm.directoryManaged" maxlength="64"></label>
+              <label>Nombre institucional<input v-model="regionalForm.nombre" :readonly="organizationManaged || regionalForm.directoryManaged" maxlength="150" required></label><label>Alias en Almuerzo<input v-model="regionalForm.alias" maxlength="150" placeholder="Opcional: nombre para mostrar"></label><label v-if="regionalForm.directoryCode || !organizationManaged">Código AD anterior (si existe)<input v-model="regionalForm.directoryCode" :readonly="organizationManaged || regionalForm.directoryManaged" maxlength="64"></label>
               <label>Estado<select v-model="regionalForm.estado"><option>ACTIVO</option><option>INACTIVO</option></select></label>
-              <button type="submit" :disabled="regionalSaving">{{ regionalSaving ? 'Guardando…' : 'Guardar regional' }}</button><button type="button" @click="Object.assign(regionalForm, {id:'',nombre:'',directoryCode:'',directoryManaged:false,estado:'ACTIVO'})">Nueva</button>
+              <button type="submit" :disabled="regionalSaving">{{ regionalSaving ? 'Guardando…' : 'Guardar regional' }}</button><button v-if="!organizationManaged" type="button" @click="Object.assign(regionalForm, {id:'',nombre:'',alias:'',directoryCode:'',directoryKey:'',directoryManaged:false,estado:'ACTIVO'})">Nueva</button>
             </form><p v-if="regionalError" role="alert">{{ regionalError }}</p>
           </details>
 <!-- Navigation -->
@@ -867,7 +867,7 @@
          <div v-if="adminState.tab === 'DEPTOS'" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
             <div class="flex justify-between items-center mb-4">
                <h2 class="text-xl font-bold text-gray-900">Departamentos</h2>
-               <button v-if="isAdminGen" @click="openDeptModal()" class="bg-gray-900 hover:bg-gray-800 text-white text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-2">
+               <button v-if="isAdminGen && !organizationManaged" @click="openDeptModal()" class="bg-gray-900 hover:bg-gray-800 text-white text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-2">
                  <i class="fa-solid fa-plus"></i> Depto
                </button>
             </div>
@@ -878,7 +878,7 @@
                   </thead>
                   <tbody class="divide-y divide-gray-100">
                      <tr v-for="d in adminState.departments" :key="d.id" class="hover:bg-gray-50">
-                        <td class="p-3 font-medium text-gray-900">{{ d.nombre }}</td>
+                        <td class="p-3 font-medium text-gray-900">{{ d.displayName || d.nombre }}<span v-if="d.alias" class="block text-xs font-normal text-gray-500">{{ d.nombre }}</span></td>
                         <td class="p-3 text-gray-500 text-xs truncate max-w-xs"><span :class="!d.admins ? 'text-amber-700 font-semibold' : ''">{{ d.admins || 'Sin responsable asignado' }}</span></td>
                         <td class="p-3"><span :class="['px-2 py-1 rounded-full text-xs font-bold', d.estado === 'ACTIVO' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700']">{{ d.estado }}</span></td>
                         <td class="p-3 flex gap-2">
@@ -1134,7 +1134,7 @@
              <div>
                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Departamento</label>
                 <select v-if="isAdminGen" :disabled="organizationManaged || adminState.userModal.data.directoryManaged" v-model="adminState.userModal.data.departamento" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                   <option v-for="d in adminState.departments" :key="d.id" :value="d.id">{{ d.nombre }}</option>
+                   <option v-for="d in adminState.departments" :key="d.id" :value="d.id">{{ d.displayName || d.nombre }}</option>
                 </select>
                 <input v-else v-model="adminState.userModal.data.departamento" disabled type="text" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none opacity-50">
              </div>
@@ -1160,23 +1160,28 @@
 
     <!-- Dept Modal -->
     <div v-if="isAdminGen && adminState.deptModal.open" class="fixed inset-0 z-[70] flex items-center justify-center p-4">
-       <div class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm" @click="adminState.deptModal.open = false"></div>
-       <div class="bg-white rounded-2xl shadow-xl w-full max-w-md relative overflow-hidden animate-fade-in-up">
+       <div class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm" @click="!adminState.deptModal.saving && (adminState.deptModal.open = false)"></div>
+       <div class="bg-white rounded-2xl shadow-xl w-full max-w-md relative overflow-hidden animate-fade-in-up flex flex-col max-h-[90dvh]">
           <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
              <h3 class="font-bold text-lg text-gray-800">{{ adminState.deptModal.isNew ? 'Nuevo Departamento' : 'Editar Departamento' }}</h3>
-             <button @click="adminState.deptModal.open = false" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
+             <button @click="!adminState.deptModal.saving && (adminState.deptModal.open = false)" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
           </div>
-          <div class="p-6 space-y-4">
+          <div class="p-6 space-y-4 overflow-y-auto min-h-0">
              <div>
-                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Nombre</label>
-                 <input :readonly="adminState.deptModal.data.directoryManaged" v-model="adminState.deptModal.data.nombre" type="text" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Nombre institucional</label>
+                 <input :readonly="organizationManaged || adminState.deptModal.data.directoryManaged" v-model="adminState.deptModal.data.nombre" type="text" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
               </div>
               <div>
-                 <label for="dept-directory-code" class="block text-xs font-bold text-gray-500 uppercase mb-1">Código de departamento AD</label>
-                 <input :readonly="adminState.deptModal.data.directoryManaged" id="dept-directory-code" v-model="adminState.deptModal.data.directoryCode" maxlength="64" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm">
+                 <label for="dept-directory-code" class="block text-xs font-bold text-gray-500 uppercase mb-1">Código AD anterior (si existe)</label>
+                 <input :readonly="organizationManaged || adminState.deptModal.data.directoryManaged" id="dept-directory-code" v-model="adminState.deptModal.data.directoryCode" maxlength="64" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm">
              </div>
              <div>
-                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Admins</label>
+                 <label for="dept-alias" class="block text-xs font-bold text-gray-500 uppercase mb-1">Alias en Almuerzo</label>
+                 <input id="dept-alias" v-model="adminState.deptModal.data.alias" maxlength="150" placeholder="Opcional: nombre para mostrar" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm">
+                 <p class="text-xs text-gray-500 mt-1">Se muestra en pantallas, correos y reportes. El nombre institucional se conserva.</p>
+              </div>
+              <div>
+                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Admins</label>
                 <div class="flex flex-wrap gap-2 mb-2 min-h-[30px] p-2 bg-gray-50 border border-gray-200 rounded-lg">
                    <span v-for="email in (adminState.deptModal.data.admins ? adminState.deptModal.data.admins.split(',').map(e=>e.trim()).filter(e=>e) : [])" :key="email" class="bg-white border border-gray-200 px-2 py-1 rounded text-xs flex items-center gap-2 shadow-sm">
                       <span class="font-semibold">{{ email }}</span>
@@ -1205,9 +1210,9 @@
              </div>
           </div>
           <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
-             <button @click="adminState.deptModal.open = false" class="px-4 py-2 rounded-lg text-sm font-bold text-gray-500 hover:bg-gray-200 transition-colors" :disabled="adminState.loading">Cancelar</button>
-             <button @click="saveDept" class="px-4 py-2 rounded-lg text-sm font-bold bg-gray-900 text-white hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2" :disabled="adminState.loading">
-                <i v-if="adminState.loading" class="fa-solid fa-circle-notch fa-spin"></i>
+             <button @click="!adminState.deptModal.saving && (adminState.deptModal.open = false)" class="px-4 py-2 rounded-lg text-sm font-bold text-gray-500 hover:bg-gray-200 transition-colors" :disabled="adminState.deptModal.saving">Cancelar</button>
+             <button @click="saveDept" class="px-4 py-2 rounded-lg text-sm font-bold bg-gray-900 text-white hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2" :disabled="adminState.deptModal.saving">
+                <i v-if="adminState.deptModal.saving" class="fa-solid fa-circle-notch fa-spin"></i>
                 Guardar
              </button>
           </div>

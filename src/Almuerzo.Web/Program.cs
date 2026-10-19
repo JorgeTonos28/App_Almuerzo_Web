@@ -18,7 +18,7 @@ if (args.Contains("--demo")) {
     var password = File.Exists(passwordPath) ? File.ReadAllText(passwordPath).Trim() : Convert.ToHexString(System.Security.Cryptography.RandomNumberGenerator.GetBytes(12));
     File.WriteAllText(passwordPath, password);
     var email = "demo.almuerzo@infotep.gob.do";
-    builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?> { ["Database:Provider"] = "Sqlite", ["Storage:Path"] = demoPath, ["ConnectionStrings:DefaultConnection"] = new Microsoft.Data.Sqlite.SqliteConnectionStringBuilder { DataSource = Path.Combine(demoPath, "almuerzo.db"), DefaultTimeout = 30 }.ToString(), ["DevelopmentIdentity:Enabled"] = "true", ["DevelopmentIdentity:Email"] = email, ["DevelopmentIdentity:Name"] = "Demostración local", ["DevelopmentIdentity:PasswordHash"] = new Microsoft.AspNetCore.Identity.PasswordHasher<string>().HashPassword(email, password), ["Operations:Enabled"] = "false" });
+    builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?> { ["Database:Provider"] = "Sqlite", ["Storage:Path"] = demoPath, ["ConnectionStrings:DefaultConnection"] = new Microsoft.Data.Sqlite.SqliteConnectionStringBuilder { DataSource = Path.Combine(demoPath, "almuerzo.db"), DefaultTimeout = 30 }.ToString(), ["Ad:AutoProvisioningEnabled"] = "false", ["Ad:AutoCreateOrganizationEnabled"] = "false", ["DevelopmentIdentity:Enabled"] = "true", ["DevelopmentIdentity:Email"] = email, ["DevelopmentIdentity:Name"] = "Demostración local", ["DevelopmentIdentity:PasswordHash"] = new Microsoft.AspNetCore.Identity.PasswordHasher<string>().HashPassword(email, password), ["Operations:Enabled"] = "false" });
 }
 var dataPath = Path.GetFullPath(builder.Configuration["Storage:Path"] ?? Path.Combine(builder.Environment.ContentRootPath, "App_Data"));
 Directory.CreateDirectory(dataPath);
@@ -90,6 +90,13 @@ builder.Logging.AddFilter("System.Net.Http.HttpClient", LogLevel.Warning);
 var app = builder.Build();
 using (var scope = app.Services.CreateScope()) {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>(); await db.Database.MigrateAsync();
+    if (args.Contains("--directory-catalog")) {
+        var output = args.SkipWhile(x => x != "--directory-catalog").Skip(1).FirstOrDefault() ?? throw new ArgumentException("Indica un archivo privado de salida.");
+        var regions = await db.Regions.AsNoTracking().ToListAsync();
+        var departments = await db.Departments.IgnoreQueryFilters().AsNoTracking().ToListAsync();
+        await File.WriteAllTextAsync(output, System.Text.Json.JsonSerializer.Serialize(regions.Select(r => new { r.Id, r.Name, r.Alias, Linked = r.DirectoryKey != null, Departments = departments.Where(d => d.RegionId == r.Id).Select(d => new { d.Id, d.Name, d.Alias, Linked = d.DirectoryKey != null }) }), new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
+        Console.WriteLine("Catálogo organizativo exportado al archivo privado indicado. No contiene usuarios ni credenciales."); return;
+    }
     if (args.Contains("--migrate-sqlite")) {
         var path = args.SkipWhile(x => x != "--migrate-sqlite").Skip(1).FirstOrDefault() ?? throw new ArgumentException("Se requiere la ruta SQLite de origen.");
         Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(await SqliteTransfer.Run(db, path))); return;

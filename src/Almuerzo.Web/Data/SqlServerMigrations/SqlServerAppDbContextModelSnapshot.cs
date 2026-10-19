@@ -46,6 +46,11 @@ namespace Almuerzo.Web.Data.SqlServerMigrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("JobTitle")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -157,7 +162,16 @@ namespace Almuerzo.Web.Data.SqlServerMigrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Alias")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
                     b.Property<string>("DirectoryCode")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("DirectoryKey")
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");
 
@@ -191,6 +205,10 @@ namespace Almuerzo.Web.Data.SqlServerMigrations
                     b.HasIndex("RegionId", "DirectoryCode")
                         .IsUnique()
                         .HasFilter("DirectoryCode IS NOT NULL");
+
+                    b.HasIndex("RegionId", "DirectoryKey")
+                        .IsUnique()
+                        .HasFilter("DirectoryKey IS NOT NULL");
 
                     b.HasIndex("RegionId", "Name")
                         .IsUnique();
@@ -647,7 +665,16 @@ namespace Almuerzo.Web.Data.SqlServerMigrations
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");
 
+                    b.Property<string>("Alias")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
                     b.Property<string>("DirectoryCode")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("DirectoryKey")
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");
 
@@ -668,6 +695,10 @@ namespace Almuerzo.Web.Data.SqlServerMigrations
                     b.HasIndex("DirectoryCode")
                         .IsUnique()
                         .HasFilter("DirectoryCode IS NOT NULL");
+
+                    b.HasIndex("DirectoryKey")
+                        .IsUnique()
+                        .HasFilter("DirectoryKey IS NOT NULL");
 
                     b.HasIndex("Name")
                         .IsUnique();

@@ -190,7 +190,7 @@ createApp({
        holidays: [],
        menuCategories: [],
        userModal: { open: false, isNew: true, data: {} },
-       deptModal: { open: false, isNew: true, data: {} },
+       deptModal: { open: false, isNew: true, saving: false, data: {} },
        configEdit: false,
        filters: {
           orders: { search: '', dateStart: '', dateEnd: '', status: '', open: false },
@@ -217,12 +217,12 @@ createApp({
     const regions = ref(window.__INITIAL_DATA__?.regions || []);
     const regionalId = ref(window.__INITIAL_DATA__?.regionalId || 'central');
     const regionalName = ref(window.__INITIAL_DATA__?.regionalName || '');
-    const regionalForm = reactive({ id: '', nombre: '', directoryCode: '', directoryManaged: false, estado: 'ACTIVO' });
+    const regionalForm = reactive({ id: '', nombre: '', alias: '', directoryCode: '', directoryKey: '', directoryManaged: false, estado: 'ACTIVO', ...(regions.value.find(r => r.id === regionalId.value) || {}) });
     const regionalSaving = ref(false);
     const regionalError = ref('');
     const saveRegion = () => {
       if (regionalSaving.value) return; regionalSaving.value = true; regionalError.value = '';
-      almuerzo.run.withSuccessHandler(res => { regionalSaving.value = false; if (res.ok) window.location.assign('/?admin=1'); else regionalError.value = res.msg; }).withFailureHandler(err => { regionalSaving.value = false; regionalError.value = err.message; }).apiSaveRegion({ ...regionalForm });
+      almuerzo.run.withSuccessHandler(res => { regionalSaving.value = false; if (res.ok) { regionalForm.id = res.id; const region = { ...regionalForm, displayName: regionalForm.alias.trim() || regionalForm.nombre }; const index = regions.value.findIndex(r => r.id === res.id); if (index < 0) regions.value.push(region); else regions.value.splice(index, 1, region); if (regionalId.value === res.id) regionalName.value = region.displayName; } else regionalError.value = res.msg; }).withFailureHandler(err => { regionalSaving.value = false; regionalError.value = err.message; }).apiSaveRegion({ ...regionalForm });
     };
     const editRegion = region => Object.assign(regionalForm, { ...region });
     const isAdminGen = computed(() => activeUser.value.rol === 'ADMIN_GEN');
@@ -923,7 +923,7 @@ createApp({
 
                // Also populate dept map from list
                const map = {};
-               adminState.departments.forEach(d => map[d.id] = d.nombre);
+               adminState.departments.forEach(d => map[d.id] = d.displayName || d.nombre);
                adminState.deptMap = map;
             } else {
                if (!options.silent) showModal(res.msg, "Error");
@@ -1026,18 +1026,29 @@ createApp({
     // Department Actions
     const openDeptModal = (d = null) => {
        adminState.deptModal.isNew = !d;
-       adminState.deptModal.data = d ? { ...d } : { nombre: '', admins: '', estado: 'ACTIVO' };
+       adminState.deptModal.data = d ? { ...d } : { nombre: '', alias: '', directoryCode: '', admins: '', estado: 'ACTIVO' };
        adminState.deptModal.open = true;
     };
 
     const saveDept = () => {
+       if (adminState.deptModal.saving) return;
        if(!adminState.deptModal.data.nombre) return showModal("El nombre del departamento es obligatorio.");
-       adminState.loading = true;
+       adminState.deptModal.saving = true;
        almuerzo.run.withSuccessHandler(res => {
-          adminState.loading = false;
-          if(res.ok) { adminState.deptModal.open = false; loadAdminData(true); }
+          adminState.deptModal.saving = false;
+           if(res.ok) {
+              const d = res.department; const index = adminState.departments.findIndex(x => x.id === d.id);
+              if (index < 0) adminState.departments.push(d); else adminState.departments.splice(index, 1, d);
+              adminState.deptMap[d.id] = d.displayName;
+              const roles = new Map((res.users || []).map(u => [u.email, u.rol]));
+              adminState.users.forEach(u => { if (u.departamentoId === d.id) u.departamento = d.displayName; if (roles.has(u.email)) u.rol = roles.get(u.email); });
+              adminState.orders.forEach(o => { if (o.deptId === d.id) o.dept = d.displayName; });
+              if (user.value.departamentoId === d.id) user.value.departamento = d.displayName;
+              if (activeUser.value.departamentoId === d.id) activeUser.value.departamento = d.displayName;
+              adminState.deptModal.open = false;
+           }
           else showModal(res.msg, "Error");
-       }).apiSaveDepartment(adminState.deptModal.data);
+       }).withFailureHandler(err => { adminState.deptModal.saving = false; showModal(err.message || 'Error guardando el departamento.', 'Error'); }).apiSaveDepartment(adminState.deptModal.data);
     };
 
     const deleteDept = (id) => {

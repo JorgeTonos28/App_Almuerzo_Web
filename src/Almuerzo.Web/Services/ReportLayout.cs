@@ -27,7 +27,7 @@ public static class ReportLayout
     {
         BusinessRules.Date(date);
         var orders = await db.Orders.AsNoTracking().Where(x => x.Date == date && x.Status == "ACTIVO" && (department == null || x.DepartmentId == department)).OrderBy(x => x.Name).ToListAsync();
-        var departments = await db.Departments.ToDictionaryAsync(x => x.Id, x => x.Name);
+        var departments = await db.Departments.ToDictionaryAsync(x => x.Id, x => x.Alias != "" ? x.Alias : x.Name);
         // A directory transfer must not remove employee codes from reports of earlier orders.
         var orderedEmails = orders.Select(x => x.Email).Distinct().ToArray();
         var codes = await db.Users.IgnoreQueryFilters().Where(x => orderedEmails.Contains(x.Email)).ToDictionaryAsync(x => x.Email, x => x.EmployeeCode ?? "");
@@ -40,7 +40,7 @@ public static class ReportLayout
         }
         var sections = new List<ReportSection> { new(department == null ? "Resumen general" : departments.GetValueOrDefault(department, department), orders.Select(Person).ToList()) };
         if (department == null) foreach (var group in orders.GroupBy(x => x.DepartmentId)) sections.Add(new(departments.GetValueOrDefault(group.Key, group.Key), group.Select(Person).ToList()));
-        return new(date, categories, sections, (await db.Regions.FindAsync(db.RegionId))?.Name ?? db.RegionId);
+        return new(date, categories, sections, (await db.Regions.FindAsync(db.RegionId))?.DisplayName ?? db.RegionId);
     }
     public static string[] Headers(IEnumerable<ReportColumn> cats) => new[] { "NO.", "NOMBRE EMPLEADO", "CÓDIGO", "DEPARTAMENTO" }.Concat(cats.Select(c => c.Name.ToUpperInvariant())).Append("NOTA PARA LA COCINA").ToArray();
     public static string[] Values(ReportPerson p, int number, IEnumerable<ReportColumn> cats) => new[] { number.ToString(), p.Name, p.Code, p.Department }.Concat(cats.Select(c => p.Dishes.GetValueOrDefault(c.Id, ""))).Append(p.Note).ToArray();

@@ -54,6 +54,22 @@ public class DirectoryTests
         var provider = Provider(new Handler((_, _) => { calls++; return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("<boolean>false</boolean>") }); }));
         Assert.Null(await provider.AuthenticateAsync("colaborador", "invalid", default)); Assert.Equal(1, calls);
     }
+    [Fact] public async Task NewNamesContractReadsOneDataTableDiffgramRowWithoutTreatingNamesAsCodes()
+    {
+        var profile = """
+        <DataTable xmlns="http://tempuri.org/">
+          <xs:schema xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" id="NewDataSet"><xs:element name="Usuario"><xs:complexType><xs:sequence><xs:element name="Regional" type="xs:string"/></xs:sequence></xs:complexType></xs:element></xs:schema>
+          <diffgr:diffgram xmlns:diffgr="urn:schemas-microsoft-com:xml-diffgram-v1"><DocumentElement xmlns=""><Usuario>
+            <NombreCompleto>Persona Sintética</NombreCompleto><CodigoEmpleado>81</CodigoEmpleado><Cargo>Puesto sintético</Cargo><Departamento>901- Equipo de prueba</Departamento><Regional>Regional sintética</Regional>
+          </Usuario></DocumentElement></diffgr:diffgram>
+        </DataTable>
+        """;
+        var provider = Provider(new Handler((request, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(request.RequestUri!.Segments.Last() == "Autenticacion" ? "<boolean>true</boolean>" : profile) })), new() { ["Ad:OrganizationContract"] = "NamesV1", ["Ad:AutoProvisioningEnabled"] = "true" });
+        var identity = await provider.AuthenticateAsync("persona", "test-only", default);
+        Assert.Equal("0081", identity!.EmployeeCode); Assert.Null(identity.RegionCode); Assert.Null(identity.DepartmentCode); Assert.Equal("Regional sintética", identity.RegionName); Assert.Equal("901- Equipo de prueba", identity.DepartmentName); Assert.Equal("Puesto sintético", identity.JobTitle);
+        profile = profile.Replace("<Regional>Regional sintética</Regional>", "");
+        await Assert.ThrowsAsync<BusinessException>(() => provider.AuthenticateAsync("persona", "test-only", default));
+    }
     [Fact] public async Task ConfiguredOrganizationColumnsMustBelongToTheVerifiedProfileRow()
     {
         var profile = "<Table><NombreCompleto>Persona</NombreCompleto><Codigo>7</Codigo><RegionalId>E</RegionalId><DepartamentoId>D1</DepartamentoId><DepartamentoNombre>Cocina</DepartamentoNombre></Table>";

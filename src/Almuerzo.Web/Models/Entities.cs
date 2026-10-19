@@ -19,6 +19,9 @@ public class Region
     public const string LegacyId = "central";
     public string Id { get; set; } = Guid.NewGuid().ToString("N");
     public string Name { get; set; } = "";
+    public string Alias { get; set; } = "";
+    public string? DirectoryKey { get; set; }
+    [System.ComponentModel.DataAnnotations.Schema.NotMapped] public string DisplayName => Alias.Length > 0 ? Alias : Name;
     public string? DirectoryCode { get; set; }
     public string Status { get; set; } = "ACTIVO";
 }
@@ -26,6 +29,9 @@ public class Region
 public class Department : IRegionalEntity
 {
     public bool DirectoryManaged { get; set; }
+    public string Alias { get; set; } = "";
+    public string? DirectoryKey { get; set; }
+    [System.ComponentModel.DataAnnotations.Schema.NotMapped] public string DisplayName => Alias.Length > 0 ? Alias : Name;
     public string? DirectoryCode { get; set; }
     public string RegionId { get; set; } = Region.LegacyId;
     public string Id { get; set; } = Guid.NewGuid().ToString();
@@ -48,6 +54,7 @@ public class AppUser : IRegionalEntity
     public string Status { get; set; } = "PENDIENTE";
     public string? EmployeeCode { get; set; }
     public string? DirectoryAccount { get; set; }
+    public string JobTitle { get; set; } = "";
     public string PreferencesJson { get; set; } = "{}";
     public string GameJson { get; set; } = "{}";
     public string Revision { get; set; } = Guid.NewGuid().ToString();

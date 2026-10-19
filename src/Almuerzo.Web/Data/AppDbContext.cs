@@ -32,6 +32,9 @@ public class AppDbContext : DbContext
         b.Entity<Region>().Property(x => x.Id).HasMaxLength(32);
         b.Entity<Region>().Property(x => x.Name).HasMaxLength(150);
         b.Entity<Region>().Property(x => x.DirectoryCode).HasMaxLength(64);
+        b.Entity<Region>().Property(x => x.Alias).HasMaxLength(150);
+        b.Entity<Region>().Property(x => x.DirectoryKey).HasMaxLength(64);
+        b.Entity<Region>().HasIndex(x => x.DirectoryKey).IsUnique().HasFilter("DirectoryKey IS NOT NULL");
         b.Entity<Region>().HasIndex(x => x.Name).IsUnique();
         b.Entity<Region>().HasIndex(x => x.DirectoryCode).IsUnique().HasFilter("DirectoryCode IS NOT NULL");
         b.Entity<AppUser>().HasKey(x => x.Email);
@@ -39,8 +42,12 @@ public class AppDbContext : DbContext
         b.Entity<AppUser>().HasIndex(x => x.DirectoryAccount).IsUnique().HasFilter("DirectoryAccount IS NOT NULL");
         b.Entity<AppUser>().HasOne(x => x.Department).WithMany().HasForeignKey(x => x.DepartmentId).OnDelete(DeleteBehavior.Restrict);
         b.Entity<AppUser>().Property(x => x.Revision).IsConcurrencyToken();
+        b.Entity<AppUser>().Property(x => x.JobTitle).HasMaxLength(150);
         b.Entity<Department>().HasIndex(x => new { x.RegionId, x.Name }).IsUnique();
         b.Entity<Department>().Property(x => x.DirectoryCode).HasMaxLength(64);
+        b.Entity<Department>().Property(x => x.Alias).HasMaxLength(150);
+        b.Entity<Department>().Property(x => x.DirectoryKey).HasMaxLength(64);
+        b.Entity<Department>().HasIndex(x => new { x.RegionId, x.DirectoryKey }).IsUnique().HasFilter("DirectoryKey IS NOT NULL");
         b.Entity<Department>().HasIndex(x => new { x.RegionId, x.DirectoryCode }).IsUnique().HasFilter("DirectoryCode IS NOT NULL");
         b.Entity<MenuCategory>().HasIndex(x => new { x.RegionId, x.Name }).IsUnique();
         b.Entity<MenuItem>().HasOne(x => x.Category).WithMany().HasForeignKey(x => x.CategoryId).OnDelete(DeleteBehavior.Restrict);

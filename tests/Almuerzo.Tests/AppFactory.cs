@@ -28,7 +28,7 @@ public class AppFactory : WebApplicationFactory<Program>
 {
     public readonly FixedClock Clock = new();
     public readonly Dictionary<string, DirectoryIdentity> Profiles = new(StringComparer.OrdinalIgnoreCase);
-    public readonly Dictionary<string, string?> ExtraConfiguration = new();
+    public readonly Dictionary<string, string?> ExtraConfiguration = new() { ["Ad:OrganizationContract"] = "Codes", ["Ad:AutoProvisioningEnabled"] = "false", ["Ad:AutoCreateOrganizationEnabled"] = "false" };
     public readonly string SqlDatabase = "AlmuerzoTest_" + Guid.NewGuid().ToString("N");
     public bool UseSqlServer => Environment.GetEnvironmentVariable("ALMUERZO_TEST_SQLSERVER") == "1";
     public readonly string Storage = Path.Combine(Path.GetTempPath(), "almuerzo-tests", Guid.NewGuid().ToString("N"));

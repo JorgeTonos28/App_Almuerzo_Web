@@ -1,6 +1,6 @@
-# Entrega a TI · App Almuerzo Web 0.2.1
+# Entrega a TI · App Almuerzo Web 0.2.2
 
-Esta es la guía vigente. Todos los comandos son para **CMD**. El código incluye SQL Server, separación regional, ADMIN_REG y SendGrid. Falta validar contra el servidor SQL institucional, el nuevo contrato del AD y un envío real con las credenciales/remitente de SendGrid que entregue TI.
+Esta es la guía vigente. Todos los comandos son para **CMD**. El código incluye SQL Server, separación regional, ADMIN_REG y SendGrid. Falta validar contra el servidor SQL institucional, la autenticación real del contrato AD NamesV1 y un envío real con las credenciales/remitente de SendGrid que entregue TI.
 
 ## 1. Preparar la entrega y proteger los datos
 
@@ -23,7 +23,7 @@ npm run build
 dotnet restore Almuerzo.sln
 dotnet build Almuerzo.sln -c Release --no-restore
 dotnet test Almuerzo.sln -c Release --no-build
-dotnet publish src\Almuerzo.Web -c Release --no-build -o artifacts\publish-v021
+dotnet publish src\Almuerzo.Web -c Release --no-build -o artifacts\publish-v022
 ```
 
 El paquete publicado no incluye la base ni el Excel. Para ensayar sin datos reales, usar la demo descrita en README. No usar `--demo` en producción.
@@ -88,7 +88,7 @@ La transferencia hace un respaldo SQLite consistente a un archivo temporal, migr
 
 Si existen correos pendientes con adjuntos, sus rutas privadas se conservan: trasladar también Reports al mismo `Storage:Path`/ruta antes de activar el worker. Conservar `keys` y la identidad de servicio para mantener las sesiones; si se cambia de equipo/cuenta, DPAPI puede exigir renovar sesiones o migrar claves con un mecanismo de TI. La firma por defecto es parte del paquete; las imágenes personalizadas permanecen en la base.
 
-Todos los datos anteriores quedan en la regional `central`, denominada inicialmente `Sede inicial`. No repartir históricos por nombres de departamento de forma automática. Renombrar/vincular esa regional desde el panel; los históricos conservan el ámbito en el que se registraron.
+Todos los datos anteriores quedan en la regional `central`, denominada inicialmente `Sede inicial`. No repartir históricos por semejanza de nombres. TI debe mapear los IDs existentes con los nombres AD mediante la [guía NamesV1](AD-NAMES-AND-TI.md); ADMIN_GEN define alias después. Los históricos conservan el ámbito en el que se registraron.
 
 ### Alternativa: Excel actualizado
 
@@ -116,10 +116,10 @@ dotnet run --project src\Almuerzo.Web -c Release --no-build --no-launch-profile 
 ```
 
 1. Entrar por AD con una cuenta ADMIN_GEN importada. El login permanece en la misma pestaña.
-2. Abrir administración y **Administrar regionales y códigos AD**. Renombrar Sede inicial y registrar su código institucional. Crear las demás regionales y sus códigos exactos; no inventar códigos.
+2. Antes de activar NamesV1, completar los mapeos privados de [la guía AD](AD-NAMES-AND-TI.md). En **Regionales: alias y acceso**, ADMIN_GEN define alias; los nombres AD no se editan. Las organizaciones nuevas llegan del primer perfil verificado con el opt-in activo.
 3. Usar el selector del encabezado para trabajar en cada regional. Cada una recibe catálogos y valores iniciales seguros, con modo de correo de prueba. Revisar proveedor/precio, horarios, menú, calendario, destinatarios e identidad visual de cada una.
 4. En Usuarios, ADMIN_GEN asigna roles y estado general a cuentas ya incorporadas por AD/importación. Nombre y código son de solo lectura. El departamento verificado también queda protegido. No existe creación manual de identidades. ADMIN_REG no modifica roles ni habilitación general.
-5. Como ADMIN_GEN, en Departamentos, vincular el código AD de los departamentos ya existentes antes de activar la sincronización. Asignar uno o varios responsables habilitados como ADMIN_DEP; deben pertenecer ya al departamento, sin suspensión regional. Esta operación nunca los traslada. Esos responsables reciben el Excel/PDF departamental y coordinan el retiro; ADMIN_REG recibe el consolidado de su regional, y ADMIN_GEN los consolidados regionales.
+5. Como ADMIN_GEN, en Departamentos, definir alias si hace falta. Los mapeos de IDs importados se preparan según la guía AD. Asignar uno o varios responsables habilitados como ADMIN_DEP; deben pertenecer ya al departamento, sin suspensión regional. Esta operación nunca los traslada. Esos responsables reciben el Excel/PDF departamental y coordinan el retiro; ADMIN_REG recibe el consolidado de su regional, y ADMIN_GEN los consolidados regionales.
 6. Si un departamento nuevo llega desde AD, se crea sin responsables; un administrador debe asignarlos. El acceso USER no depende de esa asignación. Revisar los departamentos sin responsable antes de operar.
 
 | Rol | Ámbito y permisos |
@@ -135,33 +135,13 @@ El selector cambia el contexto administrativo, no traslada al administrador ni s
 
 Para cambiar proveedor: CONFIG → Proveedor → Gestionar, escribir nombre y precio y confirmar. El importe se exige aunque sea igual al anterior. Proveedor, precio y nuevo período de valoración se guardan juntos. Las valoraciones anteriores permanecen archivadas y los precios históricos mantienen sus vigencias.
 
-## 6. AD actual y preparación del nuevo contrato
+## 6. Nuevo AD NamesV1, alias y mapeos
 
-Contrato actual: HTTPS POST a `https://ona-app-01.infotep.gob.do:8005/ADService.asmx/Autenticacion` (`Token`, `NombreUsuario`, `Password`); después `DatosUsuarioAD` (`Token`, `NombreUsuario`). La contraseña no se persiste ni se registra. El perfil verificado aporta nombre y código, y vincula la cuenta importada conservando correo/históricos. Conflictos de cuenta/código bloquean el login; ADMIN_GEN puede restablecer el vínculo desde Usuarios con auditoría y revocación de sesión.
+Seguir [AD-NAMES-AND-TI.md](AD-NAMES-AND-TI.md): contrato DataTable/diffgram real suministrado, nombres institucionales protegidos, alias ADMIN_GEN, mapeos explícitos del catálogo importado, alta USER/organización nueva, asistente CMD de token y configuración SQL separada para TI. Endpoint: `https://ona-dis-2.infotep.gov.do/InfotepADWebservice/ADService.asmx`.
 
-Mantener `Ad:AutoProvisioningEnabled=false` mientras TI no entregue el contrato nuevo. El modo actual sigue permitiendo solicitudes y aprobación administrativa, avisando a generales y regionales del ámbito.
+Se requieren `Ad:OrganizationContract=NamesV1`, `Ad:AutoProvisioningEnabled=true`, `Ad:AutoCreateOrganizationEnabled=true`, token privado, confianza TLS y mapeos de datos importados. Los valores versionados conservan el opt-in desactivado. No hay códigos organizativos separados; no inventarlos ni interpretar los nombres como códigos estables. El certificado observado desde desarrollo no tiene una raíz confiable: TI debe resolver su cadena sin desactivar validación.
 
-Pedir a TI: URL definitiva, métodos/parámetros, XML de ejemplo anonimizado del perfil del usuario autenticado, columna de código/nombre, **código estable de regional**, **código de departamento** y **nombre de departamento**. Confirmar formato de cuenta y unicidad del código de empleado. No enviar contraseñas o tokens en ejemplos.
-
-Si se conserva el contrato ASMX actual y solo se agregan columnas, basta configurar sus nombres exactos:
-
-| Clave | Valor requerido |
-|---|---|
-| `Ad:Enabled` | `true` tras configurar el token |
-| `Ad:Endpoint` | URL base ASMX HTTPS confirmada por TI |
-| `Ad:Token` | Secreto institucional |
-| `Ad:FullNameColumn` | Por defecto `NombreCompleto` |
-| `Ad:EmployeeCodeColumn` | Por defecto `Codigo` |
-| `Ad:RegionCodeColumn` | Nombre exacto de la columna regional |
-| `Ad:DepartmentCodeColumn` | Nombre exacto de la columna código departamental |
-| `Ad:DepartmentNameColumn` | Nombre exacto de la columna nombre departamental |
-| `Ad:AutoProvisioningEnabled` | `true` solo después del mapeo y pruebas |
-
-Se exige que esos campos pertenezcan al mismo perfil/código verificado. Si TI cambia métodos, parámetros o transporte, hay que ajustar el adaptador con el contrato real; no se ha supuesto un endpoint que todavía no existe.
-
-Una cuenta administrativa PENDIENTE tampoco se activa automáticamente: su habilitación requiere una decisión explícita. La provisión automática de cuentas pendientes se limita a USER.
-
-Con provisión activa, un nuevo perfil de regional mapeada y departamento activo se crea como USER y entra sin solicitud. Un departamento inexistente se crea a partir del perfil verificado. Si ya existe el nombre sin código mapeado, se exige vinculación administrativa para no duplicarlo. Regional desconocida/inactiva, departamento inactivo, perfil incompleto o conflictos de identidad impiden el acceso. Las cuentas INACTIVO nunca se reactivan por autenticarse. Roles administrativos se asignan manualmente. Cambiar de departamento retira ADMIN_DEP; cambiar de regional retira ADMIN_REG. Un departamento administrado por AD no se modifica desde un formulario del colaborador.
+Las credenciales de `AlmuerzoBD` permiten conectar a SQL, no publicar archivos/IIS. Mantener LocalDB para desarrollo y entregar el paquete a TI. `scripts\Configure.cmd ti` genera configuración privada separada; no cambia ni conecta la base local/institucional. Sin contraseña/token reales, SQL y AD institucionales siguen pendientes de homologación.
 
 ## 7. Habilitar SendGrid y probar correos
 
@@ -193,7 +173,7 @@ API oficial utilizada: [SendGrid Mail Send v3](https://www.twilio.com/docs/sendg
 
 ## 8. Publicar en IIS y configurar producción
 
-1. Detener el sitio/Application Pool. Respaldar SQL y almacenamiento privado y desplegar el contenido de `artifacts\publish-v021` en la carpeta del sitio. No sobrescribir el almacén privado con un paquete vacío.
+1. Detener el sitio/Application Pool. Respaldar SQL y almacenamiento privado y desplegar el contenido de `artifacts\publish-v022` en la carpeta del sitio. No sobrescribir el almacén privado con un paquete vacío.
 2. Configurar en el gestor de secretos o entorno de la cuenta de servicio las mismas claves, sustituyendo `:` por `__` en variables: `ConnectionStrings__DefaultConnection`, `Database__Provider=SqlServer`, `Storage__Path`, `Ad__Enabled`, `Ad__Endpoint`, `Ad__Token`, `Mail__Mode=SendGrid`, `Mail__From`, `SendGrid__ApiKey`, `SendGrid__DataResidency`, `Operations__Enabled`, `Operations__ScheduledJobsEnabled` y `AllowedHosts=dominio.institucional`.
 3. Establecer `ASPNETCORE_ENVIRONMENT=Production`. Aplicar los valores AD nuevos solo al completar el punto 6. No guardar secretos en appsettings del repositorio, archivos publicados compartidos ni web.config versionado.
 4. Configurar binding HTTPS y certificado válido. Si existe proxy, configurar de forma explícita sus hosts/redes de confianza y HTTPS antes de operar; la app no confía indiscriminadamente en cabeceras reenviadas.
@@ -209,7 +189,7 @@ Antes de dar acceso nacional, verificar en homologación:
 - Dos regionales con menú/proveedor/precio/valoraciones diferentes; USER/ADMIN_DEP/ADMIN_REG no pueden leer ni modificar otra regional, aunque manipulen IDs/cookies. ADMIN_GEN puede alternar contexto.
 - ADMIN_REG no modifica identidades, roles, departamentos, categorías/reglas, configuración, correos, branding ni proveedor/precios. ADMIN_DEP consulta cuentas y recibe solo su reporte. Verificar también que una suspensión regional no puede retirar una deshabilitación general y que AD/solicitudes manipuladas no reactivan cuentas bloqueadas. Un departamento sin responsable se detecta y asigna explícitamente.
 - Cambiar proveedor sin precio falla; con precio se guardan ambos y los históricos previos se conservan.
-- AD actual funciona; al activar el nuevo contrato, USER nuevo entra en la organización verificada sin solicitud, y los casos negativos del punto 6 permanecen bloqueados.
+- AD NamesV1 autentica contra TI; al activar la provisión, USER nuevo entra en la organización verificada sin solicitud, y los casos negativos del punto 6 permanecen bloqueados.
 - Reportes Excel/PDF, recordatorio y cierre usan la regional correcta; SendGrid entrega únicamente al buzón de prueba hasta autorizar producción.
 - Bandeja Express funciona con flechas/A-D y botones táctiles, muestra dificultad y tiempo, oculta/restaura el pedido y aplica 15 minutos diarios aunque se recargue o abandone la partida. Abandonar consume la reserva de esa partida; el ranking nuevo comienza con su propia versión de puntuación.
 - Escritorio/móvil: drawer a 1024 px, ajustes a 720 px, scroll de modales/tablas, sin desbordamiento de página. Preferencias, importación TSV multilínea, feriados, valoraciones y precios históricos deben contrastarse con la operación vigente.
@@ -240,3 +220,9 @@ Las migraciones añaden `RegionalBlocked=false` y marcadores persistentes de aut
 La aplicación local del usuario permanece detenida después de este cambio; las comprobaciones visuales se realizan con datos sintéticos en un host temporal independiente. El contrato nuevo del AD y la entrega real de SendGrid siguen requiriendo homologación institucional.
 
 Verificación del 19 de octubre de 2026: 85 pruebas correctas en SQLite y las mismas 85 en SQL Server LocalDB; ambos snapshots sin cambios pendientes, assets compilados y publicación Release generada. La demo aislada respondió HTTP 200. Se intentó la captura visual, pero el visor integrado no logró conectar su webview; no se afirma una nueva validación visual completa de esta versión. Se cerraron ambos hosts al finalizar. Las pruebas usan datos sintéticos y no envían correos externos.
+
+## Actualización v0.2.2
+
+Contrato AD NamesV1 y aliases según [AD-NAMES-AND-TI.md](AD-NAMES-AND-TI.md). Las migraciones añaden Alias/DirectoryKey a regionales y departamentos y JobTitle al usuario, con valores vacíos/nulos para datos previos; conservan IDs e históricos. El catálogo importado se vincula mediante mapeos privados explícitos, sin fusiones por semejanza. El opt-in crea organizaciones nuevas únicamente a partir de perfiles autenticados, sin responsables ni privilegios automáticos.
+
+Verificación del 19 de octubre de 2026: compilación Release sin advertencias/errores, assets y publicación generados, 96 pruebas correctas con SQLite y las mismas 96 con SQL Server LocalDB. Una repetición sufrió timeouts de conexión a LocalDB tras una interrupción prolongada; la ejecución posterior completó las 96 sin fallos. Ambos modelos EF coinciden con sus migraciones. El host sintético respondió HTTP 200; el visor agotó el tiempo de conexión, por lo que no se completó la revisión visual de escritorio/móvil. Los hosts local y QA quedaron detenidos. No se probaron credenciales AD/SQL institucionales ni se enviaron correos reales. El certificado HTTPS institucional requiere revisar su cadena de confianza con TI.

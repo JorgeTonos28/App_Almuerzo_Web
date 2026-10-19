@@ -1,4 +1,4 @@
-# App Almuerzo Web · 0.2.1
+# App Almuerzo Web · 0.2.2
 
 ASP.NET Core 10 MVC, EF Core y **SQL Server**, con la interfaz de App_Almuerzo v7.36 adaptada a operación nacional. Cada regional tiene departamentos, menú, proveedor, precio, pedidos, valoraciones, configuración y reportes. La autorización se verifica en el servidor en cada petición.
 
@@ -8,10 +8,10 @@ Guía vigente para TI: [Despliegue nacional, SQL Server, AD y SendGrid](docs/DEP
 
 La [matriz de autoridad y permisos](docs/ACCESS-CONTROL.md) define quién puede modificar cada dato y las reglas de transición del AD. Nombre/código y organización verificada son de solo lectura incluso para ADMIN_GEN; no se crean identidades manuales. El bloqueo regional es independiente de la deshabilitación general y se comprueba en cada petición.
 
-- `ADMIN_GEN`: administración nacional con selector de regional en el encabezado; crea regionales, vincula códigos AD y asigna `ADMIN_REG`.
+- `ADMIN_GEN`: administración nacional con selector de regional en el encabezado; administra alias y estados locales de organización y asigna `ADMIN_REG`.
 - `ADMIN_REG`: gestiona menú, calendario, pedidos, reportes, avisos y suspensiones regionales de USER/ADMIN_DEP. Consulta identidades y departamentos. Roles, responsables, organización, categorías/reglas, configuración, correos, branding y proveedor/precios quedan reservados a ADMIN_GEN.
 - Cambiar proveedor requiere escribir un precio válido, aunque coincida con el anterior. Ambos valores y la vigencia se guardan juntos, preservando los históricos.
-- AD preparado para recibir regional y departamento verificados. La provisión automática USER está desactivada hasta que TI entregue y confirme el contrato actualizado. Los ADMIN_DEP se asignan expresamente desde Departamentos; reciben el resumen de su departamento y coordinan el retiro.
+- Nuevo AD NamesV1: lee CodigoEmpleado, Cargo, Departamento y Regional del DataTable/diffgram. Con opt-in crea organizaciones nuevas y USER; conserva nombres AD y permite alias solo a ADMIN_GEN. Catálogos importados requieren mapeos explícitos privados antes del primer vínculo. Los ADMIN_DEP se asignan expresamente desde Departamentos; reciben el resumen de su departamento y coordinan el retiro.
 - SendGrid por API HTTPS, con adjuntos Excel/PDF, cola transaccional y reintentos. Pickup sigue siendo el modo inicial seguro; SMTP se conserva por compatibilidad.
 - Migraciones específicas de SQL Server y transferencia offline desde SQLite, transaccional y reconciliada. SQLite sigue disponible para demo y pruebas.
 - **Bandeja Express**: cuatro carriles, ingredientes y fuego, flechas/A-D y controles táctiles. Siete niveles de dificultad progresiva, partidas de hasta 45 segundos y máximo de 15 minutos diarios reservado en el servidor. El servidor reconstruye la puntuación; el ranking mensual usa la versión nueva del juego. La tarjeta del pedido se oculta con animación durante la partida y regresa al terminar.
@@ -45,7 +45,7 @@ Para conservar la base SQLite existente, detener la app, configurar una **base S
 scripts\Migrate-Sqlite.cmd C:\AlmuerzoPrivate\almuerzo.db
 ```
 
-El proceso crea un snapshot temporal consistente, aplica migraciones al snapshot, copia todas las tablas dentro de una transacción y reconcilia conteos. No modifica el origen ni mezcla datos con un destino poblado. Los datos existentes quedan en `Sede inicial` (`central`); ADMIN_GEN debe renombrarla y vincular su código AD real.
+El proceso crea un snapshot temporal consistente, aplica migraciones al snapshot, copia todas las tablas dentro de una transacción y reconcilia conteos. No modifica el origen ni mezcla datos con un destino poblado. Los datos existentes quedan en `Sede inicial` (`central`); TI debe mapearla con su nombre AD conservando los IDs, y ADMIN_GEN puede definir su alias visible.
 
 Para importar un Excel actualizado directamente en una base nueva:
 
@@ -59,7 +59,7 @@ La importación reconoce el mismo libro por SHA-256, conserva históricos y pref
 
 AD utiliza ASMX HTTPS POST: `Autenticacion` y `DatosUsuarioAD`, con `Token`, `NombreUsuario` y `Password` según el método. Se verifica el perfil del mismo usuario, sin XML DTD/entidades externas, con límites de tamaño y plazo. El código institucional único vincula la cuenta AD conservando correo e históricos importados; solo ADMIN_GEN puede restablecer un vínculo, con auditoría y revocación de sesión.
 
-Con el contrato antiguo, las cuentas nuevas solicitan acceso y un administrador asigna departamento/rol. Con `Ad:AutoProvisioningEnabled=true`, se exige organización verificada: regional previamente mapeada y departamento activo. Se crea/sincroniza USER automáticamente; nunca se reactivan cuentas INACTIVO ni se conceden privilegios administrativos. Los cambios organizativos retiran ADMIN_DEP al cambiar departamento y ADMIN_REG al cambiar regional. Un traslado verificado retira únicamente la suspensión de la regional anterior, con auditoría; una deshabilitación general se conserva. No se infiere el departamento por texto escrito por el usuario.
+Con el contrato antiguo, las cuentas nuevas solicitan acceso y un administrador asigna departamento/rol. Con `Ad:AutoProvisioningEnabled=true`, se exige organización verificada activa; con `Ad:OrganizationContract=NamesV1` y `Ad:AutoCreateOrganizationEnabled=true` se crean regionales/departamentos nuevos sin roles administrativos. Los catálogos importados se vinculan explícitamente antes de mover cuentas. Se crea/sincroniza USER automáticamente; nunca se reactivan cuentas INACTIVO ni se conceden privilegios administrativos. Los cambios organizativos retiran ADMIN_DEP al cambiar departamento y ADMIN_REG al cambiar regional. Un traslado verificado retira únicamente la suspensión de la regional anterior, con auditoría; una deshabilitación general se conserva. No se infiere el departamento por texto escrito por el usuario.
 
 En Development el envío externo exige opt-in, `TEST_EMAIL_MODE=TRUE` y un único destinatario de prueba. Los trabajos y la cola comienzan desactivados. Cada regional tiene horario, calendario y destinatarios; ADMIN_GEN recibe consolidados regionales y ADMIN_REG el de su ámbito. HTTP 202 de SendGrid significa aceptación por el proveedor; entrega y rebotes se comprueban en SendGrid.
 
@@ -80,4 +80,4 @@ Cada prueba SQL usa una BD temporal `AlmuerzoTest_<GUID>` y la elimina al termin
 
 Producción requiere HTTPS, dominio en AllowedHosts, cuenta de servicio y almacenamiento privado persistente. Las claves de Data Protection se cifran con DPAPI en Windows o certificado en otros sistemas. TI administra respaldos SQL y pruebas de restauración. Operar **una instancia y un worker**: la cola no tiene bloqueo distribuido y un fallo después de aceptar un correo puede causar reintento duplicado. No se promete entrega exactamente una vez.
 
-La integración nueva del AD y la entrega real de SendGrid necesitan los datos y las pruebas de TI antes de habilitarse. Reglas de mantenimiento: [AGENTS.md](AGENTS.md). Historial de la migración inicial: [docs/MIGRATION.md](docs/MIGRATION.md).
+El contrato nuevo está implementado contra el XML entregado; faltan token, confianza TLS y homologación AD real, credenciales/conexión SQL institucional y recepción real de SendGrid. Seguir [AD nuevo, alias, CMD y configuración separada para TI](docs/AD-NAMES-AND-TI.md): `scripts\Configure.cmd map`, `scripts\Configure.cmd ad` y `scripts\Configure.cmd ti`. El asistente no cambia la conexión SQL local al configurar AD ni conecta al servidor para preparar el archivo de TI. Reglas de mantenimiento: [AGENTS.md](AGENTS.md). Historial de la migración inicial: [docs/MIGRATION.md](docs/MIGRATION.md).
