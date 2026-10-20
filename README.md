@@ -1,4 +1,4 @@
-# App Almuerzo Web · 0.2.2
+# App Almuerzo Web · 0.2.3
 
 ASP.NET Core 10 MVC, EF Core y **SQL Server**, con la interfaz de App_Almuerzo v7.36 adaptada a operación nacional. Cada regional tiene departamentos, menú, proveedor, precio, pedidos, valoraciones, configuración y reportes. La autorización se verifica en el servidor en cada petición.
 
@@ -58,6 +58,8 @@ La importación reconoce el mismo libro por SHA-256, conserva históricos y pref
 ## Identidad, roles y correo
 
 AD utiliza ASMX HTTPS POST: `Autenticacion` y `DatosUsuarioAD`, con `Token`, `NombreUsuario` y `Password` según el método. Se verifica el perfil del mismo usuario, sin XML DTD/entidades externas, con límites de tamaño y plazo. El código institucional único vincula la cuenta AD conservando correo e históricos importados; solo ADMIN_GEN puede restablecer un vínculo, con auditoría y revocación de sesión.
+
+El endpoint de pruebas HTTP solo puede habilitarse de forma explícita en Development mediante `scripts\\Configure.cmd ad-http-test`, limitado a `ona-dis-2.infotep.gov.do`. Envía credenciales sin cifrar y requiere un token/cuenta de pruebas revocable; la aplicación rechaza esa opción fuera de Development y producción exige HTTPS. Ejecutar `scripts\\Configure.cmd ad` para volver al endpoint seguro.
 
 Con el contrato antiguo, las cuentas nuevas solicitan acceso y un administrador asigna departamento/rol. Con `Ad:AutoProvisioningEnabled=true`, se exige organización verificada activa; con `Ad:OrganizationContract=NamesV1` y `Ad:AutoCreateOrganizationEnabled=true` se crean regionales/departamentos nuevos sin roles administrativos. Los catálogos importados se vinculan explícitamente antes de mover cuentas. Se crea/sincroniza USER automáticamente; nunca se reactivan cuentas INACTIVO ni se conceden privilegios administrativos. Los cambios organizativos retiran ADMIN_DEP al cambiar departamento y ADMIN_REG al cambiar regional. Un traslado verificado retira únicamente la suspensión de la regional anterior, con auditoría; una deshabilitación general se conserva. No se infiere el departamento por texto escrito por el usuario.
 

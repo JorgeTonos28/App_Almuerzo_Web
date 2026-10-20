@@ -9,6 +9,7 @@ using System.Text.Json.Nodes;
 // Run from the repository through scripts\Configure.cmd. Never pass secrets as command arguments.
 const string secretId = "almuerzo-web-development";
 const string endpoint = "https://ona-dis-2.infotep.gov.do/InfotepADWebservice/ADService.asmx";
+const string developmentHttpEndpoint = "http://ona-dis-2.infotep.gov.do/InfotepADWebservice/ADService.asmx";
 Console.OutputEncoding = Encoding.UTF8;
 try
 {
@@ -20,6 +21,18 @@ try
             Console.WriteLine("Actualiza AD local. Conserva la conexión SQL y los demás secretos. Mapea primero los catálogos importados (modo map).");
             values["Ad:Token"] = Secret("Token AD nuevo");
             values["Ad:Endpoint"] = endpoint; values["Ad:Enabled"] = "true";
+            values["Ad:AllowInsecureHttpInDevelopment"] = "false";
+            values["Ad:OrganizationContract"] = "NamesV1"; values["Ad:EmployeeCodeColumn"] = "CodigoEmpleado";
+            values["Ad:AutoProvisioningEnabled"] = "true"; values["Ad:AutoCreateOrganizationEnabled"] = "true";
+            values["DevelopmentIdentity:Enabled"] = "false";
+            await SaveSecrets(values);
+            break;
+        case "ad-http-test":
+            Console.WriteLine("AD HTTP de pruebas: solo Development, solo el host institucional y solo con un token/cuenta de prueba. Las credenciales viajarán sin cifrar; revoca el token al terminar.");
+            if (Prompt("Escribe ENABLE_HTTP_TEST para continuar") != "ENABLE_HTTP_TEST") throw new InvalidOperationException();
+            values["Ad:Token"] = Secret("Token AD de pruebas");
+            values["Ad:Endpoint"] = developmentHttpEndpoint; values["Ad:Enabled"] = "true";
+            values["Ad:AllowInsecureHttpInDevelopment"] = "true";
             values["Ad:OrganizationContract"] = "NamesV1"; values["Ad:EmployeeCodeColumn"] = "CodigoEmpleado";
             values["Ad:AutoProvisioningEnabled"] = "true"; values["Ad:AutoCreateOrganizationEnabled"] = "true";
             values["DevelopmentIdentity:Enabled"] = "false";
@@ -75,7 +88,7 @@ try
             Console.WriteLine("Archivo privado generado. TI debe ajustar almacenamiento, importar los mapeos, asegurar permisos y configurar SendGrid antes de habilitar envíos. No incluyas este archivo en Git ni en el ZIP público.");
             break;
         default:
-            Console.WriteLine("Uso: scripts\\Configure.cmd ad | map | ti\nad: token y contrato AD en User Secrets local.\nmap: equivalencias con catálogos importados en User Secrets.\nti: configuración privada independiente para entregar a TI.");
+            Console.WriteLine("Uso: scripts\\Configure.cmd ad | ad-http-test | map | ti\nad: token y contrato AD seguro en User Secrets local.\nad-http-test: excepción temporal HTTP solo en Development para el endpoint de pruebas.\nmap: equivalencias con catálogos importados en User Secrets.\nti: configuración privada independiente para entregar a TI.");
             return 0;
     }
     Console.WriteLine("Configuración preparada. Reinicia/despliega la aplicación para aplicarla."); return 0;

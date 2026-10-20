@@ -54,6 +54,41 @@ public class DirectoryTests
         var provider = Provider(new Handler((_, _) => { calls++; return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("<boolean>false</boolean>") }); }));
         Assert.Null(await provider.AuthenticateAsync("colaborador", "invalid", default)); Assert.Equal(1, calls);
     }
+    [Fact] public async Task DevelopmentHttpEndpointRequiresExplicitOptIn()
+    {
+        int calls = 0;
+        var provider = Provider(new Handler((_, _) => { calls++; return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("<boolean>false</boolean>") }); }), new() { ["Ad:Endpoint"] = "http://ona-dis-2.infotep.gov.do/InfotepADWebservice/ADService.asmx" });
+        await Assert.ThrowsAsync<BusinessException>(() => provider.AuthenticateAsync("colaborador", "test-only", default));
+        Assert.Equal(0, calls);
+    }
+    [Fact] public async Task DevelopmentHttpEndpointCanBeUsedOnlyWithExplicitOptInAndApprovedHost()
+    {
+        int calls = 0;
+        var provider = Provider(new Handler((request, _) => { calls++; Assert.Equal("http", request.RequestUri!.Scheme); return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("<boolean>false</boolean>") }); }), new() {
+            ["Ad:Endpoint"] = "http://ona-dis-2.infotep.gov.do/InfotepADWebservice/ADService.asmx", ["Ad:AllowInsecureHttpInDevelopment"] = "true"
+        });
+        Assert.Null(await provider.AuthenticateAsync("colaborador", "test-only", default));
+        Assert.Equal(1, calls);
+    }
+    [Fact] public async Task DevelopmentHttpOptInIsIgnoredOutsideDevelopment()
+    {
+        int calls = 0;
+        var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?> {
+            ["Ad:Enabled"] = "true", ["Ad:Endpoint"] = "http://ona-dis-2.infotep.gov.do/InfotepADWebservice/ADService.asmx", ["Ad:Token"] = "synthetic-token", ["Ad:AllowInsecureHttpInDevelopment"] = "true"
+        }).Build();
+        var provider = new DirectoryIdentityProvider(new HttpClient(new Handler((_, _) => { calls++; return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("<boolean>false</boolean>") }); })), config, new TestEnvironment { EnvironmentName = "Production" });
+        await Assert.ThrowsAsync<BusinessException>(() => provider.AuthenticateAsync("colaborador", "test-only", default));
+        Assert.Equal(0, calls);
+    }
+    [Fact] public async Task DevelopmentHttpOptInRejectsAnUnapprovedHost()
+    {
+        int calls = 0;
+        var provider = Provider(new Handler((_, _) => { calls++; return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("<boolean>false</boolean>") }); }), new() {
+            ["Ad:Endpoint"] = "http://other.test/ADService.asmx", ["Ad:AllowInsecureHttpInDevelopment"] = "true"
+        });
+        await Assert.ThrowsAsync<BusinessException>(() => provider.AuthenticateAsync("colaborador", "test-only", default));
+        Assert.Equal(0, calls);
+    }
     [Fact] public async Task NewNamesContractReadsOneDataTableDiffgramRowWithoutTreatingNamesAsCodes()
     {
         var profile = """

@@ -1,8 +1,10 @@
-# AD NamesV1 y entrega a TI · 0.2.2
+# AD NamesV1 y entrega a TI · 0.2.3
 
 ## Qué está preparado
 
 El contrato recibido de TI es ASMX HTTP POST sobre `https://ona-dis-2.infotep.gov.do/InfotepADWebservice/ADService.asmx`: primero `Autenticacion` (`Token`, `NombreUsuario`, `Password`) y, únicamente si autentica, `DatosUsuarioAD` (`Token`, `NombreUsuario`). El adaptador lee el DataTable/diffgram con `NombreCompleto`, `CodigoEmpleado`, `Cargo`, `Departamento` y `Regional`. Cargo puede estar vacío; no concede permisos. Nombre, código y organización son obligatorios y pertenecen a la misma fila verificada. Se mantienen HTTPS, límites de tiempo/tamaño, rechazo de XML externo/DTD y protección de credenciales.
+
+El servidor de pruebas comunicado por TI responde actualmente en HTTP. Para homologación local existe una excepción explícita y temporal: `scripts\\Configure.cmd ad-http-test` solo puede activar `http://ona-dis-2.infotep.gov.do/...` en `Development`, con confirmación interactiva y un token/cuenta revocable de pruebas. Las credenciales viajan sin cifrar y pueden quedar expuestas en la red; no usar cuentas productivas ni incluir esa configuración en despliegues. Al terminar, ejecutar `scripts\\Configure.cmd ad` y solicitar a TI HTTPS con cadena confiable.
 
 El nombre de AD se conserva como dato institucional. `Alias` es una etiqueta independiente opcional, editable solo por ADMIN_GEN desde Regionales y Departamentos. La aplicación, los correos de resumen y los reportes muestran alias o, si está vacío, el nombre institucional. Las pantallas de edición conservan el nombre original visible y protegido. Cambiar un alias no cambia cuentas, IDs, pertenencia, pedidos ni autorización; el siguiente login tampoco lo borra. Los textos históricos importados se conservan; no se reescriben los comentarios/etiquetas antiguas para aparentar una nueva adscripción.
 

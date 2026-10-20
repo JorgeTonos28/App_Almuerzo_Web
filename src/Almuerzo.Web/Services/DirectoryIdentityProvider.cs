@@ -14,6 +14,7 @@ public interface IDirectoryIdentityProvider { Task<DirectoryIdentity?> Authentic
 public class DirectoryIdentityProvider(HttpClient http, IConfiguration config, IWebHostEnvironment env) : IDirectoryIdentityProvider
 {
     private const int MaximumResponseBytes = 1_000_000;
+    private const string DevelopmentHttpHost = "ona-dis-2.infotep.gov.do";
     public async Task<DirectoryIdentity?> AuthenticateAsync(string username, string password, CancellationToken ct)
     {
         if (env.IsDevelopment() && config.GetValue<bool>("DevelopmentIdentity:Enabled"))
@@ -24,7 +25,10 @@ public class DirectoryIdentityProvider(HttpClient http, IConfiguration config, I
             return null;
         }
         if (!config.GetValue<bool>("Ad:Enabled")) throw new BusinessException("El acceso institucional todavía no está habilitado. Contacta al administrador.");
-        if (!Uri.TryCreate(config["Ad:Endpoint"], UriKind.Absolute, out var endpoint) || endpoint.Scheme != "https" || endpoint.Query.Length > 0 || endpoint.Fragment.Length > 0 || endpoint.UserInfo.Length > 0 || string.IsNullOrWhiteSpace(config["Ad:Token"]))
+        var allowInsecureHttp = env.IsDevelopment() && config.GetValue<bool>("Ad:AllowInsecureHttpInDevelopment");
+        var endpointIsHttps = Uri.TryCreate(config["Ad:Endpoint"], UriKind.Absolute, out var endpoint) && endpoint.Scheme == Uri.UriSchemeHttps;
+        var endpointIsApprovedDevelopmentHttp = allowInsecureHttp && endpoint?.Scheme == Uri.UriSchemeHttp && endpoint.Host.Equals(DevelopmentHttpHost, StringComparison.OrdinalIgnoreCase);
+        if (endpoint == null || !endpointIsHttps && !endpointIsApprovedDevelopmentHttp || endpoint.Query.Length > 0 || endpoint.Fragment.Length > 0 || endpoint.UserInfo.Length > 0 || string.IsNullOrWhiteSpace(config["Ad:Token"]))
             throw new BusinessException("La conexión institucional no está configurada.");
         var account = NormalizeAccount(username, config["Ad:DirectoryDomain"] ?? "INFOTEP");
         if (account == null) return null;
