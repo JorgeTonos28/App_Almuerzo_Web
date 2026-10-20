@@ -28,7 +28,9 @@ public static class DirectoryCatalog
         var region = await db.Regions.SingleOrDefaultAsync(x => x.DirectoryKey == regionKey, ct);
         if (mapping != null)
         {
-            var mapped = await db.Regions.SingleOrDefaultAsync(x => x.Id == mapping["Id"], ct) ?? throw new BusinessException("La regional del mapeo no existe.");
+            var mappedId = mapping["Id"]?.Trim();
+            var mapped = !string.IsNullOrWhiteSpace(mappedId) ? await db.Regions.SingleOrDefaultAsync(x => x.Id == mappedId, ct) : null;
+            if (mapped == null) throw new BusinessException("La regional del mapeo no existe en la base local. Ejecuta scripts\\Configure.cmd map y usa el ID interno de la tabla de regionales.");
             LunchService.Require((region == null || region.Id == mapped.Id) && (mapped.DirectoryKey == null || mapped.DirectoryKey == regionKey), "El mapeo regional entra en conflicto con una vinculación AD.");
             region = mapped;
         }
@@ -55,7 +57,9 @@ public static class DirectoryCatalog
         LunchService.Require(departmentMappings.Length <= 1, "El mapeo del departamento requiere revisión de TI.");
         if (departmentMappings.SingleOrDefault() is { } departmentMapping)
         {
-            var mapped = await db.Departments.IgnoreQueryFilters().SingleOrDefaultAsync(x => x.RegionId == region.Id && x.Id == departmentMapping["Id"], ct) ?? throw new BusinessException("El departamento del mapeo no existe en esta regional.");
+            var mappedId = departmentMapping["Id"]?.Trim();
+            var mapped = !string.IsNullOrWhiteSpace(mappedId) ? await db.Departments.IgnoreQueryFilters().SingleOrDefaultAsync(x => x.RegionId == region.Id && x.Id == mappedId, ct) : null;
+            if (mapped == null) throw new BusinessException("El departamento del mapeo no existe en esta regional. Ejecuta scripts\\Configure.cmd map y usa el ID interno de la tabla de departamentos.");
             LunchService.Require((department == null || department.Id == mapped.Id) && (mapped.DirectoryKey == null || mapped.DirectoryKey == departmentKey), "El mapeo departamental entra en conflicto con una vinculación AD.");
             department = mapped;
         }

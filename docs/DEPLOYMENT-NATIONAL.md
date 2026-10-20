@@ -1,4 +1,4 @@
-# Entrega a TI · App Almuerzo Web 0.2.3
+# Entrega a TI · App Almuerzo Web 0.2.4
 
 Esta es la guía vigente. Todos los comandos son para **CMD**. El código incluye SQL Server, separación regional, ADMIN_REG y SendGrid. Falta validar contra el servidor SQL institucional, la autenticación real del contrato AD NamesV1 y un envío real con las credenciales/remitente de SendGrid que entregue TI.
 
@@ -230,3 +230,7 @@ Verificación del 19 de octubre de 2026: compilación Release sin advertencias/e
 ## Actualización v0.2.3
 
 Se añadió una excepción de desarrollo explícita para homologar temporalmente el endpoint AD HTTP comunicado por TI. `scripts\\Configure.cmd ad-http-test` exige confirmación y un token/cuenta revocable, limita el host permitido y solo funciona con `ASPNETCORE_ENVIRONMENT=Development`; producción continúa exigiendo HTTPS. Ejecutar `scripts\\Configure.cmd ad` para volver al endpoint seguro. Verificación: compilación Release sin advertencias y 100 pruebas correctas; no se enviaron credenciales reales durante las pruebas automatizadas.
+
+## Actualización v0.2.4
+
+Los perfiles de lanzamiento dejan de abrir ventanas del navegador automáticamente; el formulario de autenticación conserva el envío en la misma pestaña. El asistente de mapeos permite corregir un ID existente solo con la confirmación literal `RECONCILE_MAPPING`. La aplicación informa cuando el ID configurado no existe en `Regions` o `Departments`, sin crear vínculos implícitos ni usar nombres AD como claves locales.

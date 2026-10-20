@@ -1,4 +1,4 @@
-# App Almuerzo Web · 0.2.3
+# App Almuerzo Web · 0.2.4
 
 ASP.NET Core 10 MVC, EF Core y **SQL Server**, con la interfaz de App_Almuerzo v7.36 adaptada a operación nacional. Cada regional tiene departamentos, menú, proveedor, precio, pedidos, valoraciones, configuración y reportes. La autorización se verifica en el servidor en cada petición.
 
@@ -83,3 +83,5 @@ Cada prueba SQL usa una BD temporal `AlmuerzoTest_<GUID>` y la elimina al termin
 Producción requiere HTTPS, dominio en AllowedHosts, cuenta de servicio y almacenamiento privado persistente. Las claves de Data Protection se cifran con DPAPI en Windows o certificado en otros sistemas. TI administra respaldos SQL y pruebas de restauración. Operar **una instancia y un worker**: la cola no tiene bloqueo distribuido y un fallo después de aceptar un correo puede causar reintento duplicado. No se promete entrega exactamente una vez.
 
 El contrato nuevo está implementado contra el XML entregado; faltan token, confianza TLS y homologación AD real, credenciales/conexión SQL institucional y recepción real de SendGrid. Seguir [AD nuevo, alias, CMD y configuración separada para TI](docs/AD-NAMES-AND-TI.md): `scripts\Configure.cmd map`, `scripts\Configure.cmd ad` y `scripts\Configure.cmd ti`. El asistente no cambia la conexión SQL local al configurar AD ni conecta al servidor para preparar el archivo de TI. Reglas de mantenimiento: [AGENTS.md](AGENTS.md). Historial de la migración inicial: [docs/MIGRATION.md](docs/MIGRATION.md).
+
+Si un mapeo existente apunta a un ID que ya no está en el catálogo local, `scripts\Configure.cmd map` permite corregirlo solo después de escribir `RECONCILE_MAPPING`. Usa el ID real de `Regions` o `Departments`; el nombre/código recibido del AD nunca sustituye a ese ID.

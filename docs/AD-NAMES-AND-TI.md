@@ -1,4 +1,4 @@
-# AD NamesV1 y entrega a TI · 0.2.3
+# AD NamesV1 y entrega a TI · 0.2.4
 
 ## Qué está preparado
 
@@ -96,6 +96,8 @@ Datos recibidos: servidor SQL `ona-dis-2.infotep.gov.do`, base `AlmuerzoBD`, usu
 ```cmd
 scripts\Configure.cmd ti
 ```
+
+Si el acceso informa que el mapeo no existe en la base local, consulta el ID real del catálogo importado y vuelve a ejecutar `scripts\Configure.cmd map`. Cuando el nombre AD ya tenga otro ID guardado, el asistente exige escribir `RECONCILE_MAPPING` antes de reemplazarlo; esto evita corregir un vínculo de organización por accidente.
 
 El asistente pide contraseña SQL, token AD y hostname HTTPS de la web; genera `private\ti\appsettings.Production.json` con acceso restringido al usuario actual. Usa un constructor de cadena de conexión para manejar contraseñas con caracteres especiales y fija `Encrypt=true;TrustServerCertificate=false;Persist Security Info=false`. No cambia User Secrets/local DB, no conecta al servidor y no sobrescribe un archivo privado anterior.
 

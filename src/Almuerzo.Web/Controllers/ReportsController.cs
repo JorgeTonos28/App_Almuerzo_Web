@@ -30,6 +30,6 @@ public class ReportsController(ReportService reports, LunchService lunch, AppDbC
         db.RegionId = regionalId;
         try { BusinessRules.Date(date); } catch (BusinessException) { return BadRequest(); }
         var rows = await db.Menu.AsNoTracking().Where(x => x.Date == date && x.Enabled).ToListAsync();
-        return Json(new { ok = true, fecha = date, date, exists = rows.Count > 0, existeMenu = rows.Count > 0, appVersion = "0.2.3", items = rows.Select(x => new { id = x.Id, categoria = x.CategoryId, plato = BusinessRules.Text(x.Dish), descripcion = BusinessRules.Text(x.Description) }) });
+        return Json(new { ok = true, fecha = date, date, exists = rows.Count > 0, existeMenu = rows.Count > 0, appVersion = "0.2.4", items = rows.Select(x => new { id = x.Id, categoria = x.CategoryId, plato = BusinessRules.Text(x.Dish), descripcion = BusinessRules.Text(x.Description) }) });
     }
 }
