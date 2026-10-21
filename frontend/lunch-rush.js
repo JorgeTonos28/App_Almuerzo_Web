@@ -6,7 +6,7 @@ function createPotSimulation(seed, baseScore, baseNegatives = 0) {
     pauseUntil: 0, penaltySeconds: 0, drops: [], feedback: '¡A cocinar!', event: 0 };
   // 0, 500, 1000, 1500, 2000, 2500, 3000, 4000: the final climb spans 1000 points.
   const level = () => s.score >= 4000 ? 8 : Math.min(7, Math.floor(s.score / 500) + 1);
-  const fallDuration = () => 3135 - Math.floor((level() - 1) * 2095 / 7);
+  const fallDuration = () => 3135 - Math.floor((level() - 1) * 2275 / 7);
   const next = max => { random ^= random << 13; random ^= random >>> 17; random ^= random << 5; random >>>= 0; return random % max; };
   const say = text => { s.feedback = text; s.event++; };
   function advance(elapsed, moves) {
@@ -71,7 +71,7 @@ function createPotSimulation(seed, baseScore, baseNegatives = 0) {
 function createLunchRush(setState) {
   const state = Vue.reactive({ active: false, busy: false, syncing: false, id: '', duration: 900, level: 1, remaining: 900,
     lane: 1, drops: [], points: 0, total: 0, streak: 0, message: '', error: '', feedback: '', pending: false, effects: [], event: 0,
-    negativeHits: 0, paused: false, pauseSeconds: 0, penaltyLoss: 0, waitRemaining: 0 });
+    negativeHits: 0, paused: false, pauseSeconds: 0, penaltyLoss: 0, waitRemaining: 0, levelUp: 0, levelUpUntil: 0, levelUpEvent: 0 });
   const food = ['🍚', '🥦', '🍗', '🥕', '🥑', '🍅'];
   const icons = { feast: '⭐', shield: '🛡️', slow: '🧊' };
   const hazards = ['🔥', '💣', '🦠', '🪨'];
@@ -96,7 +96,10 @@ function createLunchRush(setState) {
   function paint(elapsed, realElapsed = elapsed) {
     const s = simulation.advance(elapsed, moves);
     state.remaining = Math.max(0, Math.ceil(state.duration - elapsed / 1000));
-    state.total = s.score; state.points = s.score - baseScore; state.level = simulation.level(); state.streak = s.streak;
+    const nextLevel = simulation.level();
+    if (nextLevel > state.level) { state.levelUp = nextLevel; state.levelUpUntil = elapsed + 950; state.levelUpEvent++; }
+    else if (nextLevel < state.level || elapsed >= state.levelUpUntil) state.levelUp = 0;
+    state.total = s.score; state.points = s.score - baseScore; state.level = nextLevel; state.streak = s.streak;
     state.drops = simulation.renderDrops(realElapsed, boardHeight).map(d => ({ ...d, icon: d.kind === 'burnt' ? hazardIcon(d) : icons[d.kind] || food[d.food] }));
     state.negativeHits = s.negativeHits; state.paused = elapsed < s.pauseUntil;
     state.pauseSeconds = Math.max(0, Math.ceil((s.pauseUntil - elapsed) / 1000)); state.penaltyLoss = 30 * Math.floor(s.negativeHits / 3);
@@ -162,11 +165,11 @@ function createLunchRush(setState) {
     if (state.busy || state.active || state.pending || state.waitRemaining > 0) return;
     state.busy = true; state.error = ''; state.message = '';
     try {
-      const res = await rpc('apiStartLunchRush', 'pot-v4');
+      const res = await rpc('apiStartLunchRush', 'pot-v5');
       clearInterval(restTimer); restTimer = 0; state.waitRemaining = 0;
       setState(res.state); baseScore = res.baseScore; simulation = createPotSimulation(res.seed, baseScore, res.baseNegatives);
       Object.assign(state, { id: res.id, duration: res.duration, remaining: res.duration, level: simulation.level(), points: 0,
-        total: baseScore, streak: 0, lane: 1, feedback: '¡La cocina está lista!', active: true, effects: [], paused: false, negativeHits: res.baseNegatives });
+        total: baseScore, streak: 0, lane: 1, feedback: '¡La cocina está lista!', active: true, effects: [], paused: false, negativeHits: res.baseNegatives, levelUp: 0, levelUpUntil: 0 });
       moves = []; lastSaved = 0; nextSave = 10000; finalPayload = null; started = performance.now();
       await Vue.nextTick();
       resizeObserver?.disconnect();

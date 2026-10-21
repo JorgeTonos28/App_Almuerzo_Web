@@ -274,7 +274,7 @@
         <p v-if="!rush.active && rush.waitRemaining > 0" class="rush-error" role="status">La pausa de cocina continúa. Tu tiempo diario sigue corriendo.</p>
         <transition name="rush-expand">
           <section v-if="rush.active" id="rush-board" tabindex="0" :class="['rush-board', { 'rush-feast': rush.effects.some(e => e.kind === 'feast') }]" aria-label="Olla Express: usa flechas izquierda y derecha o A y D para mover la olla. Escape detiene y guarda.">
-            <div class="rush-hud"><span>Nivel {{ rush.level }}<small>{{ rush.syncing ? 'Guardando…' : 'Guardado automático' }}</small></span><strong>{{ rush.points >= 0 ? '+' : '' }}{{ rush.points }} pts</strong><span>{{ rushClock(rush.remaining) }}<small>restantes hoy</small></span></div>
+            <div class="rush-hud"><span>Nivel de velocidad: {{ rush.level }}<small>{{ rush.syncing ? 'Guardando…' : 'Guardado automático' }}</small></span><strong>{{ rush.points >= 0 ? '+' : '' }}{{ rush.points }} pts</strong><span>{{ rushClock(rush.remaining) }}<small>restantes hoy</small></span></div>
             <div class="rush-danger-meter"><span>Negativos sin protección <strong>{{ rush.negativeHits % 3 }}/3</strong></span><span v-if="rush.negativeHits >= 3">{{ Math.floor(rush.negativeHits / 3) }} {{ Math.floor(rush.negativeHits / 3) === 1 ? 'penalización hoy' : 'penalizaciones hoy' }}</span><span v-else>Cada 3, pausa y pérdida extra</span></div>
             <div class="rush-kitchen" aria-hidden="true"><span>COCINA</span><i class="fa-solid fa-utensils"></i><span>EN SERVICIO</span></div>
             <div class="rush-lanes" aria-hidden="true">
@@ -283,6 +283,7 @@
               <div :class="['rush-pot', { protected: rush.effects.some(e => e.kind === 'shield') }]" :style="{ left: (rush.lane * 25 + 12.5) + '%' }"><div class="rush-pot-steam"><i></i><i></i><i></i></div><div class="rush-pot-body"></div><div class="rush-pot-rim"></div></div>
               <div class="rush-effects"><span v-for="effect in rush.effects" :key="effect.kind" :class="effect.kind">{{ effect.label }} · {{ effect.seconds }}s</span></div>
             </div>
+            <div v-if="rush.levelUp && !rush.paused" :key="rush.levelUpEvent" class="rush-level-up" role="status"><span aria-hidden="true">↑</span><strong>Nivel {{ rush.levelUp }}</strong><small>¡Más velocidad!</small></div>
             <div v-if="rush.paused" class="rush-penalty" role="status"><span class="rush-penalty-icon" aria-hidden="true">⏳</span><strong>Cocina en pausa</strong><span class="rush-penalty-clock">{{ rush.pauseSeconds }}s</span><p>−{{ rush.penaltyLoss }} puntos adicionales por acumular 3 negativos.</p><small>Tu tiempo diario sigue corriendo.</small></div>
             <div class="rush-feedback" aria-live="off"><span :key="rush.event" class="rush-pop">{{ rush.feedback }}</span><span v-if="rush.streak > 1"> · Racha {{ rush.streak }}</span></div>
             <div class="rush-touch"><button :disabled="rush.paused" @pointerdown.prevent="moveRush(rush.lane - 1)" aria-label="Mover a la izquierda">←</button><span>← → o A / D</span><button :disabled="rush.paused" @pointerdown.prevent="moveRush(rush.lane + 1)" aria-label="Mover a la derecha">→</button></div>
@@ -1423,41 +1424,49 @@
 
     <!-- Menu Import Modal -->
     <div v-if="adminState.menuImportModal.open" class="fixed inset-0 z-[70] flex items-center justify-center p-4">
-       <div class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm" @click="adminState.menuImportModal.open = false"></div>
-       <div class="bg-white rounded-2xl shadow-xl w-full max-w-4xl relative overflow-hidden animate-fade-in-up flex flex-col max-h-[90vh]">
+       <div class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm" @click="closeMenuImport"></div>
+        <div class="menu-import-modal bg-white rounded-2xl shadow-xl w-full max-w-4xl relative overflow-hidden animate-fade-in-up flex flex-col max-h-[90vh]">
           <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 shrink-0">
              <h3 class="font-bold text-lg text-gray-800">Importar Menú Semanal</h3>
-             <button @click="adminState.menuImportModal.open = false" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
+             <button @click="closeMenuImport" :disabled="adminState.menuImportModal.saving" aria-label="Cerrar importación" class="text-gray-400 hover:text-gray-600 disabled:opacity-40"><i class="fa-solid fa-xmark"></i></button>
           </div>
 
           <div class="p-6 overflow-y-auto grow">
              <!-- Step 1: Input -->
              <div v-if="adminState.menuImportModal.step === 1" class="space-y-4">
                  <div class="bg-blue-50 p-4 rounded-xl text-blue-800 text-sm mb-4">
-                    <i class="fa-solid fa-circle-info mr-2"></i> Copia las celdas del Excel (incluyendo encabezados de categoría) y pégalas aquí. Asegúrate de seleccionar la semana correcta.
+                     <i class="fa-solid fa-circle-info mr-2"></i> Carga el Excel del proveedor o pega sus celdas, incluyendo las categorías. Revisa la semana y la vista previa antes de importar.
                  </div>
 
                  <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Inicio de Semana (Lunes)</label>
-                    <input v-model="adminState.menuImportModal.weekStart" type="date" class="w-full md:w-1/3 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                     <label for="menu-import-week" class="block text-xs font-bold text-gray-500 uppercase mb-1">Inicio de Semana (Lunes)</label>
+                     <input id="menu-import-week" v-model="adminState.menuImportModal.weekStart" :disabled="adminState.menuImportModal.busy" type="date" class="w-full md:w-1/3 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                     <p class="text-xs text-gray-400 mt-2">Puedes dejarla vacía para usar la fecha indicada en el archivo. La plantilla se descarga para la semana elegida o el próximo lunes.</p>
                  </div>
 
+                  <div class="menu-file-tools" :aria-busy="adminState.menuImportModal.busy">
+                    <div class="menu-file-actions">
+                      <label :class="['menu-file-upload', { disabled: adminState.menuImportModal.busy }]" for="menu-excel-file"><input id="menu-excel-file" class="sr-only" type="file" accept=".xls,.xlsx" :disabled="adminState.menuImportModal.busy" @change="selectMenuWorkbook"><i :class="adminState.menuImportModal.busy ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-file-excel'" aria-hidden="true"></i> {{ adminState.menuImportModal.busy ? 'Leyendo Excel…' : 'Cargar Excel' }}</label>
+                      <button type="button" @click="downloadMenuTemplate" :disabled="adminState.menuImportModal.downloading || adminState.menuImportModal.busy" class="menu-template-download"><i :class="adminState.menuImportModal.downloading ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-download'" aria-hidden="true"></i> {{ adminState.menuImportModal.downloading ? 'Preparando…' : 'Descargar plantilla' }}</button>
+                    </div>
+                    <p>.xls o .xlsx · Hasta 2 MB · Categorías de {{ regionalName }}</p>
+                    <p v-if="adminState.menuImportModal.fileName" class="menu-file-selected" role="status"><i class="fa-solid fa-paperclip" aria-hidden="true"></i> {{ adminState.menuImportModal.fileName }}<button type="button" @click="usePastedMenu" :disabled="adminState.menuImportModal.busy">Usar texto</button></p>
+                  </div>
                  <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Contenido del Menú</label>
-                    <textarea v-model="adminState.menuImportModal.text" rows="10" placeholder="Pega aquí las celdas del Excel..." class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs font-mono focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
-                 </div>
-
-                 <div v-if="adminState.menuImportModal.error" class="bg-red-50 text-red-600 p-3 rounded-lg text-sm font-semibold animate-shake">
-                    <i class="fa-solid fa-circle-exclamation mr-1"></i> {{ adminState.menuImportModal.error }}
+                     <label for="menu-import-text" class="block text-xs font-bold text-gray-500 uppercase mb-1">O pega el contenido del menú</label>
+                     <textarea id="menu-import-text" v-model="adminState.menuImportModal.text" @input="usePastedMenu" :disabled="adminState.menuImportModal.busy" rows="8" placeholder="Pega aquí las celdas del Excel..." class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs font-mono focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
                  </div>
              </div>
 
              <!-- Step 2: Preview -->
              <div v-if="adminState.menuImportModal.step === 2" class="space-y-4">
                  <div class="bg-green-50 p-4 rounded-xl text-green-800 text-sm mb-4 flex justify-between items-center">
-                    <span><i class="fa-solid fa-check-circle mr-2"></i> Datos procesados correctamente. Verifica antes de guardar.</span>
-                    <button @click="adminState.menuImportModal.step = 1" class="text-xs font-bold underline hover:text-green-900">Volver a editar</button>
+                    <span><i class="fa-solid fa-check-circle mr-2"></i> {{ adminState.menuImportModal.itemCount }} platos en {{ adminState.menuImportModal.preview.length }} días. Verifica antes de guardar.</span>
+                    <button @click="adminState.menuImportModal.step = 1" :disabled="adminState.menuImportModal.saving" class="text-xs font-bold underline hover:text-green-900">Volver a editar</button>
                  </div>
+                  <div v-if="adminState.menuImportModal.warnings.length" class="menu-import-notes" role="status"><p v-for="warning in adminState.menuImportModal.warnings" :key="warning">{{ warning }}</p></div>
+                  <p class="text-xs text-gray-500">Semana del {{ adminState.menuImportModal.weekStart }} · {{ regionalName }}. Los días sin platos no se modifican.</p>
+                  <p class="text-xs text-gray-500">Se reemplazará el menú de los días mostrados. Los pedidos afectados por platos retirados se cancelarán con aviso.</p>
 
                  <div class="overflow-x-auto border border-gray-200 rounded-xl">
                     <table class="w-full text-xs text-left">
@@ -1483,18 +1492,19 @@
                     </table>
                  </div>
              </div>
+              <div v-if="adminState.menuImportModal.error" role="alert" class="bg-red-50 text-red-600 p-3 rounded-lg text-sm font-semibold mt-4"><i class="fa-solid fa-circle-exclamation mr-1"></i> {{ adminState.menuImportModal.error }}</div>
           </div>
 
           <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3 shrink-0">
-             <button @click="adminState.menuImportModal.open = false" class="px-4 py-2 rounded-lg text-sm font-bold text-gray-500 hover:bg-gray-200 transition-colors" :disabled="adminState.loading">Cancelar</button>
+              <button @click="closeMenuImport" class="px-4 py-2 rounded-lg text-sm font-bold text-gray-500 hover:bg-gray-200 transition-colors" :disabled="adminState.menuImportModal.saving">Cancelar</button>
 
-             <button v-if="adminState.menuImportModal.step === 1" @click="processMenuImport" class="px-6 py-2 rounded-lg text-sm font-bold bg-gray-900 text-white hover:bg-black transition-colors flex items-center gap-2">
-                Procesar <i class="fa-solid fa-arrow-right"></i>
+             <button v-if="adminState.menuImportModal.step === 1" @click="processMenuImport" :disabled="adminState.menuImportModal.busy" class="px-6 py-2 rounded-lg text-sm font-bold bg-gray-900 text-white hover:bg-black transition-colors flex items-center gap-2 disabled:opacity-50">
+                {{ adminState.menuImportModal.busy ? 'Procesando…' : adminState.menuImportModal.file ? 'Procesar Excel' : 'Procesar texto' }} <i class="fa-solid fa-arrow-right"></i>
              </button>
 
-             <button v-if="adminState.menuImportModal.step === 2" @click="saveWeeklyMenu" class="px-6 py-2 rounded-lg text-sm font-bold bg-blue-600 text-white hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50" :disabled="adminState.loading">
-                <i v-if="adminState.loading" class="fa-solid fa-circle-notch fa-spin"></i>
-                Confirmar e Importar
+             <button v-if="adminState.menuImportModal.step === 2" @click="saveWeeklyMenu" class="px-6 py-2 rounded-lg text-sm font-bold bg-blue-600 text-white hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50" :disabled="adminState.menuImportModal.saving || !adminState.menuImportModal.canSave">
+                <i v-if="adminState.menuImportModal.saving" class="fa-solid fa-circle-notch fa-spin"></i>
+                {{ adminState.menuImportModal.saving ? 'Importando…' : 'Confirmar e importar' }}
              </button>
           </div>
        </div>

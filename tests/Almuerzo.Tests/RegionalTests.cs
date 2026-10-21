@@ -117,14 +117,14 @@ public class RegionalTests
     [Fact] public async Task OpenSessionChargesOnlyPlayedTimeAndFinalRetryIsIdempotent()
     {
         await using var app = new AppFactory(); await app.Seed(); using var c = app.Client(); await app.Login(c, "user@infotep.gob.do");
-        var start = await app.Rpc(c, "apiStartLunchRush", "pot-v4"); Assert.True(start["ok"]!.GetValue<bool>()); Assert.Equal(900, start["duration"]!.GetValue<int>()); Assert.Equal(900, start["state"]!["remainingSeconds"]!.GetValue<int>());
-        Assert.False((await app.Rpc(c, "apiStartLunchRush", "pot-v4"))["ok"]!.GetValue<bool>());
+        var start = await app.Rpc(c, "apiStartLunchRush", "pot-v5"); Assert.True(start["ok"]!.GetValue<bool>()); Assert.Equal(900, start["duration"]!.GetValue<int>()); Assert.Equal(900, start["state"]!["remainingSeconds"]!.GetValue<int>());
+        Assert.False((await app.Rpc(c, "apiStartLunchRush", "pot-v5"))["ok"]!.GetValue<bool>());
         app.Clock.Current = app.Clock.Current.AddSeconds(7);
         var finish = await app.Rpc(c, "apiFinishLunchRush", new { id = start["id"]!.ToString(), moves = new[] { new { t = 100, lane = 2 } }, score = 999999 });
         Assert.True(finish["ok"]!.GetValue<bool>()); Assert.True(finish["state"]!["score"]!.GetValue<int>() < 999999); Assert.Equal(893, finish["state"]!["remainingSeconds"]!.GetValue<int>());
         var retry = await app.Rpc(c, "apiFinishLunchRush", new { id = start["id"]!.ToString(), moves = Array.Empty<object>() });
         Assert.True(retry["ok"]!.GetValue<bool>()); Assert.Equal(finish["state"]!.ToJsonString(), retry["state"]!.ToJsonString());
-        Assert.Equal(893, (await app.Rpc(c, "apiStartLunchRush", "pot-v4"))["duration"]!.GetValue<int>());
+        Assert.Equal(893, (await app.Rpc(c, "apiStartLunchRush", "pot-v5"))["duration"]!.GetValue<int>());
     }
     [Fact] public async Task HistoricalReportKeepsEmployeeCodeAfterRegionalTransfer()
     {
@@ -148,15 +148,15 @@ public class RegionalTests
     {
         await using var app = new AppFactory(); await app.Seed(); using var c = app.Client(); await app.Login(c, "user@infotep.gob.do");
         for (var i = 0; i < 45; i++) {
-            Assert.True((await app.Rpc(c, "apiStartLunchRush", "pot-v4"))["ok"]!.GetValue<bool>());
+            Assert.True((await app.Rpc(c, "apiStartLunchRush", "pot-v5"))["ok"]!.GetValue<bool>());
             app.Clock.Current = app.Clock.Current.AddSeconds(21);
         }
         using var again = app.Client(); await app.Login(again, "user@infotep.gob.do");
-        Assert.False((await app.Rpc(again, "apiStartLunchRush", "pot-v4"))["ok"]!.GetValue<bool>());
+        Assert.False((await app.Rpc(again, "apiStartLunchRush", "pot-v5"))["ok"]!.GetValue<bool>());
         Assert.Equal(0, (await app.Rpc(again, "apiGetInitData"))["chefGame"]!["remainingSeconds"]!.GetValue<int>());
         app.Clock.Current = app.Clock.Current.AddDays(1);
         using var nextDay = app.Client(); await app.Login(nextDay, "user@infotep.gob.do");
-        Assert.True((await app.Rpc(nextDay, "apiStartLunchRush", "pot-v4"))["ok"]!.GetValue<bool>());
+        Assert.True((await app.Rpc(nextDay, "apiStartLunchRush", "pot-v5"))["ok"]!.GetValue<bool>());
     }
     [Fact] public async Task RegionalMenuRetainsWhiteRiceAndGrainRules()
     {

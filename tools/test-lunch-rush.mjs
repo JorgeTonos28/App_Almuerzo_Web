@@ -14,14 +14,14 @@ for (const [seed, base] of [[1, 0], [123456, 900], [2147483646, 299], [42, 3999]
 }
 // These vectors are also checked by the C# simulator tests.
 console.log(JSON.stringify(vectors));
-assert.deepEqual(vectors, [[1,0,341,63,56,7,191300,0,0],[123456,900,972,65,62,8,35780,0,200180],[2147483646,299,740,67,58,8,194900,0,93140],[42,3999,4294,76,148,5,191680,26240,110420],[98765,6000,5192,56,109,3,0,183440,0]]);
-const thresholds = [[0,1,3135],[499,1,3135],[500,2,2836],[999,2,2836],[1000,3,2537],[1499,3,2537],[1500,4,2238],[1999,4,2238],[2000,5,1938],[2499,5,1938],[2500,6,1639],[2999,6,1639],[3000,7,1340],[3500,7,1340],[3999,7,1340],[4000,8,1040],[999999,8,1040]];
+assert.deepEqual(vectors, [[1,0,341,63,56,7,191300,0,0],[123456,900,737,62,55,6,35780,0,73700],[2147483646,299,752,68,57,8,194900,0,93140],[42,3999,3111,48,97,4,0,122160,0],[98765,6000,6330,75,148,5,158180,0,46740]]);
+const thresholds = [[0,1,3135],[499,1,3135],[500,2,2810],[999,2,2810],[1000,3,2485],[1499,3,2485],[1500,4,2160],[1999,4,2160],[2000,5,1835],[2499,5,1835],[2500,6,1510],[2999,6,1510],[3000,7,1185],[3500,7,1185],[3999,7,1185],[4000,8,860],[999999,8,860]];
 for (const [score, expectedLevel, expectedFall] of thresholds) {
   const sim = create(1, score); assert.equal(sim.level(), expectedLevel); assert.equal(sim.fallDuration(), expectedFall);
 }
 const finalLevel = create(1,3999);
 finalLevel.state.drops.push({ id:999,lane:1,food:0,kind:'food',progress:7550 }); finalLevel.advance(0,[]);
-assert.equal(finalLevel.level(),8); assert.equal(finalLevel.fallDuration(),1040);
+assert.equal(finalLevel.level(),8); assert.equal(finalLevel.fallDuration(),860);
 finalLevel.state.drops.push({ id:1000,lane:1,food:0,kind:'burnt',progress:7550 }); finalLevel.advance(20,[]);
 assert.equal(finalLevel.level(),7);
 const touch = create(1, 499);
@@ -78,3 +78,24 @@ assert.ok(smooth.renderDrops(625,330)[0].y > smooth.renderDrops(620,330)[0].y);
 assert.ok(smooth.renderDrops(630,330)[0].y > smooth.renderDrops(625,330)[0].y);
 assert.equal(smooth.state.drops[0].progress,progress,'Rendering must not advance authoritative physics');
 console.log('Protección, penalizaciones acumulativas y movimiento entre pasos verificados.');
+
+// Exercise the actual browser controller against a local clock and an authenticated-start response.
+async function controller(baseScore) {
+  let elapsed = 0, frame = null, success;
+  const run = { withSuccessHandler(fn) { success = fn; return this; }, withFailureHandler() { return this; },
+    apiStartLunchRush(version) { assert.equal(version,'pot-v5'); success({ok:true,id:'test',seed:1,baseScore,baseNegatives:0,duration:900,state:{}}); } };
+  const sandbox = vm.createContext({ Vue:{reactive:x=>x,nextTick:async()=>{},onMounted(){},onUnmounted(){}},
+    window:{almuerzo:{run},addEventListener(){},removeEventListener(){}}, document:{addEventListener(){},removeEventListener(){},getElementById(){return null;}},
+    performance:{now:()=>elapsed},requestAnimationFrame:fn=>{frame=fn;return 1;},cancelAnimationFrame(){},clearInterval(){},setInterval(){return 1;} });
+  vm.runInContext(await fs.readFile('frontend/lunch-rush.js','utf8'),sandbox);
+  const game = sandbox.createLunchRush(()=>{}); await game.start();
+  return {game,tick:t=>{elapsed=t;frame();}};
+}
+const notice = await controller(499); assert.equal(notice.game.state.levelUp,0,'Starting a session does not announce a level gain');
+let promotedAt = 0;
+for (let t=0;t<=6000;t+=20) { notice.tick(t); if (notice.game.state.levelUp) { promotedAt=t; break; } }
+assert.ok(promotedAt>0); assert.equal(notice.game.state.level,2); assert.equal(notice.game.state.levelUp,2);
+assert.equal(notice.game.state.levelUpEvent,1); notice.tick(promotedAt+900); assert.equal(notice.game.state.levelUp,2);
+notice.tick(promotedAt+960); assert.equal(notice.game.state.levelUp,0,'Level text disappears in less than a second');
+const veteran = await controller(4000); veteran.tick(0); assert.equal(veteran.game.state.level,8); assert.equal(veteran.game.state.levelUp,0);
+console.log('Aviso de nivel verificado: solo al subir, sin aviso falso al iniciar, duración inferior a un segundo.');

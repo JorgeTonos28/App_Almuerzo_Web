@@ -1,4 +1,4 @@
-# App Almuerzo Web · 0.4.2
+# App Almuerzo Web · 0.5.0
 
 ASP.NET Core 10 MVC, EF Core y **SQL Server**, con la interfaz de App_Almuerzo v7.36 adaptada a operación nacional. Cada regional tiene grupos de almuerzo, catálogo institucional AD, menú, proveedor, precio, pedidos, valoraciones, configuración y reportes. La autorización se verifica en el servidor en cada petición.
 
@@ -21,6 +21,10 @@ La [matriz de autoridad y permisos](docs/ACCESS-CONTROL.md) define quién puede 
 En v0.4.1, el juego interpola el movimiento en cada cuadro y usa transformaciones gráficas, con simulación del servidor en pasos de 20 ms. El nivel máximo cae aproximadamente un 34% más rápido. 🔥 💣 🦠 🪨 son variantes del mismo negativo: −12 puntos; cada tercer impacto diario sin protección añade −30/−60/−90… puntos y 3/6/9… segundos de pausa, consumiendo tiempo diario. El contador y la espera sobreviven a detener, recargar o iniciar sesión nuevamente. El escudo evita cualquier efecto del negativo, incluido romper racha o sumar impactos. Perder un ingrediente sigue rompiendo la racha.
 
 En v0.4.2, Olla Express conserva la velocidad inicial y extiende la progresión mensual: niveles 1–8 desde 0, 500, 1,000, 1,500, 2,000, 2,500, 3,000 y 4,000 puntos. El último tramo abarca 3,000–3,999; el máximo reduce el recorrido de 1,280 a 1,040 ms (aproximadamente 23% más velocidad). Se conservan puntos, tiempo y penalizaciones anteriores. Recarga la página tras desplegar: los clientes con reglas antiguas deben actualizarse antes de iniciar una partida. El panel regional integra selector, catálogo y formulario en una tarjeta con estados de carga/guardado y diseño adaptable. Cambiar la ficha a editar no cambia la regional de trabajo; la identidad AD y los permisos mantienen sus reglas.
+
+En v0.5.0, el menú semanal también se carga desde Excel `.xls`/`.xlsx`, con vista previa y confirmación, conservando el pegado de texto. En Administración → Menú → Importar menú semanal, **Descargar plantilla** genera el formato para la regional y semana seleccionadas; sus categorías tienen listas desplegables por día. **Cargar Excel** lee la plantilla completada o el formato de cinco columnas del proveedor. Ver [formato, fechas, validación y límites](docs/MENU-WORKBOOK.md). La lectura no guarda el archivo ni modifica menús; confirmar usa la operación transaccional existente, con validación por regional y avisos en cola. La carga valida categorías y menús en lote para evitar una consulta por plato.
+
+Olla Express mantiene el nivel 8 desde 4,000 puntos. Sus recorridos por nivel son 3135/2810/2485/2160/1835/1510/1185/860 ms: cada nivel aumenta la velocidad y el máximo es aproximadamente 21% más rápido que v0.4.2. Al subir aparece «↑ Nivel N» durante 950 ms, sin bloquear controles, y el HUD indica «Nivel de velocidad: N». La simulación pasa a `pot-v5`, conserva estadísticas, tiempo y penalizaciones anteriores y exige recargar clientes antiguos.
 
 ## Ejecutar una demostración
 

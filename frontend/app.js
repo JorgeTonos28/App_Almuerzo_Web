@@ -224,7 +224,7 @@ createApp({
        categoryManagerModal: { open: false, view: 'LIST' },
        categoryModal: { open: false, isNew: true, data: { combinable_con: [] } },
        // Menu Import
-       menuImportModal: { open: false, step: 1, weekStart: '', text: '', preview: [], error: null },
+       menuImportModal: { open: false, step: 1, weekStart: '', text: '', preview: [], error: null, file: null, fileName: '', busy: false, saving: false, downloading: false, warnings: [], canSave: true, source: 'TEXT', itemCount: 0 },
        // Holiday Editor
        holidayModal: { open: false, data: {} },
        nextBusinessDay: '',
@@ -1291,8 +1291,52 @@ createApp({
     };
 
     // Menu Import Logic
+    let menuWorkbookAbort = null;
+    const closeMenuImport = () => {
+       if (adminState.menuImportModal.saving) return;
+       menuWorkbookAbort?.abort(); menuWorkbookAbort = null;
+       adminState.menuImportModal.open = false; adminState.menuImportModal.file = null;
+    };
     const openMenuImportModal = () => {
-       adminState.menuImportModal = { open: true, step: 1, weekStart: '', text: '', preview: [], error: null };
+       menuWorkbookAbort?.abort(); menuWorkbookAbort = null;
+       adminState.menuImportModal = { open: true, step: 1, weekStart: '', text: '', preview: [], error: null, file: null, fileName: '', busy: false, saving: false, downloading: false, warnings: [], canSave: true, source: 'TEXT', itemCount: 0 };
+    };
+    const usePastedMenu = () => {
+       const modal = adminState.menuImportModal;
+       modal.file = null; modal.fileName = ''; modal.source = 'TEXT'; modal.warnings = []; modal.error = null; modal.canSave = true;
+    };
+    const previewMenuWorkbook = async () => {
+       const modal = adminState.menuImportModal;
+       if (modal.busy || modal.saving || !modal.file) return;
+       modal.busy = true; modal.error = null;
+       const controller = new AbortController(); menuWorkbookAbort = controller;
+       try {
+          const form = new FormData(); form.append('file', modal.file); if (modal.weekStart) form.append('weekStart', modal.weekStart);
+          const response = await fetch('/menu/workbook/preview', { method: 'POST', credentials: 'same-origin', headers: { 'X-CSRF-TOKEN': csrfToken }, body: form, signal: controller.signal });
+          const data = await response.json().catch(() => null);
+          if (!response.ok || !data?.ok) throw new Error(data?.msg || 'No se pudo leer el Excel. Revisa tu sesión y vuelve a intentarlo.');
+          if (adminState.menuImportModal !== modal || !modal.open) return;
+          Object.assign(modal, { weekStart: data.result.weekStart, preview: data.result.preview, warnings: data.result.warnings, canSave: data.result.canSave, itemCount: data.result.itemCount, source: 'EXCEL', step: 2 });
+       } catch (error) { if (error.name !== 'AbortError' && modal.open) modal.error = error.message || 'No se pudo procesar el Excel.'; }
+       finally { modal.busy = false; if (menuWorkbookAbort === controller) menuWorkbookAbort = null; }
+    };
+    const selectMenuWorkbook = event => {
+       const modal = adminState.menuImportModal, file = event.target.files?.[0]; event.target.value = '';
+       if (!file || modal.busy || modal.saving) return;
+       modal.error = null;
+       if (!/\.(xls|xlsx)$/i.test(file.name) || file.size > 2000000 || !file.size) { modal.error = 'Selecciona un Excel .xls o .xlsx de hasta 2 MB.'; return; }
+       modal.file = file; modal.fileName = file.name; previewMenuWorkbook();
+    };
+    const downloadMenuTemplate = async () => {
+       const modal = adminState.menuImportModal; if (modal.downloading) return;
+       modal.downloading = true; modal.error = null;
+       try {
+          const response = await fetch('/menu/workbook/template' + (modal.weekStart ? '?weekStart=' + encodeURIComponent(modal.weekStart) : ''), { credentials: 'same-origin' });
+          if (!response.ok || !response.headers.get('Content-Type')?.includes('spreadsheetml')) { const data = await response.json().catch(() => null); throw new Error(data?.msg || 'No se pudo descargar la plantilla. Revisa tu sesión.'); }
+          const url = URL.createObjectURL(await response.blob()), link = document.createElement('a');
+          link.href = url; link.download = 'plantilla-menu' + (modal.weekStart ? '-' + modal.weekStart : '') + '.xlsx'; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+       } catch (error) { if (modal.open) modal.error = error.message; }
+       finally { modal.downloading = false; }
     };
 
     const parseTsvRows = (raw) => {
@@ -1347,6 +1391,8 @@ createApp({
     };
 
     const processMenuImport = () => {
+       if (adminState.menuImportModal.busy || adminState.menuImportModal.saving) return;
+       if (adminState.menuImportModal.file) return previewMenuWorkbook();
        const text = adminState.menuImportModal.text;
        const weekStart = adminState.menuImportModal.weekStart;
 
@@ -1464,11 +1510,17 @@ createApp({
        }
 
        adminState.menuImportModal.preview = dateMapping;
+       adminState.menuImportModal.source = 'TEXT';
+       adminState.menuImportModal.itemCount = dateMapping.reduce((sum, day) => sum + Object.values(day.items).reduce((n, items) => n + items.length, 0), 0);
+       adminState.menuImportModal.canSave = dateMapping.every(day => day.date > todayYmd.value);
+       adminState.menuImportModal.warnings = adminState.menuImportModal.canSave ? [] : ['La semana contiene fechas de hoy o pasadas. Selecciona una semana futura antes de guardar.'];
        adminState.menuImportModal.step = 2;
        adminState.menuImportModal.error = null;
     };
 
     const saveWeeklyMenu = () => {
+       const modal = adminState.menuImportModal;
+       if (modal.saving || modal.busy || !modal.canSave) return;
        const data = {};
        adminState.menuImportModal.preview.forEach(day => {
           const items = [];
@@ -1480,23 +1532,23 @@ createApp({
           data[day.date] = items;
        });
 
-       adminState.loading = true;
+       modal.saving = true; modal.error = null;
        almuerzo.run
          .withSuccessHandler(res => {
-            adminState.loading = false;
+             modal.saving = false;
             if(res.ok) {
-               adminState.menuImportModal.open = false;
+                closeMenuImport();
                showModal("Menú importado exitosamente.", "Éxito");
                // Reload current view
                loadMenuDay();
                loadData();
             } else {
-               showModal(res.msg, "Error");
+                modal.error = res.msg;
             }
          })
          .withFailureHandler(err => {
-            adminState.loading = false;
-            showModal(err.message || "Error importando el menú.", "Error");
+             modal.saving = false;
+             modal.error = err.message || "Error importando el menú.";
          })
          .apiSaveWeeklyMenu(data);
     };
@@ -2047,7 +2099,7 @@ createApp({
       // Menu/Holiday
       checkMenuDate, loadMenuDay, openMenuModal, saveMenuItem, deleteMenuItem, openCategoryManager, openCategoryModal, saveMenuCategory,
       saveHoliday, deleteHoliday,
-      openMenuImportModal, processMenuImport, saveWeeklyMenu,
+      openMenuImportModal, closeMenuImport, processMenuImport, saveWeeklyMenu, usePastedMenu, selectMenuWorkbook, downloadMenuTemplate,
 
       // Responsibles
       addResponsible, removeResponsible,

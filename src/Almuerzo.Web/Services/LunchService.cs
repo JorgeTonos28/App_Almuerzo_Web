@@ -10,7 +10,7 @@ namespace Almuerzo.Web.Services;
 // The legacy view contract is retained; all identity, scope and integrity checks live here.
 public partial class LunchService(AppDbContext db, BusinessRules rules, ReportService reports, IConfiguration configuration)
 {
-    public const string Version = "0.4.2";
+    public const string Version = "0.5.0";
     public static JsonObject Obj(string? raw) => JsonNode.Parse(string.IsNullOrWhiteSpace(raw) ? "{}" : raw) as JsonObject ?? new();
     public static string Str(JsonNode? node, string key, string fallback = "") => node?[key]?.ToString() ?? fallback;
     public static int Num(JsonNode? node, string key, int fallback = 0) => int.TryParse(Str(node, key), out var v) ? v : fallback;
@@ -95,13 +95,13 @@ public partial class LunchService(AppDbContext db, BusinessRules rules, ReportSe
     };
     public JsonObject Game(AppUser u)
     {
-        var saved = Obj(u.GameJson); var month = rules.Today[..7]; var sameMonth = Str(saved, "monthKey") == month && Str(saved, "gameVersion") is "rush-v1" or "pot-v2" or "pot-v3" or "pot-v4"; var sameDay = Str(saved, "dayKey") == rules.Today;
-        var used = sameDay ? Math.Clamp(Str(saved, "gameVersion") is "pot-v2" or "pot-v3" or "pot-v4" ? RushCharged(saved) : Num(saved, "usedSeconds"), 0, 900) : 0;
-        var cooldown = sameDay && Str(saved, "gameVersion") is "pot-v3" or "pot-v4" && DateTimeOffset.TryParse(Str(saved, "rushStarted"), out var start)
+        var saved = Obj(u.GameJson); var month = rules.Today[..7]; var sameMonth = Str(saved, "monthKey") == month && Str(saved, "gameVersion") is "rush-v1" or "pot-v2" or "pot-v3" or "pot-v4" or "pot-v5"; var sameDay = Str(saved, "dayKey") == rules.Today;
+        var used = sameDay ? Math.Clamp(Str(saved, "gameVersion") is "pot-v2" or "pot-v3" or "pot-v4" or "pot-v5" ? RushCharged(saved) : Num(saved, "usedSeconds"), 0, 900) : 0;
+        var cooldown = sameDay && Str(saved, "gameVersion") is "pot-v3" or "pot-v4" or "pot-v5" && DateTimeOffset.TryParse(Str(saved, "rushStarted"), out var start)
             ? (int)Math.Clamp((start.AddMilliseconds(Num(saved, "rushPauseUntil")) - rules.Now).TotalMilliseconds, 0, 900000) : 0;
         var waitBudget = cooldown > 0 ? Math.Max(0, Math.Min(900, Num(saved, "rushUsedBefore") + (Num(saved, "rushPauseUntil") + 999) / 1000) - used) : 0;
         return new JsonObject {
-            ["gameVersion"] = "pot-v4", ["monthKey"] = month, ["monthLabel"] = rules.Now.ToString("MMMM yyyy", CultureInfo.GetCultureInfo("es-DO")), ["dayKey"] = rules.Today,
+            ["gameVersion"] = "pot-v5", ["monthKey"] = month, ["monthLabel"] = rules.Now.ToString("MMMM yyyy", CultureInfo.GetCultureInfo("es-DO")), ["dayKey"] = rules.Today,
             ["score"] = sameMonth ? Num(saved, "score") : 0, ["hits"] = sameMonth ? Num(saved, "hits") : 0, ["misses"] = sameMonth ? Num(saved, "misses") : 0,
             ["usedSeconds"] = used, ["remainingSeconds"] = 900 - used, ["dailyLimitSeconds"] = 900, ["streak"] = sameDay ? Num(saved, "streak") : 0,
             ["bestStreak"] = sameMonth ? Num(saved, "bestStreak") : 0, ["penaltySeconds"] = sameDay ? Num(saved, "penaltySeconds") : 0,
@@ -408,8 +408,9 @@ public partial class LunchService(AppDbContext db, BusinessRules rules, ReportSe
     private async Task<MenuItem> NewMenu(string date, string cat, JsonNode p)
     {
         var category = await db.Categories.SingleOrDefaultAsync(x => x.Id == cat); Require(category is { Status: "ACTIVO" }, "Categoría inexistente o inactiva.");
-        return new MenuItem { Date = date, CategoryId = cat, Dish = BusinessRules.Text(Bounded(Str(p, "plato"), 300, "Plato")), Description = BusinessRules.Text(Bounded(Str(p, "desc"), 1000, "Descripción", false)) };
+        return MenuItemValues(date, cat, p);
     }
+    private static MenuItem MenuItemValues(string date, string cat, JsonNode p) => new() { Date = date, CategoryId = cat, Dish = BusinessRules.Text(Bounded(Str(p, "plato"), 300, "Plato")), Description = BusinessRules.Text(Bounded(Str(p, "desc"), 1000, "Descripción", false)) };
     private async Task<int> CancelAffected(string date, IEnumerable<MenuItem> old, IEnumerable<MenuItem> next)
     {
         var removed = old.Where(x => x.Enabled && !next.Any(n => n.Enabled && n.CategoryId == x.CategoryId && BusinessRules.Text(n.Dish) == BusinessRules.Text(x.Dish) && n.Description == x.Description)).ToArray();
@@ -437,11 +438,14 @@ public partial class LunchService(AppDbContext db, BusinessRules rules, ReportSe
     private async Task<object> SaveWeekly(AppUser actor, JsonObject payload)
     {
         ManageRegion(actor); Require(payload.Count is >= 1 and <= 14, "Importa entre 1 y 14 días."); var holidays = await Holidays(); var cfg = await Config(); var plans = new List<(string date, List<MenuItem> old, List<MenuItem> next)>();
+        var categoryIds = await db.Categories.Where(c => c.Status == "ACTIVO").Select(c => c.Id).ToHashSetAsync();
+        var dates = payload.Select(d => d.Key).ToArray(); var oldMenus = (await db.Menu.Where(m => dates.Contains(m.Date)).ToListAsync()).ToLookup(m => m.Date);
         foreach (var day in payload)
         {
             rules.MenuDate(day.Key, holidays); Require(day.Value is JsonArray a && a.Count <= 200, "Menú diario inválido."); var next = new List<MenuItem>();
-            foreach (var item in (JsonArray)day.Value!) next.Add(await NewMenu(day.Key, Str(item, "cat"), item!));
-            plans.Add((day.Key, await db.Menu.Where(x => x.Date == day.Key).ToListAsync(), next));
+            foreach (var item in (JsonArray)day.Value!) { var cat = Str(item, "cat"); Require(categoryIds.Contains(cat), "Categoría inexistente o inactiva."); next.Add(MenuItemValues(day.Key, cat, item!)); }
+            Require(next.Select(m => (m.CategoryId, m.Dish.ToUpperInvariant())).Distinct().Count() == next.Count, "Hay platos duplicados dentro de una categoría del mismo día.");
+            plans.Add((day.Key, oldMenus[day.Key].ToList(), next));
         }
         var cancelled = 0; var available = new List<string>();
         foreach (var plan in plans) { cancelled += await CancelAffected(plan.date, plan.old, plan.next); if (!plan.old.Any(x => x.Enabled) && plan.next.Count > 0 && Open(plan.date, holidays, cfg)) available.Add(plan.date); db.Menu.RemoveRange(plan.old); db.Menu.AddRange(plan.next); }

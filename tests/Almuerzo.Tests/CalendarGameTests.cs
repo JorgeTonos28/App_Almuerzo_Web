@@ -21,10 +21,10 @@ public class CalendarGameTests
     }
     [Theory]
     [InlineData(1, 0, 341, 63, 56, 7, 191300, 0, 0)]
-    [InlineData(123456, 900, 972, 65, 62, 8, 35780, 0, 200180)]
-    [InlineData(2147483646, 299, 740, 67, 58, 8, 194900, 0, 93140)]
-    [InlineData(42, 3999, 4294, 76, 148, 5, 191680, 26240, 110420)]
-    [InlineData(98765, 6000, 5192, 56, 109, 3, 0, 183440, 0)]
+    [InlineData(123456, 900, 737, 62, 55, 6, 35780, 0, 73700)]
+    [InlineData(2147483646, 299, 752, 68, 57, 8, 194900, 0, 93140)]
+    [InlineData(42, 3999, 3111, 48, 97, 4, 0, 122160, 0)]
+    [InlineData(98765, 6000, 6330, 75, 148, 5, 158180, 0, 46740)]
     public void ServerReplayMatchesBrowserVectors(int seed, int score, int final, int hits, int misses, int best, int frenzy, int slow, int shield)
     {
         var moves = Enumerable.Range(0, 800).Select(i => new RushMove(100 + i * 240, (i + 2) % 4)).ToArray();
@@ -67,7 +67,7 @@ public class CalendarGameTests
     [Fact] public async Task CheckpointRejectsFutureTimeRewrittenHistoryAndImpossibleControls()
     {
         await using var app = new AppFactory(); await app.Seed(); using var c = app.Client(); await app.Login(c, "user@infotep.gob.do");
-        var start = await app.Rpc(c, "apiStartLunchRush", "pot-v4"); var id = start["id"]!.ToString();
+        var start = await app.Rpc(c, "apiStartLunchRush", "pot-v5"); var id = start["id"]!.ToString();
         Assert.False((await app.Rpc(c, "apiFinishLunchRush", new { id, elapsedMs = 15000, moves = Array.Empty<object>() }))["ok"]!.GetValue<bool>());
         app.Clock.Current = app.Clock.Current.AddSeconds(10);
         var moves = new[] { new { t = 100, lane = 0 }, new { t = 200, lane = 3 } }; // includes left-edge wrap
