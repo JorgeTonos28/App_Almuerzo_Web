@@ -571,7 +571,7 @@
                 <tr>
                   <th>Posicion</th>
                   <th>Usuario</th>
-                  <th>Departamento</th>
+                  <th>Grupo de almuerzo</th>
                   <th>Puntos</th>
                   <th>Aciertos</th>
                   <th>Racha</th>
@@ -628,7 +628,7 @@
 <!-- Navigation -->
           <p v-if="!isAdminGen" class="text-xs text-gray-500 mb-4">{{ canManageRegion ? 'Gestión operativa de tu regional. Identidades, roles, departamentos y configuración institucional son de solo lectura.' : 'Consulta y gestión de pedidos de tu departamento. La identidad y los accesos los administra ADMIN_GEN.' }}</p>
           <div class="flex gap-1 border-b border-gray-200 mb-6 overflow-x-auto no-scrollbar pb-1">
-             <button v-for="tab in adminTabs" :key="tab" @click="adminState.tab = tab; if (tab === 'VALORACIONES') loadRatingsSummary();" :class="['px-4 py-2 font-bold text-xs rounded-t-lg border-b-2 transition-all whitespace-nowrap', adminState.tab === tab ? 'border-blue-600 text-blue-600 bg-blue-50/50' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50']">{{ tab === 'DIAS_LIBRES' ? 'CALENDARIO' : tab }}</button>
+             <button v-for="tab in adminTabs" :key="tab" @click="adminState.tab = tab; if (tab === 'VALORACIONES') loadRatingsSummary();" :class="['px-4 py-2 font-bold text-xs rounded-t-lg border-b-2 transition-all whitespace-nowrap', adminState.tab === tab ? 'border-blue-600 text-blue-600 bg-blue-50/50' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50']">{{ tab === 'DIAS_LIBRES' ? 'CALENDARIO' : tab === 'DEPTOS' ? 'GRUPOS DE ALMUERZO' : tab }}</button>
           </div>
 
 <!-- Users Module -->
@@ -641,19 +641,19 @@
                     <button v-if="adminState.filters.users.search" @click="clearFilters('users')" class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
                  </div>
                </div>
-                <p class="text-xs text-gray-500">Cuentas incorporadas por AD o importación. Los datos de identidad son de solo lectura.</p>
+                <p class="text-xs text-gray-500">AD confirma la identidad. La administración asigna el grupo de almuerzo y habilita el acceso.</p>
              </div>
             <div class="overflow-x-auto">
                <table class="w-full text-sm text-left">
                   <thead class="bg-gray-50 text-gray-500 font-bold uppercase text-xs">
-                     <tr><th class="p-3 rounded-l">Nombre</th><th class="p-3">Código</th><th class="p-3">Correo</th><th class="p-3">Depto</th><th class="p-3">Rol</th><th class="p-3">Estado</th><th v-if="canManageRegion" class="p-3 rounded-r">Acciones</th></tr>
+                     <tr><th class="p-3 rounded-l">Nombre</th><th class="p-3">Código</th><th class="p-3">Correo</th><th class="p-3">Grupo de almuerzo</th><th class="p-3">Departamento AD</th><th class="p-3">Rol</th><th class="p-3">Estado</th><th v-if="canManageRegion" class="p-3 rounded-r">Acciones</th></tr>
                   </thead>
                   <tbody class="divide-y divide-gray-100">
                      <tr v-for="u in filteredUsers" :key="u.email" class="hover:bg-gray-50">
                         <td class="p-3 font-medium text-gray-900">{{ u.nombre }}</td>
                         <td class="p-3 text-gray-600 font-mono text-xs">{{ u.codigo || '-' }}</td>
                         <td class="p-3 text-gray-500">{{ u.email }}</td>
-                        <td class="p-3"><span class="bg-gray-100 px-2 py-1 rounded text-xs font-semibold text-gray-600">{{ u.departamento }}</span></td>
+                        <td class="p-3"><span class="bg-gray-100 px-2 py-1 rounded text-xs font-semibold text-gray-600">{{ u.departamento || 'Sin grupo asignado' }}</span></td><td class="p-3 text-xs text-gray-500">{{ u.adDepartment }}</td>
                         <td class="p-3"><span class="bg-blue-50 text-blue-600 px-2 py-1 rounded text-xs font-bold">{{ u.rol }}</span></td>
                         <td class="p-3">
                            <span :class="['px-2 py-1 rounded-full text-xs font-bold', u.estado === 'ACTIVO' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700']">{{ u.estado }}</span><span v-if="u.regionalBlocked" class="block text-[10px] font-bold text-amber-700 mt-1">SUSPENDIDO EN LA REGIONAL</span>
@@ -700,7 +700,7 @@
              <div class="overflow-x-auto">
                <table class="w-full text-sm text-left">
                   <thead class="bg-gray-50 text-gray-500 font-bold uppercase text-xs">
-                     <tr><th class="p-3 rounded-l">Fecha</th><th class="p-3">Usuario</th><th class="p-3">Departamento</th><th class="p-3">Resumen</th><th class="p-3">Creado Por</th><th class="p-3">Estado</th><th class="p-3 rounded-r">Acciones</th></tr>
+                     <tr><th class="p-3 rounded-l">Fecha</th><th class="p-3">Usuario</th><th class="p-3">Grupo de almuerzo</th><th class="p-3">Resumen</th><th class="p-3">Creado Por</th><th class="p-3">Estado</th><th class="p-3 rounded-r">Acciones</th></tr>
                   </thead>
                   <tbody>
                      <tr v-for="o in filteredOrders" :key="o.id" class="border-b last:border-0 hover:bg-gray-50">
@@ -863,22 +863,22 @@
             </div>
          </div>
 
-         <!-- Depts Module (Admin Gen) -->
+         <!-- Meal groups retain legacy IDs and can include several AD departments. -->
          <div v-if="adminState.tab === 'DEPTOS'" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
             <div class="flex justify-between items-center mb-4">
-               <h2 class="text-xl font-bold text-gray-900">Departamentos</h2>
-               <button v-if="isAdminGen && !organizationManaged" @click="openDeptModal()" class="bg-gray-900 hover:bg-gray-800 text-white text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-2">
-                 <i class="fa-solid fa-plus"></i> Depto
+               <h2 class="text-xl font-bold text-gray-900">Grupos de almuerzo</h2>
+               <button v-if="isAdminGen" @click="openDeptModal()" class="bg-gray-900 hover:bg-gray-800 text-white text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-2">
+                 <i class="fa-solid fa-plus"></i> Grupo
                </button>
             </div>
             <div class="overflow-x-auto">
                <table class="w-full text-sm text-left">
                   <thead class="bg-gray-50 text-gray-500 font-bold uppercase text-xs">
-                     <tr><th class="p-3 rounded-l">Nombre</th><th class="p-3">Admins (Emails)</th><th class="p-3">Estado</th><th v-if="canManageRegion" class="p-3 rounded-r">Acciones</th></tr>
+                      <tr><th class="p-3 rounded-l">Grupo y departamentos AD</th><th class="p-3">Responsables</th><th class="p-3">Estado</th><th v-if="canManageRegion" class="p-3 rounded-r">Acciones</th></tr>
                   </thead>
                   <tbody class="divide-y divide-gray-100">
                      <tr v-for="d in adminState.departments" :key="d.id" class="hover:bg-gray-50">
-                        <td class="p-3 font-medium text-gray-900">{{ d.displayName || d.nombre }}<span v-if="d.alias" class="block text-xs font-normal text-gray-500">{{ d.nombre }}</span></td>
+                        <td class="p-3 font-medium text-gray-900">{{ d.displayName || d.nombre }}<span v-if="d.alias" class="block text-xs font-normal text-gray-500">{{ d.nombre }}</span><span class="block text-xs font-normal text-gray-500 mt-1">{{ (d.adDepartments || []).join(', ') || 'Sin departamentos AD verificados aún' }}</span></td>
                         <td class="p-3 text-gray-500 text-xs truncate max-w-xs"><span :class="!d.admins ? 'text-amber-700 font-semibold' : ''">{{ d.admins || 'Sin responsable asignado' }}</span></td>
                         <td class="p-3"><span :class="['px-2 py-1 rounded-full text-xs font-bold', d.estado === 'ACTIVO' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700']">{{ d.estado }}</span></td>
                         <td class="p-3 flex gap-2">
@@ -1112,14 +1112,15 @@
              <button @click="adminState.userModal.open = false" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
           </div>
           <div class="p-6 space-y-4 min-h-0 overflow-y-auto">
-             <p class="text-xs text-blue-800 bg-blue-50 rounded-lg p-3">Nombre y código se actualizan desde AD. El departamento verificado tampoco puede modificarse aquí. Solo se administran los permisos y la habilitación local.</p>
+             <p class="text-xs text-blue-800 bg-blue-50 rounded-lg p-3">Nombre, código, cargo, regional y departamento institucional vienen de AD. El grupo de almuerzo es una asignación operativa independiente; puede reunir personas de varios departamentos.</p>
              <p v-if="adminState.userModal.data.regionalBlocked" class="text-xs text-amber-800">Existe una suspensión regional. Habilitar el estado general no la retira.</p>
              <label class="block text-xs font-bold text-gray-500 uppercase">Estado general<select v-model="adminState.userModal.data.estado" class="mt-1 w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm"><option>ACTIVO</option><option>PENDIENTE</option><option>INACTIVO</option></select></label>
              <div>
                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Correo</label>
                 <input v-model="adminState.userModal.data.email" readonly type="email" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none disabled:opacity-50">
              </div>
-             <div v-if="adminState.userModal.data.directoryAccount" class="bg-blue-50 border border-blue-100 rounded-lg p-3">
+              <div class="text-xs bg-gray-50 rounded-lg p-3"><p class="font-semibold">Departamento AD · solo lectura</p><p class="mt-1">{{ adminState.userModal.data.adDepartment }}</p><p v-if="adminState.userModal.data.cargo" class="mt-1 text-gray-500">{{ adminState.userModal.data.cargo }}</p></div>
+              <div v-if="adminState.userModal.data.directoryAccount" class="bg-blue-50 border border-blue-100 rounded-lg p-3">
                 <p class="text-xs font-semibold text-blue-800">Cuenta AD vinculada</p><p class="text-xs text-blue-700 break-all mt-1">{{ adminState.userModal.data.directoryAccount }}</p>
                 <button v-if="isAdminGen" type="button" @click="resetDirectoryLink" :disabled="directoryLinkSaving" class="text-xs font-semibold text-blue-700 mt-2 disabled:opacity-50"><i v-if="directoryLinkSaving" class="fa-solid fa-circle-notch fa-spin mr-1" aria-hidden="true"></i>{{ directoryLinkSaving ? 'Restableciendo…' : 'Restablecer vínculo AD' }}</button>
              </div>
@@ -1132,9 +1133,9 @@
                 <input v-model="adminState.userModal.data.codigo" readonly type="text" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="4 dígitos (ej. 5445)" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
              </div>
              <div>
-                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Departamento</label>
-                <select v-if="isAdminGen" :disabled="organizationManaged || adminState.userModal.data.directoryManaged" v-model="adminState.userModal.data.departamento" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                   <option v-for="d in adminState.departments" :key="d.id" :value="d.id">{{ d.displayName || d.nombre }}</option>
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Grupo de almuerzo</label>
+                <select v-if="isAdminGen" v-model="adminState.userModal.data.departamento" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                   <option value="">Pendiente de asignación</option><option v-for="d in adminState.departments.filter(d => d.estado === 'ACTIVO')" :key="d.id" :value="d.id">{{ d.displayName || d.nombre }}</option>
                 </select>
                 <input v-else v-model="adminState.userModal.data.departamento" disabled type="text" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none opacity-50">
              </div>
@@ -1142,7 +1143,7 @@
                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Rol</label>
                 <select v-model="adminState.userModal.data.rol" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                    <option value="USER">Usuario</option>
-                   <option value="ADMIN_DEP">Admin Depto</option>
+                   <option value="ADMIN_DEP">Responsable de grupo</option>
                    <option v-if="isAdminGen" value="ADMIN_REG">Admin Regional</option>
                     <option v-if="isAdminGen" value="ADMIN_GEN">Admin General</option>
                 </select>
@@ -1163,25 +1164,16 @@
        <div class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm" @click="!adminState.deptModal.saving && (adminState.deptModal.open = false)"></div>
        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md relative overflow-hidden animate-fade-in-up flex flex-col max-h-[90dvh]">
           <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-             <h3 class="font-bold text-lg text-gray-800">{{ adminState.deptModal.isNew ? 'Nuevo Departamento' : 'Editar Departamento' }}</h3>
+             <h3 class="font-bold text-lg text-gray-800">{{ adminState.deptModal.isNew ? 'Nuevo grupo de almuerzo' : 'Editar grupo de almuerzo' }}</h3>
              <button @click="!adminState.deptModal.saving && (adminState.deptModal.open = false)" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
           </div>
           <div class="p-6 space-y-4 overflow-y-auto min-h-0">
              <div>
-                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Nombre institucional</label>
-                 <input :readonly="organizationManaged || adminState.deptModal.data.directoryManaged" v-model="adminState.deptModal.data.nombre" type="text" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Nombre del grupo de almuerzo</label>
+                  <input id="meal-group-name" aria-label="Nombre del grupo de almuerzo" v-model="adminState.deptModal.data.nombre" maxlength="150" type="text" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
               </div>
               <div>
-                 <label for="dept-directory-code" class="block text-xs font-bold text-gray-500 uppercase mb-1">Código AD anterior (si existe)</label>
-                 <input :readonly="organizationManaged || adminState.deptModal.data.directoryManaged" id="dept-directory-code" v-model="adminState.deptModal.data.directoryCode" maxlength="64" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm">
-             </div>
-             <div>
-                 <label for="dept-alias" class="block text-xs font-bold text-gray-500 uppercase mb-1">Alias en Almuerzo</label>
-                 <input id="dept-alias" v-model="adminState.deptModal.data.alias" maxlength="150" placeholder="Opcional: nombre para mostrar" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm">
-                 <p class="text-xs text-gray-500 mt-1">Se muestra en pantallas, correos y reportes. El nombre institucional se conserva.</p>
-              </div>
-              <div>
-                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Admins</label>
+                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Responsables del grupo</label>
                 <div class="flex flex-wrap gap-2 mb-2 min-h-[30px] p-2 bg-gray-50 border border-gray-200 rounded-lg">
                    <span v-for="email in (adminState.deptModal.data.admins ? adminState.deptModal.data.admins.split(',').map(e=>e.trim()).filter(e=>e) : [])" :key="email" class="bg-white border border-gray-200 px-2 py-1 rounded text-xs flex items-center gap-2 shadow-sm">
                       <span class="font-semibold">{{ email }}</span>
@@ -1198,8 +1190,8 @@
                       </button>
                    </div>
                 </div>
-
-                <p class="mt-2 text-xs text-gray-500">Solo colaboradores habilitados de este departamento. Asignar un responsable no cambia su adscripción. Los datos organizativos verificados se corrigen en AD.</p>
+                 <p v-if="deptAdminSearch && !filteredAdminUsers.length" class="text-xs text-amber-700 mt-2">Sin coincidencias activas en este grupo. Revisa el grupo y la habilitación del colaborador en Usuarios.</p>
+                <p class="mt-2 text-xs text-gray-500">Colaboradores activos de este grupo, aunque pertenezcan a departamentos AD diferentes. Un ADMIN_GEN o ADMIN_REG conserva su rol y puede recibir el resumen del grupo.</p>
              </div>
              <div>
                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Estado</label>

@@ -17,7 +17,7 @@ public static class DirectoryCatalog
         return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(normalized)));
     }
 
-    public static async Task<(Region Region, Department Department, bool Created)> Resolve(AppDbContext db, IConfiguration config, DirectoryIdentity identity, AppUser? user, CancellationToken ct)
+    public static async Task<(Region Region, DirectoryDepartment Department, bool Created)> Resolve(AppDbContext db, IConfiguration config, DirectoryIdentity identity, AppUser? user, CancellationToken ct)
     {
         var regionName = identity.RegionName ?? throw new BusinessException("AD no devolvió la regional.");
         var departmentName = identity.DepartmentName ?? throw new BusinessException("AD no devolvió el departamento.");
@@ -52,42 +52,26 @@ public static class DirectoryCatalog
             Audit("DirectoryCreateRegion", region.Id);
         }
         LunchService.Require(region.Status == "ACTIVO", "La regional institucional está inactiva.");
-        var department = await db.Departments.IgnoreQueryFilters().SingleOrDefaultAsync(x => x.RegionId == region.Id && x.DirectoryKey == departmentKey, ct);
-        var departmentMappings = mapping?.GetSection("Departments").GetChildren().Where(x => Key(x["Name"] ?? "") == departmentKey).ToArray() ?? [];
-        LunchService.Require(departmentMappings.Length <= 1, "El mapeo del departamento requiere revisión de TI.");
-        if (departmentMappings.SingleOrDefault() is { } departmentMapping)
-        {
-            var mappedId = departmentMapping["Id"]?.Trim();
-            var mapped = !string.IsNullOrWhiteSpace(mappedId) ? await db.Departments.IgnoreQueryFilters().SingleOrDefaultAsync(x => x.RegionId == region.Id && x.Id == mappedId, ct) : null;
-            if (mapped == null) throw new BusinessException("El departamento del mapeo no existe en esta regional. Ejecuta scripts\\Configure.cmd map y usa el ID interno de la tabla de departamentos.");
-            LunchService.Require((department == null || department.Id == mapped.Id) && (mapped.DirectoryKey == null || mapped.DirectoryKey == departmentKey), "El mapeo departamental entra en conflicto con una vinculación AD.");
-            department = mapped;
-        }
-        if (user?.DepartmentId != null && user.DepartmentId != department?.Id)
-        {
-            var previous = await db.Departments.IgnoreQueryFilters().SingleAsync(x => x.Id == user.DepartmentId, ct);
-            LunchService.Require(previous.DirectoryKey != null, "TI debe mapear el departamento importado antes del primer acceso con el nuevo AD.");
-        }
+        // Institutional departments never select or rename a meal group.
+        // Deprecated Departments mappings refer to legacy meal group IDs and are not AD catalog IDs.
+        var department = await db.DirectoryDepartments.IgnoreQueryFilters().SingleOrDefaultAsync(x => x.RegionId == region.Id && x.DirectoryKey == departmentKey, ct);
         if (department == null)
         {
             LunchService.Require(config.GetValue<bool>("Ad:AutoCreateOrganizationEnabled"), "La creación de organizaciones AD no está habilitada.");
-            LunchService.Require(!await db.Departments.IgnoreQueryFilters().AnyAsync(x => x.RegionId == region.Id && x.Name == departmentName, ct), "TI debe mapear el departamento existente con su nombre AD.");
-            var legacyNames = await db.Departments.IgnoreQueryFilters().Where(x => x.RegionId == region.Id && x.DirectoryKey == null).Select(x => x.Name).ToListAsync(ct);
-            LunchService.Require(!legacyNames.Any(x => Key(x) == departmentKey), "TI debe mapear el departamento existente con su nombre AD.");
-            department = new Department { RegionId = region.Id, Name = departmentName, DirectoryKey = departmentKey, DirectoryManaged = true };
-            db.Departments.Add(department);
+            department = new DirectoryDepartment { RegionId = region.Id, Name = departmentName, DirectoryKey = departmentKey };
+            db.DirectoryDepartments.Add(department);
             Audit("DirectoryCreateDepartment", department.Id);
         }
         LunchService.Require(department.Status == "ACTIVO", "El departamento institucional está inactivo.");
         // Mapping only selects a legacy ID. Canonical names are assigned from the authenticated profile.
         LunchService.Require(!await db.Regions.AnyAsync(x => x.Id != region.Id && x.Name == regionName, ct)
-            && !await db.Departments.IgnoreQueryFilters().AnyAsync(x => x.RegionId == region.Id && x.Id != department.Id && x.Name == departmentName, ct), "Los nombres institucionales requieren reconciliación con TI.");
+            && !await db.DirectoryDepartments.IgnoreQueryFilters().AnyAsync(x => x.RegionId == region.Id && x.Id != department.Id && x.Name == departmentName, ct), "Los nombres institucionales requieren reconciliación con TI.");
         if (region.DirectoryKey == null) Audit("DirectoryLinkRegion", region.Id);
         if (department.DirectoryKey == null) Audit("DirectoryLinkDepartment", department.Id);
         if (region.DirectoryKey != null && region.Name != regionName) Audit("DirectoryRefreshRegionName", region.Id);
         if (department.DirectoryKey != null && department.Name != departmentName) Audit("DirectoryRefreshDepartmentName", department.Id);
         region.Name = regionName; region.DirectoryKey = regionKey; region.DirectoryManaged = true;
-        department.Name = departmentName; department.DirectoryKey = departmentKey; department.DirectoryManaged = true;
+        department.Name = departmentName; department.DirectoryKey = departmentKey;
         return (region, department, created);
 
         void Audit(string action, string id) => db.Audit.Add(new AuditEvent { RegionId = region!.Id, Actor = identity.Email, Action = action, EntityId = id });

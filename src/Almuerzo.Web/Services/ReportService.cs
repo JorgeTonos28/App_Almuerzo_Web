@@ -40,8 +40,9 @@ public class ReportService(AppDbContext db, StoragePaths paths)
             recipients.AddRange(copies.Select(x => x is System.Text.Json.Nodes.JsonObject ? LunchService.Str(x, "email") : x?.ToString() ?? "").Where(x => System.Net.Mail.MailAddress.TryCreate(x, out _)));
         void Queue(string recipient, string subject, string attachment, string extra) { db.Outbox.Add(new MailMessageRecord { Recipient = recipient, Subject = subject, Body = $"{regionalName}: adjuntos el Excel y PDF del pedido de almuerzo para el {date}.", AttachmentPath = attachment, ExtraAttachmentsJson = JsonSerializer.Serialize(new[] { extra }) }); count++; }
         foreach (var email in recipients.Distinct()) Queue(email, $"{regionalName} · Reporte general de almuerzo {date}", file, pdf);
-        var admins = await db.Users.Where(x => x.Role == Roles.DepartmentAdmin && x.Status == "ACTIVO" && !x.RegionalBlocked && x.Department!.Status == "ACTIVO").ToListAsync();
-        foreach (var group in admins.GroupBy(x => x.DepartmentId)) { if (group.Key == null) continue; var deptFile = await GenerateAsync(date, group.Key); var deptPdf = await GenerateAsync(date, group.Key, "pdf"); foreach (var admin in group) Queue(testRecipient ?? admin.Email, $"{regionalName} · Reporte de almuerzo del departamento {date}", deptFile, deptPdf); }
+        var candidates = await db.Users.Include(x => x.Department).Include(x => x.DirectoryDepartment).Where(x => x.Status == "ACTIVO" && !x.RegionalBlocked && x.Department!.Status == "ACTIVO").ToListAsync();
+        var admins = candidates.Where(LunchService.Enabled).Where(x => x.Role == Roles.DepartmentAdmin || LunchService.Split(x.Department!.Admins).Contains(x.Email, StringComparer.OrdinalIgnoreCase));
+        foreach (var group in admins.GroupBy(x => x.DepartmentId)) { if (group.Key == null) continue; var deptFile = await GenerateAsync(date, group.Key); var deptPdf = await GenerateAsync(date, group.Key, "pdf"); foreach (var admin in group) Queue(testRecipient ?? admin.Email, $"{regionalName} · Reporte de almuerzo del grupo {date}", deptFile, deptPdf); }
         return count;
     }
 }

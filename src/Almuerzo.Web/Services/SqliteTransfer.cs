@@ -43,7 +43,7 @@ public static class SqliteTransfer
                 if (await target.Set<T>().IgnoreQueryFilters().CountAsync(ct) != rows.Count) throw new BusinessException("La reconciliación de transferencia falló.");
                 counts[table] = rows.Count; target.ChangeTracker.Clear();
             }
-            await Copy<Region>(); await Copy<Department>(); await Copy<MenuCategory>(); await Copy<AppUser>(); await Copy<MenuItem>();
+            await Copy<Region>(); await Copy<Department>(); await Copy<DirectoryDepartment>(); await Copy<MenuCategory>(); await Copy<AppUser>(); await Copy<MenuItem>();
             await Copy<Order>(); await Copy<Holiday>(); await Copy<Setting>(); await Copy<Rating>(); await Copy<RatingHistory>(true);
             await Copy<AuditEvent>(true); await Copy<MailMessageRecord>(true); await Copy<ImportRecord>(); await Copy<SourceRecord>(true); await Copy<JobRun>(); await Copy<BrandingAsset>();
             await tx.CommitAsync(ct);

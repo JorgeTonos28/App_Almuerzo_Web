@@ -1,4 +1,4 @@
-# AD NamesV1 y entrega a TI · 0.2.4
+# AD NamesV1 y entrega a TI · 0.3.0
 
 ## Qué está preparado
 
@@ -6,9 +6,9 @@ El contrato recibido de TI es ASMX HTTP POST sobre `https://ona-dis-2.infotep.go
 
 El servidor de pruebas comunicado por TI responde actualmente en HTTP. Para homologación local existe una excepción explícita y temporal: `scripts\\Configure.cmd ad-http-test` solo puede activar `http://ona-dis-2.infotep.gov.do/...` en `Development`, con confirmación interactiva y un token/cuenta revocable de pruebas. Las credenciales viajan sin cifrar y pueden quedar expuestas en la red; no usar cuentas productivas ni incluir esa configuración en despliegues. Al terminar, ejecutar `scripts\\Configure.cmd ad` y solicitar a TI HTTPS con cadena confiable.
 
-El nombre de AD se conserva como dato institucional. `Alias` es una etiqueta independiente opcional, editable solo por ADMIN_GEN desde Regionales y Departamentos. La aplicación, los correos de resumen y los reportes muestran alias o, si está vacío, el nombre institucional. Las pantallas de edición conservan el nombre original visible y protegido. Cambiar un alias no cambia cuentas, IDs, pertenencia, pedidos ni autorización; el siguiente login tampoco lo borra. Los textos históricos importados se conservan; no se reescriben los comentarios/etiquetas antiguas para aparentar una nueva adscripción.
+AD y gestión de almuerzos usan catálogos separados. `DirectoryDepartments` conserva el nombre y clave institucional por regional; nunca se edita desde el panel. La tabla Legacy `Departments` conserva los **grupos de almuerzo**, con IDs, miembros y pedidos históricos. ADMIN_GEN cambia su nombre visible y responsables, y asigna colaboradores aunque sus departamentos AD sean diferentes. La regional conserva su alias independiente.
 
-Con el opt-in activo, el primer colaborador verificado crea una regional/departamento inexistentes, catálogos/configuración regionales y su cuenta USER, en la misma transacción. Las organizaciones inactivas no se reactivan; INACTIVO conserva el bloqueo general. Los responsables ADMIN_DEP y administradores regionales se designan explícitamente. Los traslados verificados conservan históricos, retiran ADMIN_DEP si cambia departamento y ADMIN_REG si cambia regional, y no convierten la suspensión regional en habilitación general.
+Las cuentas nuevas quedan PENDIENTE sin grupo hasta que ADMIN_GEN asigne uno y apruebe el acceso; su primer registro encola un aviso, sin repetirlo en cada login. Las importadas conservan grupo y rol al verificar AD en la misma regional. Cambiar de departamento AD no divide un grupo. Un traslado regional retira grupo y roles ADMIN_DEP/ADMIN_REG, mantiene los históricos y exige nueva asignación. INACTIVO y suspensiones no se retiran por reautenticación. Ver [modelo de grupos](MEAL-GROUPS.md).
 
 **Límite del contrato:** no hay IDs estables de regional/departamento. Se usa SHA-256 del nombre normalizado (Unicode compuesto, mayúsculas y espacios compactados), preservando acentos y puntuación; el departamento se identifica dentro de su regional. No se interpreta el prefijo numérico del departamento como identificador. Un cambio sustancial de nombre llega como otra organización, sin fusión automática. Antes de renombrar organizaciones en AD, TI debe coordinar una reconciliación auditada o ampliar el endpoint con IDs estables. Un alias puede cambiar libremente sin afectar ese vínculo.
 
@@ -37,22 +37,14 @@ notepad private\directory-catalog.json
 scripts\Configure.cmd map
 ```
 
-El comando de catálogo aplica migraciones locales y termina sin abrir la web ni enviar correos. El archivo privado contiene IDs/nombres de regionales/departamentos, sin usuarios ni credenciales. El asistente `map` pide el nombre exacto que llega de AD y el ID interno existente; permite añadir varios departamentos. Para el catálogo inicial, la regional interna es `central`. Solicitar a TI los nombres AD de los departamentos existentes; no inventarlos. Repetir `map` para otras regionales y departamentos conforme se verifiquen. No se necesita enumerar organizaciones que nunca existieron en la app: esas se crearán al ingresar su primer usuario.
+El comando de catálogo aplica migraciones y termina sin abrir la web ni enviar correos. El archivo privado contiene las regionales, los grupos de almuerzo y el catálogo AD por separado. El asistente `map` solo vincula el nombre exacto de la **regional** AD con su ID interno existente; para ONA la regional Legacy es `central`. No hay que mapear cada departamento AD a un grupo: esa mezcla era incorrecta. Los antiguos elementos `Departments` de los mapeos privados ya no se consumen en NamesV1 y se pueden retirar en la configuración privada.
 
-Los mapeos quedan en User Secrets, no en el repositorio. Son una decisión administrativa de reconciliación: verificar cada equivalencia, especialmente si el catálogo importado tiene departamentos homónimos. No pueden apuntar a un departamento de otra regional, sustituir vínculos incompatibles ni resolver duplicados silenciosamente. El nombre institucional se asigna del perfil autenticado, no del formulario de mapeo. Los nombres nuevos no adoptan automáticamente como alias el nombre antiguo: ADMIN_GEN elige el alias después.
+Las regionales nuevas se registran cuando autentica el primer usuario, con opt-in; los nombres de directorios o capturas sirven para verificar con TI, no se cargan como organizaciones confirmadas. El sistema rechaza una primera vinculación de cuenta importada a una regional diferente y no vinculada.
 
-En la instalación de TI deben configurarse los mismos mapeos contra los IDs del destino importado, mediante configuración privada. Ejemplo **sintético** de forma anidada en el archivo privado de producción:
+Configuración privada equivalente para TI, con datos **sintéticos**:
 
 ```json
-{
-  "Ad": {
-    "OrganizationMappings": [
-      { "Name": "Regional AD de prueba", "Id": "central", "Departments": [
-        { "Name": "Departamento AD de prueba", "Id": "ID_INTERNO_EXISTENTE" }
-      ] }
-    ]
-  }
-}
+{ "Ad": { "OrganizationMappings": [ { "Name": "Regional AD de prueba", "Id": "central" } ] } }
 ```
 
 No trasladar sin revisión el catálogo completo de desarrollo a producción; se usa la base actualizada de la fecha de despliegue. El primer ADMIN_GEN procede de la importación/autorización institucional existente, nunca de un cargo ni de un primer registro automático.
@@ -87,7 +79,7 @@ set ASPNETCORE_ENVIRONMENT=Development
 dotnet run --project src\Almuerzo.Web -c Release --no-build --no-launch-profile --urls http://localhost:5062
 ```
 
-Probar la cuenta ADMIN_GEN importada, un usuario nuevo y los cuatro roles. Luego configurar alias en Administración → Regionales y DEPTOS, responsables del mismo departamento y administradores regionales. Verificar menú/calendario/reportes de cada ámbito. Probar INACTIVO, suspensión regional, perfil incompleto y organización inactiva. Detener con Ctrl+C antes de compilar/publicar. `--demo` sigue usando datos/identidad sintéticos y desactiva la provisión AD aunque esté activa en User Secrets.
+Probar la cuenta ADMIN_GEN importada, un usuario nuevo y los cuatro roles. Luego configurar el alias regional y los nombres en GRUPOS DE ALMUERZO. En USUARIOS, asignar grupos y habilitar pendientes; en cada grupo, designar responsables del mismo grupo (pueden tener departamentos AD distintos). Verificar menú/calendario/reportes de cada ámbito. Probar INACTIVO, suspensión regional, perfil incompleto y organización inactiva. Detener con Ctrl+C antes de compilar/publicar. `--demo` sigue usando datos/identidad sintéticos y desactiva la provisión AD aunque esté activa en User Secrets.
 
 ## 4. Preparar la configuración separada para TI
 

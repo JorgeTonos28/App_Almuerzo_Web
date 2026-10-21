@@ -52,21 +52,7 @@ try
                 if (Prompt("Escribe RECONCILE_MAPPING para reemplazarlo") != "RECONCILE_MAPPING") throw new InvalidOperationException();
             }
             values[prefix + "Name"] = name; values[prefix + "Id"] = id;
-            while (true)
-            {
-                var department = Prompt("Nombre de departamento en AD (vacío para terminar)", optional: true);
-                if (department.Length == 0) break;
-                var departmentId = Prompt("ID interno del departamento existente"); int index = 0;
-                while (current[$"{prefix}Departments:{index}:Name"] is { } existing && Normalize(existing.ToString()) != Normalize(department)) index++;
-                var key = $"{prefix}Departments:{index}:";
-                if (current[key + "Id"] is { } previousDept && previousDept.ToString() != departmentId)
-                {
-                    Console.WriteLine("Ya existe un mapeo para este departamento AD. Cambiar el ID puede mover el acceso a otro catálogo y requiere reconciliación explícita.");
-                    if (Prompt("Escribe RECONCILE_MAPPING para reemplazarlo") != "RECONCILE_MAPPING") throw new InvalidOperationException();
-                }
-                values[key + "Name"] = department; values[key + "Id"] = departmentId;
-                current[key + "Name"] = department; current[key + "Id"] = departmentId;
-            }
+            Console.WriteLine("NamesV1 solo mapea regionales. Los departamentos AD se registran aparte; los grupos de almuerzo se asignan en el panel.");
             await SaveSecrets(values);
             break;
         case "ti":

@@ -30,6 +30,10 @@ namespace Almuerzo.Web.Data.Migrations
                         .HasMaxLength(254)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("DirectoryDepartmentId")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
                     b.Property<bool>("DirectoryManaged")
                         .HasColumnType("INTEGER");
 
@@ -84,6 +88,8 @@ namespace Almuerzo.Web.Data.Migrations
                     b.HasIndex("DirectoryAccount")
                         .IsUnique()
                         .HasFilter("DirectoryAccount IS NOT NULL");
+
+                    b.HasIndex("DirectoryDepartmentId");
 
                     b.HasIndex("EmployeeCode")
                         .IsUnique()
@@ -207,6 +213,51 @@ namespace Almuerzo.Web.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Departments");
+                });
+
+            modelBuilder.Entity("Almuerzo.Web.Models.DirectoryDepartment", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DirectoryCode")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DirectoryKey")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RegionId")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("central");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RegionId");
+
+                    b.HasIndex("RegionId", "DirectoryCode")
+                        .IsUnique()
+                        .HasFilter("DirectoryCode IS NOT NULL");
+
+                    b.HasIndex("RegionId", "DirectoryKey")
+                        .IsUnique()
+                        .HasFilter("DirectoryKey IS NOT NULL");
+
+                    b.ToTable("DirectoryDepartments");
                 });
 
             modelBuilder.Entity("Almuerzo.Web.Models.Holiday", b =>
@@ -764,7 +815,14 @@ namespace Almuerzo.Web.Data.Migrations
                         .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("Almuerzo.Web.Models.DirectoryDepartment", "DirectoryDepartment")
+                        .WithMany()
+                        .HasForeignKey("DirectoryDepartmentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Department");
+
+                    b.Navigation("DirectoryDepartment");
                 });
 
             modelBuilder.Entity("Almuerzo.Web.Models.MenuItem", b =>

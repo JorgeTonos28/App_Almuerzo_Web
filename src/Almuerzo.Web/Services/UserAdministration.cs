@@ -11,7 +11,7 @@ public partial class LunchService
     private async Task<object> SetUserStatus(AppUser actor, JsonNode p)
     {
         Admin(actor, true); OnlyFields(p, "email", "estado");
-        var user = await db.Users.Include(x => x.Department).SingleOrDefaultAsync(x => x.Email == Email(Str(p, "email")));
+        var user = await db.Users.Include(x => x.Department).Include(x => x.DirectoryDepartment).SingleOrDefaultAsync(x => x.Email == Email(Str(p, "email")));
         Require(user != null, "Usuario fuera de la regional o inexistente.");
         var state = Str(p, "estado"); Require(state is "ACTIVO" or "INACTIVO" or "PENDIENTE", "Estado inválido.");
         if (state == "ACTIVO") Require(user!.Department is { Status: "ACTIVO" }, "Se requiere un departamento activo.");

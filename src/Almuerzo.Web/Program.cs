@@ -63,7 +63,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         var directoryAccount = context.Principal?.FindFirstValue("directory_account");
         if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(directoryCode) || string.IsNullOrWhiteSpace(directoryAccount)) { context.RejectPrincipal(); return; }
         var db = context.HttpContext.RequestServices.GetRequiredService<AppDbContext>();
-        var u = await db.Users.IgnoreQueryFilters().AsNoTracking().Include(x => x.Department).SingleOrDefaultAsync(x => x.Email == email);
+        var u = await db.Users.IgnoreQueryFilters().AsNoTracking().Include(x => x.Department).Include(x => x.DirectoryDepartment).SingleOrDefaultAsync(x => x.Email == email);
         if (u?.EmployeeCode is { Length: > 0 } code && code != directoryCode) { context.RejectPrincipal(); return; }
         if (u != null && u.DirectoryAccount != directoryAccount) { context.RejectPrincipal(); return; }
         var identity = new ClaimsIdentity(context.Principal!.Identity);
@@ -94,7 +94,8 @@ using (var scope = app.Services.CreateScope()) {
         var output = args.SkipWhile(x => x != "--directory-catalog").Skip(1).FirstOrDefault() ?? throw new ArgumentException("Indica un archivo privado de salida.");
         var regions = await db.Regions.AsNoTracking().ToListAsync();
         var departments = await db.Departments.IgnoreQueryFilters().AsNoTracking().ToListAsync();
-        await File.WriteAllTextAsync(output, System.Text.Json.JsonSerializer.Serialize(regions.Select(r => new { r.Id, r.Name, r.Alias, Linked = r.DirectoryKey != null, Departments = departments.Where(d => d.RegionId == r.Id).Select(d => new { d.Id, d.Name, d.Alias, Linked = d.DirectoryKey != null }) }), new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
+        var directoryDepartments = await db.DirectoryDepartments.IgnoreQueryFilters().AsNoTracking().ToListAsync();
+        await File.WriteAllTextAsync(output, System.Text.Json.JsonSerializer.Serialize(regions.Select(r => new { r.Id, r.Name, r.Alias, Linked = r.DirectoryKey != null, MealGroups = departments.Where(d => d.RegionId == r.Id).Select(d => new { d.Id, d.Name, d.Alias }), DirectoryDepartments = directoryDepartments.Where(d => d.RegionId == r.Id).Select(d => new { d.Id, d.Name, d.DirectoryKey }) }), new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
         Console.WriteLine("Catálogo organizativo exportado al archivo privado indicado. No contiene usuarios ni credenciales."); return;
     }
     if (args.Contains("--migrate-sqlite")) {

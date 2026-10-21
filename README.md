@@ -1,6 +1,6 @@
-# App Almuerzo Web · 0.2.4
+# App Almuerzo Web · 0.3.0
 
-ASP.NET Core 10 MVC, EF Core y **SQL Server**, con la interfaz de App_Almuerzo v7.36 adaptada a operación nacional. Cada regional tiene departamentos, menú, proveedor, precio, pedidos, valoraciones, configuración y reportes. La autorización se verifica en el servidor en cada petición.
+ASP.NET Core 10 MVC, EF Core y **SQL Server**, con la interfaz de App_Almuerzo v7.36 adaptada a operación nacional. Cada regional tiene grupos de almuerzo, catálogo institucional AD, menú, proveedor, precio, pedidos, valoraciones, configuración y reportes. La autorización se verifica en el servidor en cada petición.
 
 Guía vigente para TI: [Despliegue nacional, SQL Server, AD y SendGrid](docs/DEPLOYMENT-NATIONAL.md), con comandos **CMD**, migración, configuración privada y pruebas. La BD real y el Excel se transfieren por un canal privado: **solicitar la copia actualizada inmediatamente antes del despliegue**.
 
@@ -11,7 +11,7 @@ La [matriz de autoridad y permisos](docs/ACCESS-CONTROL.md) define quién puede 
 - `ADMIN_GEN`: administración nacional con selector de regional en el encabezado; administra alias y estados locales de organización y asigna `ADMIN_REG`.
 - `ADMIN_REG`: gestiona menú, calendario, pedidos, reportes, avisos y suspensiones regionales de USER/ADMIN_DEP. Consulta identidades y departamentos. Roles, responsables, organización, categorías/reglas, configuración, correos, branding y proveedor/precios quedan reservados a ADMIN_GEN.
 - Cambiar proveedor requiere escribir un precio válido, aunque coincida con el anterior. Ambos valores y la vigencia se guardan juntos, preservando los históricos.
-- Nuevo AD NamesV1: lee CodigoEmpleado, Cargo, Departamento y Regional del DataTable/diffgram. Con opt-in crea organizaciones nuevas y USER; conserva nombres AD y permite alias solo a ADMIN_GEN. Catálogos importados requieren mapeos explícitos privados antes del primer vínculo. Los ADMIN_DEP se asignan expresamente desde Departamentos; reciben el resumen de su departamento y coordinan el retiro.
+- Nuevo AD NamesV1: lee CodigoEmpleado, Cargo, Departamento y Regional del DataTable/diffgram. Con opt-in crea organizaciones nuevas y USER; conserva nombres AD y permite alias solo a ADMIN_GEN. Catálogos importados requieren mapeos explícitos privados antes del primer vínculo. Los grupos operativos de Legacy se conservan; varios departamentos AD pueden compartir el mismo grupo. Los nuevos usuarios quedan PENDIENTE hasta que ADMIN_GEN asigne grupo y acceso. ADMIN_DEP gestiona el grupo y recibe su resumen conjunto. Un ADMIN_GEN/ADMIN_REG puede recibir también el resumen de su grupo sin cambiar de rol.
 - SendGrid por API HTTPS, con adjuntos Excel/PDF, cola transaccional y reintentos. Pickup sigue siendo el modo inicial seguro; SMTP se conserva por compatibilidad.
 - Migraciones específicas de SQL Server y transferencia offline desde SQLite, transaccional y reconciliada. SQLite sigue disponible para demo y pruebas.
 - **Bandeja Express**: cuatro carriles, ingredientes y fuego, flechas/A-D y controles táctiles. Siete niveles de dificultad progresiva, partidas de hasta 45 segundos y máximo de 15 minutos diarios reservado en el servidor. El servidor reconstruye la puntuación; el ranking mensual usa la versión nueva del juego. La tarjeta del pedido se oculta con animación durante la partida y regresa al terminar.
@@ -33,7 +33,7 @@ dotnet run --project src\Almuerzo.Web -c Release --no-build --no-launch-profile 
 
 Abrir `http://localhost:5062`. La demo usa SQLite independiente en `src/Almuerzo.Web/App_Data/demo`, cuenta sintética `demo.almuerzo@infotep.gob.do` y contraseña aleatoria disponible únicamente en `App_Data/demo/access.txt`. Nunca habilita cuentas de la base importada; `--demo` se rechaza en producción.
 
-Editar `frontend/app.js`, `frontend/lunch-rush.js`, CSS y `src/Almuerzo.Web/Templates/app.html`, y ejecutar `npm run build`; los recursos en `wwwroot/assets` son generados. No ejecutar el portador inicial de Apps Script para sobrescribir la implementación actual.
+El login se mantiene en `wwwroot/assets/auth.js`. Editar `frontend/app.js`, `frontend/lunch-rush.js`, CSS y `src/Almuerzo.Web/Templates/app.html`, y ejecutar `npm run build`; los recursos en `wwwroot/assets` son generados. No ejecutar el portador inicial de Apps Script para sobrescribir la implementación actual.
 
 ## Datos existentes y SQL Server
 
@@ -61,7 +61,9 @@ AD utiliza ASMX HTTPS POST: `Autenticacion` y `DatosUsuarioAD`, con `Token`, `No
 
 El endpoint de pruebas HTTP solo puede habilitarse de forma explícita en Development mediante `scripts\\Configure.cmd ad-http-test`, limitado a `ona-dis-2.infotep.gov.do`. Envía credenciales sin cifrar y requiere un token/cuenta de pruebas revocable; la aplicación rechaza esa opción fuera de Development y producción exige HTTPS. Ejecutar `scripts\\Configure.cmd ad` para volver al endpoint seguro.
 
-Con el contrato antiguo, las cuentas nuevas solicitan acceso y un administrador asigna departamento/rol. Con `Ad:AutoProvisioningEnabled=true`, se exige organización verificada activa; con `Ad:OrganizationContract=NamesV1` y `Ad:AutoCreateOrganizationEnabled=true` se crean regionales/departamentos nuevos sin roles administrativos. Los catálogos importados se vinculan explícitamente antes de mover cuentas. Se crea/sincroniza USER automáticamente; nunca se reactivan cuentas INACTIVO ni se conceden privilegios administrativos. Los cambios organizativos retiran ADMIN_DEP al cambiar departamento y ADMIN_REG al cambiar regional. Un traslado verificado retira únicamente la suspensión de la regional anterior, con auditoría; una deshabilitación general se conserva. No se infiere el departamento por texto escrito por el usuario.
+Con NamesV1, el AD determina identidad, cargo, regional y departamento institucional. Estos datos son de solo lectura. Los grupos de almuerzo son una agrupación local independiente: ADMIN_GEN puede nombrarlos, reunir personas de varios departamentos, asignar responsables y aprobar altas. Las cuentas importadas conservan su grupo, rol e históricos al verificar AD en la misma regional. Las nuevas quedan PENDIENTE y se encola un aviso a ADMIN_GEN una sola vez. Un cambio de departamento AD dentro de la misma regional conserva el grupo; un traslado regional retira grupo y ADMIN_DEP/ADMIN_REG y requiere revisión. INACTIVO y las suspensiones siguen bloqueando el acceso. Véase [modelo y flujo de grupos](docs/MEAL-GROUPS.md). El contrato Codes anterior conserva su comportamiento de compatibilidad.
+
+El login valida con una petición en la misma página y navega a una ruta local de la misma pestaña. Conserva CSRF, rate limiting, cookies HttpOnly y un formulario de respaldo sin JavaScript.
 
 En Development el envío externo exige opt-in, `TEST_EMAIL_MODE=TRUE` y un único destinatario de prueba. Los trabajos y la cola comienzan desactivados. Cada regional tiene horario, calendario y destinatarios; ADMIN_GEN recibe consolidados regionales y ADMIN_REG el de su ámbito. HTTP 202 de SendGrid significa aceptación por el proveedor; entrega y rebotes se comprueban en SendGrid.
 
@@ -84,4 +86,4 @@ Producción requiere HTTPS, dominio en AllowedHosts, cuenta de servicio y almace
 
 El contrato nuevo está implementado contra el XML entregado; faltan token, confianza TLS y homologación AD real, credenciales/conexión SQL institucional y recepción real de SendGrid. Seguir [AD nuevo, alias, CMD y configuración separada para TI](docs/AD-NAMES-AND-TI.md): `scripts\Configure.cmd map`, `scripts\Configure.cmd ad` y `scripts\Configure.cmd ti`. El asistente no cambia la conexión SQL local al configurar AD ni conecta al servidor para preparar el archivo de TI. Reglas de mantenimiento: [AGENTS.md](AGENTS.md). Historial de la migración inicial: [docs/MIGRATION.md](docs/MIGRATION.md).
 
-Si un mapeo existente apunta a un ID que ya no está en el catálogo local, `scripts\Configure.cmd map` permite corregirlo solo después de escribir `RECONCILE_MAPPING`. Usa el ID real de `Regions` o `Departments`; el nombre/código recibido del AD nunca sustituye a ese ID.
+Si un mapeo existente apunta a un ID que ya no está en el catálogo local, `scripts\Configure.cmd map` permite corregirlo solo después de escribir `RECONCILE_MAPPING`. Usa el ID real de `Regions`; el nombre/código recibido del AD nunca sustituye a ese ID.

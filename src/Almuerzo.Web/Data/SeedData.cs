@@ -8,11 +8,10 @@ public static class SeedData
     public static async Task InitializeAsync(AppDbContext db)
     {
         if (!await db.Regions.AnyAsync()) { db.Regions.Add(new Region { Id = Region.LegacyId, Name = "Sede inicial" }); await db.SaveChangesAsync(); }
-        // Preserve directory ownership during upgrades, independently of later staff transfers.
+        // Directory ownership applies to the regional catalog; meal groups remain local.
         var verifiedDepartments = await db.Users.Where(x => x.DirectoryManaged && x.DepartmentId != null).Select(x => x.DepartmentId).Distinct().ToListAsync();
         if (verifiedDepartments.Count > 0) {
             var region = await db.Regions.FindAsync(db.RegionId); if (region != null) region.DirectoryManaged = true;
-            foreach (var department in await db.Departments.Where(x => verifiedDepartments.Contains(x.Id) && !x.DirectoryManaged).ToListAsync()) department.DirectoryManaged = true;
         }
         var defaults = new Dictionary<string, string> {
             ["HORA_ENVIO"] = "15:00", ["MINUTOS_PREV_CIERRE"] = "30", ["HORA_RECORDATORIO"] = "13:00",

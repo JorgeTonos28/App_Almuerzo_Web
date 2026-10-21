@@ -42,7 +42,7 @@ public static class ReportLayout
         if (department == null) foreach (var group in orders.GroupBy(x => x.DepartmentId)) sections.Add(new(departments.GetValueOrDefault(group.Key, group.Key), group.Select(Person).ToList()));
         return new(date, categories, sections, (await db.Regions.FindAsync(db.RegionId))?.DisplayName ?? db.RegionId);
     }
-    public static string[] Headers(IEnumerable<ReportColumn> cats) => new[] { "NO.", "NOMBRE EMPLEADO", "CÓDIGO", "DEPARTAMENTO" }.Concat(cats.Select(c => c.Name.ToUpperInvariant())).Append("NOTA PARA LA COCINA").ToArray();
+    public static string[] Headers(IEnumerable<ReportColumn> cats) => new[] { "NO.", "NOMBRE EMPLEADO", "CÓDIGO", "GRUPO DE ALMUERZO" }.Concat(cats.Select(c => c.Name.ToUpperInvariant())).Append("NOTA PARA LA COCINA").ToArray();
     public static string[] Values(ReportPerson p, int number, IEnumerable<ReportColumn> cats) => new[] { number.ToString(), p.Name, p.Code, p.Department }.Concat(cats.Select(c => p.Dishes.GetValueOrDefault(c.Id, ""))).Append(p.Note).ToArray();
     public static void Pdf(ReportData data, string file)
     {

@@ -26,6 +26,7 @@ public class Region
     public string Status { get; set; } = "ACTIVO";
 }
 
+// Legacy Department IDs are meal groups, not institutional AD departments.
 public class Department : IRegionalEntity
 {
     public bool DirectoryManaged { get; set; }
@@ -41,6 +42,16 @@ public class Department : IRegionalEntity
     public string PreferencesJson { get; set; } = "{}";
 }
 
+public class DirectoryDepartment : IRegionalEntity
+{
+    public string Id { get; set; } = Guid.NewGuid().ToString();
+    public string RegionId { get; set; } = Region.LegacyId;
+    public string Name { get; set; } = "";
+    public string? DirectoryKey { get; set; }
+    public string? DirectoryCode { get; set; }
+    public string Status { get; set; } = "ACTIVO";
+}
+
 public class AppUser : IRegionalEntity
 {
     public bool DirectoryManaged { get; set; }
@@ -50,6 +61,8 @@ public class AppUser : IRegionalEntity
     public string Name { get; set; } = "";
     public string? DepartmentId { get; set; }
     public Department? Department { get; set; }
+    public string? DirectoryDepartmentId { get; set; }
+    public DirectoryDepartment? DirectoryDepartment { get; set; }
     public string Role { get; set; } = Roles.User;
     public string Status { get; set; } = "PENDIENTE";
     public string? EmployeeCode { get; set; }

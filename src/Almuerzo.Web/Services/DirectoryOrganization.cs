@@ -23,8 +23,37 @@ public class DirectoryOrganization(AppDbContext db, IConfiguration config)
         if (config["Ad:OrganizationContract"] == "NamesV1")
         {
             var catalog = await DirectoryCatalog.Resolve(db, config, identity, user, ct);
-            region = catalog.Region; department = catalog.Department;
+            region = catalog.Region;
             if (catalog.Created) createdRegion = region.Id;
+            var isNew = user == null;
+            if (user == null) { user = new AppUser { Email = identity.Email, Role = Roles.User }; db.Users.Add(user); }
+            var transferred = user.RegionId != region.Id;
+            var organizationChanged = isNew || !user.DirectoryManaged || transferred || user.DirectoryDepartmentId != catalog.Department.Id;
+            if (transferred)
+            {
+                if (user.DepartmentId != null)
+                {
+                    var previous = await db.Departments.IgnoreQueryFilters().SingleOrDefaultAsync(x => x.Id == user.DepartmentId, ct);
+                    if (previous != null) previous.Admins = string.Join(", ", LunchService.Split(previous.Admins).Where(e => !e.Equals(user.Email, StringComparison.OrdinalIgnoreCase)));
+                }
+                user.DepartmentId = null; user.Department = null;
+                if (user.Role is Roles.DepartmentAdmin or Roles.RegionalAdmin) user.Role = Roles.User;
+                user.Status = "PENDIENTE";
+                if (user.RegionalBlocked) {
+                    user.RegionalBlocked = false;
+                    db.Audit.Add(new AuditEvent { RegionId = region.Id, Actor = identity.Email, Action = "DirectoryTransferClearedRegionalBlock", EntityId = user.Email });
+                }
+            }
+            // Existing meal groups and responsibilities survive changes of AD department in the same region.
+            // New accounts never become active merely by authenticating or matching an imported department name.
+            user.RegionId = region.Id; user.DirectoryDepartment = catalog.Department; user.DirectoryDepartmentId = catalog.Department.Id; user.DirectoryManaged = true;
+            if (isNew || user.DepartmentId == null) user.Status = "PENDIENTE";
+            if (organizationChanged) db.Audit.Add(new AuditEvent { RegionId = region.Id, Actor = user.Email, Action = isNew ? "DirectoryProvisionPendingUser" : "DirectorySyncOrganization", EntityId = user.Email });
+            if (isNew) {
+                var admins = await db.Users.IgnoreQueryFilters().Where(x => x.Role == Roles.GeneralAdmin && x.Status == "ACTIVO" && !x.RegionalBlocked && x.Department!.Status == "ACTIVO").Select(x => x.Email).ToListAsync(ct);
+                foreach (var admin in admins.Distinct()) db.Outbox.Add(new MailMessageRecord { RegionId = region.Id, Recipient = admin, Subject = "Nuevo colaborador pendiente de grupo de almuerzo", Body = $"{identity.Name} ({identity.Email}) validó su identidad institucional. Revisa su regional y departamento AD, asígnale un grupo de almuerzo y habilita su acceso." });
+            }
+            return user;
         }
         else
         {

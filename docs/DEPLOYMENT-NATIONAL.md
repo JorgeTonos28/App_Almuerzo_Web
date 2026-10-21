@@ -1,4 +1,6 @@
-# Entrega a TI · App Almuerzo Web 0.2.4
+# Entrega a TI · App Almuerzo Web 0.3.0
+
+**Modelo vigente de identidad y agrupación:** desde v0.3.0 se separan los departamentos AD de los grupos de almuerzo de Legacy. Las altas nuevas requieren asignación y aprobación de ADMIN_GEN. Para este comportamiento prevalecen [MEAL-GROUPS.md](MEAL-GROUPS.md), [ACCESS-CONTROL.md](ACCESS-CONTROL.md) y [AD-NAMES-AND-TI.md](AD-NAMES-AND-TI.md) sobre las descripciones históricas de versiones anteriores.
 
 Esta es la guía vigente. Todos los comandos son para **CMD**. El código incluye SQL Server, separación regional, ADMIN_REG y SendGrid. Falta validar contra el servidor SQL institucional, la autenticación real del contrato AD NamesV1 y un envío real con las credenciales/remitente de SendGrid que entregue TI.
 
@@ -23,7 +25,7 @@ npm run build
 dotnet restore Almuerzo.sln
 dotnet build Almuerzo.sln -c Release --no-restore
 dotnet test Almuerzo.sln -c Release --no-build
- dotnet publish src\Almuerzo.Web -c Release --no-build -o artifacts\publish-v023
+ dotnet publish src\Almuerzo.Web -c Release --no-build -o artifacts\publish-v030
 ```
 
 El paquete publicado no incluye la base ni el Excel. Para ensayar sin datos reales, usar la demo descrita en README. No usar `--demo` en producción.
@@ -173,7 +175,7 @@ API oficial utilizada: [SendGrid Mail Send v3](https://www.twilio.com/docs/sendg
 
 ## 8. Publicar en IIS y configurar producción
 
-1. Detener el sitio/Application Pool. Respaldar SQL y almacenamiento privado y desplegar el contenido de `artifacts\publish-v023` en la carpeta del sitio. No sobrescribir el almacén privado con un paquete vacío.
+1. Detener el sitio/Application Pool. Respaldar SQL y almacenamiento privado y desplegar el contenido de `artifacts\publish-v030` en la carpeta del sitio. No sobrescribir el almacén privado con un paquete vacío.
 2. Configurar en el gestor de secretos o entorno de la cuenta de servicio las mismas claves, sustituyendo `:` por `__` en variables: `ConnectionStrings__DefaultConnection`, `Database__Provider=SqlServer`, `Storage__Path`, `Ad__Enabled`, `Ad__Endpoint`, `Ad__Token`, `Mail__Mode=SendGrid`, `Mail__From`, `SendGrid__ApiKey`, `SendGrid__DataResidency`, `Operations__Enabled`, `Operations__ScheduledJobsEnabled` y `AllowedHosts=dominio.institucional`.
 3. Establecer `ASPNETCORE_ENVIRONMENT=Production`. Aplicar los valores AD nuevos solo al completar el punto 6. No guardar secretos en appsettings del repositorio, archivos publicados compartidos ni web.config versionado.
 4. Configurar binding HTTPS y certificado válido. Si existe proxy, configurar de forma explícita sus hosts/redes de confianza y HTTPS antes de operar; la app no confía indiscriminadamente en cabeceras reenviadas.
@@ -234,3 +236,11 @@ Se añadió una excepción de desarrollo explícita para homologar temporalmente
 ## Actualización v0.2.4
 
 Los perfiles de lanzamiento dejan de abrir ventanas del navegador automáticamente; el formulario de autenticación conserva el envío en la misma pestaña. El asistente de mapeos permite corregir un ID existente solo con la confirmación literal `RECONCILE_MAPPING`. La aplicación informa cuando el ID configurado no existe en `Regions` o `Departments`, sin crear vínculos implícitos ni usar nombres AD como claves locales.
+
+## Actualización v0.3.0
+
+Se separan grupos de almuerzo Legacy y departamentos institucionales AD. Las migraciones copian los vínculos NamesV1 ya verificados a DirectoryDepartments y Users.DirectoryDepartmentId; preservan IDs, miembros, roles, pedidos e históricos. No hay que mapear cada departamento AD a un grupo. Solo se conservan los mapeos regionales privados (ONA → central). Nuevos usuarios quedan USER/PENDIENTE hasta asignación y habilitación por ADMIN_GEN. Los cambios de departamento AD en la misma regional conservan grupo; los traslados regionales requieren nueva asignación. ADMIN_GEN/ADMIN_REG pueden ser receptores explícitos del resumen de su grupo conservando su rol. El login usa validación en la misma página, con CSRF, rate limiting, estados de carga y navegación local.
+
+Publicar el código actualizado y entregar a TI un paquete nuevo. Solicitar la base actualizada antes del corte; respaldar antes de aplicar migraciones. No se incluyen datos privados en Git ni en el paquete.
+
+Verificación del 21 de octubre de 2026: build Release sin advertencias ni errores; 106 pruebas correctas con SQLite y las mismas 106 con SQL Server LocalDB, sin omisiones. Ambos snapshots EF coinciden con el modelo. Se verificó el primer login de la demo en la misma pestaña, los formularios de usuarios/grupos, escritorio, tableta a 920 px y móvil a 390 px; la página conserva su ancho y las tablas usan scroll interno. La actualización de la base local tuvo respaldo privado COPY_ONLY verificado y comparación de huellas de miembros, roles, estados, grupos y pedidos antes/después, sin cambios en esos datos. La app local respondió HTTP 200. No se usaron credenciales AD reales en las pruebas ni se enviaron correos externos. AD/SQL institucional y recepción SendGrid requieren la homologación de TI.

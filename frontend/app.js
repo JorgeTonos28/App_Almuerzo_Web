@@ -267,14 +267,14 @@ createApp({
           u.nombre.toLowerCase().includes(q) ||
           u.email.toLowerCase().includes(q) ||
           (u.codigo && String(u.codigo).includes(q)) ||
-          u.departamento.toLowerCase().includes(q)
+          (u.departamento || '').toLowerCase().includes(q) || (u.adDepartment || '').toLowerCase().includes(q)
        );
     });
 
     const filteredAdminUsers = computed(() => {
        const q = deptAdminSearch.value.toLowerCase();
        if (!q) return [];
-        return adminState.users.filter(u => u.departamentoId === adminState.deptModal.data.id && u.estado === 'ACTIVO' && !u.regionalBlocked && ['USER','ADMIN_DEP'].includes(u.rol) && (u.nombre.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)));
+        return adminState.users.filter(u => u.departamentoId === adminState.deptModal.data.id && u.estado === 'ACTIVO' && !u.regionalBlocked && ['USER','ADMIN_DEP','ADMIN_REG','ADMIN_GEN'].includes(u.rol) && (u.nombre.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)));
      });
 
     const filteredOrders = computed(() => {
@@ -1026,13 +1026,13 @@ createApp({
     // Department Actions
     const openDeptModal = (d = null) => {
        adminState.deptModal.isNew = !d;
-       adminState.deptModal.data = d ? { ...d } : { nombre: '', alias: '', directoryCode: '', admins: '', estado: 'ACTIVO' };
+       adminState.deptModal.data = d ? { ...d, nombre: d.displayName || d.nombre, alias: '' } : { nombre: '', alias: '', admins: '', estado: 'ACTIVO' };
        adminState.deptModal.open = true;
     };
 
     const saveDept = () => {
        if (adminState.deptModal.saving) return;
-       if(!adminState.deptModal.data.nombre) return showModal("El nombre del departamento es obligatorio.");
+       if(!adminState.deptModal.data.nombre) return showModal("El nombre del grupo de almuerzo es obligatorio.");
        adminState.deptModal.saving = true;
        almuerzo.run.withSuccessHandler(res => {
           adminState.deptModal.saving = false;
@@ -1515,7 +1515,7 @@ createApp({
     };
 
     const addDeptAdmin = (u) => {
-       if (!isAdminGen.value || !['USER','ADMIN_DEP'].includes(u.rol) || u.regionalBlocked || u.estado !== 'ACTIVO' || u.departamentoId !== adminState.deptModal.data.id) return showModal('El responsable debe ser un colaborador habilitado de este departamento.');
+       if (!isAdminGen.value || !['USER','ADMIN_DEP','ADMIN_REG','ADMIN_GEN'].includes(u.rol) || u.regionalBlocked || u.estado !== 'ACTIVO' || u.departamentoId !== adminState.deptModal.data.id) return showModal('El responsable debe pertenecer a este grupo de almuerzo y estar habilitado.');
        const emails = (adminState.deptModal.data.admins || '').split(',').map(e=>e.trim()).filter(Boolean);
        if (!emails.includes(u.email)) emails.push(u.email);
        adminState.deptModal.data.admins = emails.join(', ');

@@ -32,19 +32,20 @@ public partial class LunchService(AppDbContext db, BusinessRules rules, ReportSe
         Require(!value.Any(char.IsControl), "Alias inválido."); return value;
     }
     public static void Admin(AppUser actor, bool general = false) => Require(general ? actor.Role == Roles.GeneralAdmin : actor.Role is Roles.GeneralAdmin or Roles.RegionalAdmin or Roles.DepartmentAdmin, "Permiso denegado.");
-    public static bool Enabled(AppUser? u) => u is { Status: "ACTIVO", RegionalBlocked: false, Department: { Status: "ACTIVO" } } && u.RegionId == u.Department.RegionId && Roles.All.Contains(u.Role);
+    public static bool Enabled(AppUser? u) => u is { Status: "ACTIVO", RegionalBlocked: false, Department: { Status: "ACTIVO" } } && u.RegionId == u.Department.RegionId && Roles.All.Contains(u.Role)
+        && (u.DirectoryDepartmentId == null || u.DirectoryDepartment is { Status: "ACTIVO" } && u.DirectoryDepartment.RegionId == u.RegionId);
     public static bool RegionalAdmin(AppUser actor) => actor.Role is Roles.GeneralAdmin or Roles.RegionalAdmin;
     public static void ManageRegion(AppUser actor) => Require(RegionalAdmin(actor), "Permiso denegado.");
     public async Task<AppUser> Actor(string email)
     {
-        var user = await db.Users.IgnoreQueryFilters().Include(x => x.Department).SingleOrDefaultAsync(x => x.Email == email);
+        var user = await db.Users.IgnoreQueryFilters().Include(x => x.Department).Include(x => x.DirectoryDepartment).SingleOrDefaultAsync(x => x.Email == email);
         Require(Enabled(user) && (user!.Role == Roles.GeneralAdmin || user.RegionId == db.RegionId), "Acceso denegado. Tu cuenta requiere habilitación, rol y departamento activos."); return user!;
     }
     public async Task<AppUser> Target(AppUser actor, string? email)
     {
         if (string.IsNullOrWhiteSpace(email) || email.Equals(actor.Email, StringComparison.OrdinalIgnoreCase)) return actor;
         Admin(actor);
-        var u = await db.Users.Include(x => x.Department).SingleOrDefaultAsync(x => x.Email == email.ToLowerInvariant());
+        var u = await db.Users.Include(x => x.Department).Include(x => x.DirectoryDepartment).SingleOrDefaultAsync(x => x.Email == email.ToLowerInvariant());
         Require(Enabled(u) && (RegionalAdmin(actor) || u!.DepartmentId == actor.DepartmentId), "Usuario fuera de tu ámbito o inactivo."); return u!;
     }
     public async Task<Dictionary<string, string>> Config() => await db.Settings.ToDictionaryAsync(x => x.Key, x => x.Value);
@@ -63,7 +64,7 @@ public partial class LunchService(AppDbContext db, BusinessRules rules, ReportSe
         return 30;
     }
     private bool Open(string date, HashSet<string> holidays, Dictionary<string, string> config) => rules.OrderingOpen(date, holidays, config.GetValueOrDefault("HORA_ENVIO", "15:00"), CloseMinutes(config));
-    public static object UserDto(AppUser u) => new { email = u.Email, nombre = u.Name, departamentoId = u.DepartmentId, departamento = u.Department?.DisplayName ?? "", rol = u.Role, estado = u.Status, codigo = u.EmployeeCode ?? "", directoryAccount = u.DirectoryAccount ?? "", cargo = u.JobTitle, regionalId = u.RegionId, directoryManaged = u.DirectoryManaged, regionalBlocked = u.RegionalBlocked };
+    public static object UserDto(AppUser u) => new { email = u.Email, nombre = u.Name, departamentoId = u.DepartmentId, departamento = u.Department?.DisplayName ?? "", adDepartmentId = u.DirectoryDepartmentId ?? "", adDepartment = u.DirectoryDepartment?.Name ?? "Pendiente de primera verificación AD", rol = u.Role, estado = u.Status, codigo = u.EmployeeCode ?? "", directoryAccount = u.DirectoryAccount ?? "", cargo = u.JobTitle, regionalId = u.RegionId, directoryManaged = u.DirectoryManaged, regionalBlocked = u.RegionalBlocked };
     public static object CategoryDto(MenuCategory c) => new { id = c.Id, nombre = c.Name, orden = c.SortOrder, estado = c.Status, aliases = Split(c.Aliases), es_combinable = c.Combinable, combinable_con = Split(c.CombinableWith), tipo_seleccion = c.SelectionType };
     public static object OrderDto(Order o) => new { id = o.Id, resumen = BusinessRules.Text(o.Summary), detalle = Obj(o.DetailJson), estado = o.Status };
     public static object RatingDto(Rating r) => new { id = r.Id, orderId = r.OrderId, date = r.Scope, periodId = r.Scope, providerName = r.ProviderName, puntuacion = r.Score, comentario = r.Comment, platos = r.Dishes, version = r.Version, updatedAt = r.UpdatedAt };
@@ -91,13 +92,14 @@ public partial class LunchService(AppDbContext db, BusinessRules rules, ReportSe
         var openDates = future.Select(x => x.Date).Distinct().Where(d => Open(d, holidays, cfg)).ToArray();
         var date = openDates.Contains(requested) ? requested : openDates.FirstOrDefault();
         object MenuOf(string d) => future.Where(x => x.Date == d).GroupBy(x => x.CategoryId).ToDictionary(g => g.Key, g => g.Select(x => new { id = x.Id, plato = BusinessRules.Text(x.Dish), desc = BusinessRules.Text(x.Description) }).ToArray());
-        var orders = await db.Orders.AsNoTracking().Where(x => x.Email == target.Email && x.Status == "ACTIVO").ToListAsync();
-        var mealRatings = await db.Ratings.AsNoTracking().Where(x => x.Email == target.Email && x.Kind == "MEAL").ToListAsync();
+        var orders = await db.Orders.AsNoTracking().Where(x => x.Email == target.Email && x.Status == "ACTIVO" && (actor.Role != Roles.DepartmentAdmin || x.DepartmentId == actor.DepartmentId)).ToListAsync();
+        var mealRatings = await db.Ratings.AsNoTracking().Where(x => x.Email == target.Email && x.Kind == "MEAL" && (actor.Role != Roles.DepartmentAdmin || db.Orders.Any(o => o.Id == x.OrderId && o.DepartmentId == actor.DepartmentId))).ToListAsync();
         var period = cfg["PROVIDER_PERIOD_ID"];
         var providerRating = await db.Ratings.AsNoTracking().SingleOrDefaultAsync(x => x.Email == target.Email && x.Kind == "PROVIDER" && x.Scope == period);
+        if (actor.Role == Roles.DepartmentAdmin && providerRating?.Department != actor.DepartmentId) providerRating = null;
         var deptUsers = actor.Role == Roles.DepartmentAdmin ? await db.Users.AsNoTracking().Where(x => x.DepartmentId == actor.DepartmentId && x.Status == "ACTIVO" && !x.RegionalBlocked && x.Email != actor.Email).Select(x => new { email = x.Email, nombre = x.Name }).ToArrayAsync() : [];
         return new {
-            ok = true, appVersion = "0.2.4", organizationManaged = configuration.GetValue<bool>("Ad:AutoProvisioningEnabled"), regionalId = db.RegionId, regionalName = (await db.Regions.FindAsync(db.RegionId))?.DisplayName ?? db.RegionId, regions = await db.Regions.Where(x => actor.Role == Roles.GeneralAdmin || x.Id == actor.RegionId).OrderBy(x => x.Name).Select(x => new { id = x.Id, nombre = x.Name, displayName = x.Alias != "" ? x.Alias : x.Name, alias = x.Alias, directoryKey = x.DirectoryKey, directoryCode = x.DirectoryCode, directoryManaged = x.DirectoryManaged || db.Users.IgnoreQueryFilters().Any(u => u.RegionId == x.Id && u.DirectoryManaged), estado = x.Status }).ToArrayAsync(), nextBusinessDay = rules.NextBusinessDay(holidays).ToString("yyyy-MM-dd"), user = UserDto(target), activeUser = UserDto(actor), deptUsers,
+            ok = true, appVersion = "0.3.0", organizationManaged = configuration.GetValue<bool>("Ad:AutoProvisioningEnabled"), regionalId = db.RegionId, regionalName = (await db.Regions.FindAsync(db.RegionId))?.DisplayName ?? db.RegionId, regions = await db.Regions.Where(x => actor.Role == Roles.GeneralAdmin || x.Id == actor.RegionId).OrderBy(x => x.Name).Select(x => new { id = x.Id, nombre = x.Name, displayName = x.Alias != "" ? x.Alias : x.Name, alias = x.Alias, directoryKey = x.DirectoryKey, directoryCode = x.DirectoryCode, directoryManaged = x.DirectoryManaged || db.Users.IgnoreQueryFilters().Any(u => u.RegionId == x.Id && u.DirectoryManaged), estado = x.Status }).ToArrayAsync(), nextBusinessDay = rules.NextBusinessDay(holidays).ToString("yyyy-MM-dd"), user = UserDto(target), activeUser = UserDto(actor), deptUsers,
             userPrefs = Obj(target.PreferencesJson), currentDate = date, dates = openDates.Select(d => new { value = d, label = BusinessRules.Date(d).ToString("ddd dd MMM", CultureInfo.GetCultureInfo("es-DO")) }),
             menu = date != null ? MenuOf(date) : new Dictionary<string, object>(), allMenus = openDates.ToDictionary(d => d, MenuOf), allOrders = orders.ToDictionary(x => x.Date, OrderDto),
             myOrder = orders.Where(x => x.Date == date).Select(OrderDto).FirstOrDefault(), adminData = actor.Role == Roles.User ? null : await Stats(actor, date),
@@ -116,12 +118,13 @@ public partial class LunchService(AppDbContext db, BusinessRules rules, ReportSe
     private async Task<object> AdminData(AppUser actor)
     {
         Admin(actor); var cfg = actor.Role == Roles.GeneralAdmin ? (await Config()).Where(x => !BrandingService.Keys.Contains(x.Key)).ToDictionary(x => x.Key, x => x.Value) : new(); var cutoff = BusinessRules.Date(rules.Today).AddDays(-60).ToString("yyyy-MM-dd");
-        var users = await db.Users.AsNoTracking().Include(x => x.Department).Where(x => RegionalAdmin(actor) || x.DepartmentId == actor.DepartmentId).ToListAsync();
+        var users = await db.Users.AsNoTracking().Include(x => x.Department).Include(x => x.DirectoryDepartment).Where(x => RegionalAdmin(actor) || x.DepartmentId == actor.DepartmentId).ToListAsync();
         var departments = await db.Departments.AsNoTracking().ToListAsync(); var map = departments.ToDictionary(x => x.Id, x => x.DisplayName);
         var orders = await db.Orders.AsNoTracking().Where(x => x.Status == "ACTIVO" && string.Compare(x.Date, cutoff) >= 0 && (RegionalAdmin(actor) || x.DepartmentId == actor.DepartmentId)).ToListAsync();
         return new { ok = true, rol = actor.Role, dept = actor.DepartmentId, users = users.Select(UserDto),
             orders = orders.Select(x => new { id = x.Id, date = x.Date, email = x.Email, nombre = x.Name, deptId = x.DepartmentId, dept = map.GetValueOrDefault(x.DepartmentId, x.DepartmentId), resumen = x.Summary, estado = x.Status, creado_por = x.CreatedBy }),
-            departments = departments.Where(x => RegionalAdmin(actor) || x.Id == actor.DepartmentId).Select(x => new { id = x.Id, nombre = x.Name, displayName = x.DisplayName, alias = x.Alias, directoryKey = x.DirectoryKey, admins = x.Admins, estado = x.Status, directoryCode = x.DirectoryCode, directoryManaged = x.DirectoryManaged || users.Any(u => u.DepartmentId == x.Id && u.DirectoryManaged) }),
+            departments = departments.Where(x => RegionalAdmin(actor) || x.Id == actor.DepartmentId).Select(x => new { id = x.Id, nombre = x.Name, displayName = x.DisplayName, alias = x.Alias, admins = x.Admins, estado = x.Status,
+                adDepartments = users.Where(u => u.DepartmentId == x.Id && u.DirectoryDepartment != null).Select(u => u.DirectoryDepartment!.Name).Distinct().OrderBy(n => n), memberCount = users.Count(u => u.DepartmentId == x.Id) }),
             config = cfg, configKeys = cfg.Keys, configList = (await db.Settings.AsNoTracking().ToListAsync()).Where(x => cfg.ContainsKey(x.Key)).Select(x => new { key = x.Key, value = x.Value, desc = x.Description }),
             holidays = RegionalAdmin(actor) ? (await db.Holidays.ToListAsync()).Select(x => new { date = x.Date, desc = x.Reason }) : [],
             menuCategories = RegionalAdmin(actor) ? (await db.Categories.OrderBy(x => x.SortOrder).ToListAsync()).Select(CategoryDto) : []
@@ -142,7 +145,7 @@ public partial class LunchService(AppDbContext db, BusinessRules rules, ReportSe
             {
                 var order = await db.Orders.SingleOrDefaultAsync(x => x.Id == first); Require(order != null, "Pedido no encontrado.");
                 if (method == "apiAdminCancelOrder") { Admin(actor); Require(RegionalAdmin(actor) || actor.DepartmentId == order!.DepartmentId, "Pedido fuera de tu departamento."); }
-                else { await Target(actor, order!.Email); Require(Open(order.Date, await Holidays(), await Config()), "Ya pasó la hora de cierre."); }
+                else { await Target(actor, order!.Email); Require(actor.Role != Roles.DepartmentAdmin || actor.DepartmentId == order.DepartmentId, "Pedido histórico fuera de tu grupo de almuerzo."); Require(Open(order.Date, await Holidays(), await Config()), "Ya pasó la hora de cierre."); }
                 order!.Status = "CANCELADO"; order.ModifiedAt = rules.Now.ToString("O"); await db.SaveChangesAsync(); return new { ok = true, date = order.Date, adminData = actor.Role == Roles.User ? null : await Stats(actor, order.Date) };
             }
             case "apiSetUserPreference":
@@ -175,9 +178,9 @@ public partial class LunchService(AppDbContext db, BusinessRules rules, ReportSe
             case "apiDeleteDepartment":
             {
                 Admin(actor, true); var d = await db.Departments.SingleOrDefaultAsync(x => x.Id == first); Require(d != null, "Departamento no encontrado.");
-                Require(!d!.DirectoryManaged, "Los departamentos verificados por AD se conservan; puedes desactivarlos, no eliminarlos.");
+                Require(configuration["Ad:OrganizationContract"] == "NamesV1" || !d!.DirectoryManaged, "El catálogo AD de compatibilidad se conserva; no se elimina.");
                 Require(!await db.Users.AnyAsync(x => x.DepartmentId == first) && !await db.Orders.AnyAsync(x => x.DepartmentId == first), "El departamento tiene usuarios o históricos. Desactívalo para conservarlos.");
-                db.Departments.Remove(d); return Ok();
+                db.Departments.Remove(d!); return Ok();
             }
             case "apiAdminSaveUser": return await SaveUser(actor, P()!);
             case "apiAdminDeleteUser": return await SetUserStatus(actor, new JsonObject { ["email"] = Email(first), ["estado"] = "INACTIVO" });
@@ -262,50 +265,60 @@ public partial class LunchService(AppDbContext db, BusinessRules rules, ReportSe
     private async Task<object> SaveUser(AppUser actor, JsonNode p)
     {
         Admin(actor, true);
-        var email = Email(Str(p, "email")); var u = await db.Users.SingleOrDefaultAsync(x => x.Email == email);
+        OnlyFields(p, "email", "nombre", "codigo", "regionalId", "directoryAccount", "cargo", "directoryManaged", "regionalBlocked", "rol", "estado", "departamento", "departamentoId", "adDepartment", "adDepartmentId");
+        var email = Email(Str(p, "email")); var u = await db.Users.Include(x => x.Department).Include(x => x.DirectoryDepartment).SingleOrDefaultAsync(x => x.Email == email);
         Require(u != null, "Las cuentas se incorporan mediante AD o importación; no se crean identidades manuales.");
         Require(Str(p, "nombre", u!.Name) == u.Name && Str(p, "codigo", u.EmployeeCode ?? "") == (u.EmployeeCode ?? ""), "Nombre y código son datos de identidad de solo lectura. Corrígelos en el directorio institucional.");
         Require(Str(p, "regionalId", u.RegionId) == u.RegionId && Str(p, "directoryAccount", u.DirectoryAccount ?? "") == (u.DirectoryAccount ?? ""), "No puedes alterar la identidad o regional desde este formulario.");
         Require(Str(p, "cargo", u.JobTitle) == u.JobTitle, "El cargo solo se actualiza desde AD.");
+        Require(Str(p, "adDepartmentId", u.DirectoryDepartmentId ?? "") == (u.DirectoryDepartmentId ?? ""), "El departamento institucional solo se actualiza desde AD.");
+        if (p["adDepartment"] != null) Require(Str(p, "adDepartment") == (u.DirectoryDepartment?.Name ?? "Pendiente de primera verificación AD"), "El departamento institucional solo se actualiza desde AD.");
         Require(Str(p, "directoryManaged", u.DirectoryManaged ? "true" : "false") == (u.DirectoryManaged ? "true" : "false") && Str(p, "regionalBlocked", u.RegionalBlocked ? "true" : "false") == (u.RegionalBlocked ? "true" : "false"), "Usa la operación autorizada; estos atributos no son editables.");
         var role = Str(p, "rol", u.Role); if (role == "USUARIO") role = Roles.User;
         Require(Roles.All.Contains(role), "Rol inválido."); var state = Str(p, "estado", u.Status);
         Require(state is "ACTIVO" or "INACTIVO" or "PENDIENTE", "Estado inválido.");
         Require(!u.RegionalBlocked || role == u.Role, "Retira primero el bloqueo regional antes de cambiar el rol.");
         var dept = Str(p, "departamento", Str(p, "departamentoId", u.DepartmentId ?? ""));
-        if (u.DirectoryManaged || configuration.GetValue<bool>("Ad:AutoProvisioningEnabled")) Require(dept == (u.DepartmentId ?? ""), "El departamento procede del AD; solicita corregir el perfil institucional.");
+        if (configuration["Ad:OrganizationContract"] != "NamesV1" && (u.DirectoryManaged || configuration.GetValue<bool>("Ad:AutoProvisioningEnabled"))) Require(dept == (u.DepartmentId ?? ""), "El departamento del contrato AD de compatibilidad no se reasigna aquí.");
         Department? department = null;
         if (dept.Length > 0) { department = await db.Departments.SingleOrDefaultAsync(x => x.Id == dept); Require(department != null, "Departamento fuera de la regional o inexistente."); }
         if (state == "ACTIVO") Require(department is { Status: "ACTIVO" }, "Selecciona un departamento activo.");
         await ProtectLastAdmin(u, role, state); var previous = u.Status;
-        u.DepartmentId = department?.Id; u.Role = role; u.Status = state;
+        var groupChanged = u.DepartmentId != department?.Id;
+        if (groupChanged) {
+            foreach (var group in await db.Departments.Where(x => x.Id == u.DepartmentId).ToListAsync()) group.Admins = string.Join(", ", Split(group.Admins).Where(e => e != u.Email));
+            db.Audit.Add(new AuditEvent { Actor = actor.Email, Action = "MealGroupAssigned", EntityId = email });
+        }
+        u.DepartmentId = department?.Id; u.Department = department; u.Role = role; u.Status = state;
         if (state == "ACTIVO" && previous != "ACTIVO" && !u.RegionalBlocked) Queue(email, "Acceso aprobado", "Tu cuenta de Almuerzo fue habilitada. Ya puedes iniciar sesión con tu cuenta institucional.");
         await SyncDepartmentAdmins(); return Ok();
     }
     private async Task SyncDepartmentAdmins()
     {
         var users = await db.Users.ToListAsync(); users.AddRange(db.Users.Local.Where(x => !users.Contains(x)));
-        foreach (var dept in await db.Departments.ToListAsync()) dept.Admins = string.Join(", ", users.Where(x => x.RegionId == db.RegionId && x.DepartmentId == dept.Id && x.Role == Roles.DepartmentAdmin && x.Status == "ACTIVO" && !x.RegionalBlocked).Select(x => x.Email));
+        foreach (var dept in await db.Departments.ToListAsync()) {
+            var previous = Split(dept.Admins).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            dept.Admins = string.Join(", ", users.Where(x => x.RegionId == db.RegionId && x.DepartmentId == dept.Id && x.Status == "ACTIVO" && !x.RegionalBlocked && (x.Role == Roles.DepartmentAdmin || x.Role is Roles.GeneralAdmin or Roles.RegionalAdmin && previous.Contains(x.Email))).Select(x => x.Email));
+        }
     }
     private async Task<object> SaveDepartment(AppUser actor, JsonNode p)
     {
         Admin(actor, true); var d = await db.Departments.SingleOrDefaultAsync(x => x.Id == Str(p, "id")); var name = Bounded(Str(p, "nombre"), 150, "Nombre");
-        Require(!configuration.GetValue<bool>("Ad:AutoProvisioningEnabled") || d != null, "Los departamentos nuevos se incorporan desde AD.");
         Require(Str(p, "id").Length == 0 || d != null, "Departamento fuera de tu regional o inexistente.");
         var directoryCode = Str(p, "directoryCode", d?.DirectoryCode ?? "");
         Require(Str(p, "directoryKey", d?.DirectoryKey ?? "") == (d?.DirectoryKey ?? ""), "La clave AD no es editable.");
-        if (d != null && (configuration.GetValue<bool>("Ad:AutoProvisioningEnabled") || d.DirectoryManaged || await db.Users.AnyAsync(x => x.DepartmentId == d.Id && x.DirectoryManaged)))
-            Require(name == d.Name && directoryCode == (d.DirectoryCode ?? ""), "Nombre y código del departamento verificado solo se actualizan desde AD.");
+        Require(directoryCode == (d?.DirectoryCode ?? ""), "Los códigos AD no se administran en los grupos de almuerzo.");
+        if (configuration["Ad:OrganizationContract"] != "NamesV1" && d != null && (d.DirectoryManaged || configuration.GetValue<bool>("Ad:AutoProvisioningEnabled"))) Require(name == d.Name, "El nombre institucional del contrato de compatibilidad solo se actualiza desde AD.");
         Require(!await db.Departments.AnyAsync(x => x.Name.ToLower() == name.ToLower() && x.Id != Str(p, "id")), "Nombre de departamento duplicado.");
         var state = Str(p, "estado", "ACTIVO"); Require(state is "ACTIVO" or "INACTIVO", "Estado inválido.");
         if (d == null) { d = new Department(); db.Departments.Add(d); }
         if (state == "INACTIVO") Require(!await db.Users.AnyAsync(x => x.DepartmentId == d.Id && x.Status == "ACTIVO" && x.Role == Roles.GeneralAdmin), "Mueve primero los administradores generales a un departamento activo.");
-        var adminEmails = Split(Str(p, "admins")).Select(Email).Distinct().ToArray(); var users = await db.Users.Where(x => adminEmails.Contains(x.Email) || x.DepartmentId == d.Id && x.Role == Roles.DepartmentAdmin).ToListAsync();
-        Require(adminEmails.All(e => users.Any(x => x.Email == e && x.Status == "ACTIVO" && !x.RegionalBlocked && x.DepartmentId == d.Id && x.Role is Roles.User or Roles.DepartmentAdmin)), "Los responsables deben ser colaboradores habilitados del mismo departamento."); d.Name = name; d.Status = state; d.DirectoryCode = string.IsNullOrWhiteSpace(directoryCode) ? null : Bounded(directoryCode, 64, "Código AD");
+        var adminEmails = Split(Str(p, "admins", d.Admins)).Select(Email).Distinct().ToArray(); var users = await db.Users.Where(x => adminEmails.Contains(x.Email) || x.DepartmentId == d.Id && x.Role == Roles.DepartmentAdmin).ToListAsync();
+        Require(adminEmails.All(e => users.Any(x => x.Email == e && x.Status == "ACTIVO" && !x.RegionalBlocked && x.DepartmentId == d.Id && Roles.All.Contains(x.Role))), "Los responsables deben ser colaboradores activos del mismo grupo de almuerzo, sin suspensión. Un administrador general o regional conserva su rol."); d.Name = name; d.Status = state;
         foreach (var u in users) { if (u.Role is Roles.GeneralAdmin or Roles.RegionalAdmin) continue; if (adminEmails.Contains(u.Email)) u.Role = Roles.DepartmentAdmin; else u.Role = Roles.User; }
         d.Alias = OrganizationAlias(Str(p, "alias", d.Alias));
-        await SyncDepartmentAdmins(); d.Admins = string.Join(", ", adminEmails.Where(e => users.Any(x => x.Email == e && x.Role == Roles.DepartmentAdmin)));
-        return new { ok = true, department = new { id = d.Id, nombre = d.Name, alias = d.Alias, displayName = d.DisplayName, admins = d.Admins, estado = d.Status, directoryCode = d.DirectoryCode, directoryKey = d.DirectoryKey, directoryManaged = d.DirectoryManaged || configuration.GetValue<bool>("Ad:AutoProvisioningEnabled") }, users = users.Select(x => new { email = x.Email, rol = x.Role }) };
+        await SyncDepartmentAdmins(); d.Admins = string.Join(", ", adminEmails);
+        return new { ok = true, department = new { id = d.Id, nombre = d.Name, alias = d.Alias, displayName = d.DisplayName, admins = d.Admins, estado = d.Status }, users = users.Select(x => new { email = x.Email, rol = x.Role }) };
     }
     private async Task<object> SaveConfig(AppUser actor, JsonNode p)
     {
@@ -433,7 +446,7 @@ public partial class LunchService(AppDbContext db, BusinessRules rules, ReportSe
     }
     private async Task<object> Ranking(AppUser actor, string targetEmail)
     {
-        var target = await Target(actor, targetEmail); var users = await db.Users.AsNoTracking().Include(x => x.Department).Where(x => x.Status == "ACTIVO" && !x.RegionalBlocked).ToListAsync();
+        var target = await Target(actor, targetEmail); var users = await db.Users.AsNoTracking().Include(x => x.Department).Include(x => x.DirectoryDepartment).Where(x => x.Status == "ACTIVO" && !x.RegionalBlocked).ToListAsync();
         var sorted = users.Select(u => new { u, g = Game(u) }).OrderByDescending(x => Num(x.g, "score")).ThenByDescending(x => Num(x.g, "hits")).ThenBy(x => Num(x.g, "misses")).ThenBy(x => x.u.Name);
         var rows = sorted.Select((x, i) => new { rank = i + 1, nombre = x.u.Name, departamento = x.u.Department?.DisplayName ?? "", score = Num(x.g, "score"), hits = Num(x.g, "hits"), misses = Num(x.g, "misses"), bestStreak = Num(x.g, "bestStreak"), isCurrent = x.u.Email == target.Email }).ToArray();
         return new { ok = true, monthKey = rules.Today[..7], monthLabel = rules.Now.ToString("MMMM yyyy", CultureInfo.GetCultureInfo("es-DO")), rows = rows.Take(50), currentUser = rows.FirstOrDefault(x => x.isCurrent) };
