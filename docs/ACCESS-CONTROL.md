@@ -1,4 +1,4 @@
-# Autoridad de datos y permisos · v0.3.0
+# Autoridad de datos y permisos · v0.4.0
 
 AD confirma identidad y estructura institucional. Almuerzo administra acceso y **grupos de almuerzo**, que son las agrupaciones operativas de Legacy. Un grupo puede reunir colaboradores de varios departamentos AD de una misma regional. Véase [modelo y migración](MEAL-GROUPS.md).
 
@@ -17,13 +17,15 @@ Todos los permisos se comprueban en el servidor en cada petición. ADMIN_GEN sel
 | Alta PENDIENTE, habilitación general y roles | ADMIN_GEN; nunca automáticos desde AD | No aprueba ni reactiva | No |
 | Suspensión regional de USER/ADMIN_DEP | ADMIN_GEN o ADMIN_REG, operación limitada | Sí en su regional, sin afectar pares/general | No |
 | Menú e importación semanal | ADMIN_GEN | Sí en su regional | No |
-| Calendario | ADMIN_GEN | Sí en su regional | No |
+| Cierres institucionales adicionales | ADMIN_GEN | Sí en su regional | No |
+| Feriados nacionales automáticos | Reglas verificadas en servidor; consulta, sin borrado desde panel | Consulta | Consulta |
 | Pedidos y cancelaciones administrativas | ADMIN_GEN | Sí en su regional | Sí en su grupo |
 | Reportes y valoraciones identificadas | ADMIN_GEN | De su regional | De su grupo |
 | Avisos a colaboradores | ADMIN_GEN | Sí en su regional | No |
 | Proveedor, precio y períodos | ADMIN_GEN | Consulta | Consulta operativa |
 | Categorías, reglas, horarios, configuración, correos y branding | ADMIN_GEN | No | No |
 | Secretos y procesos AD/SQL/SendGrid | TI mediante configuración privada | No | No |
+| Ranking del juego | Nacional para colaboradores habilitados; opción de regional propia | Misma consulta pública del juego | Misma consulta pública del juego |
 
 Asignar un responsable no cambia su grupo ni el departamento AD. USER pasa a ADMIN_DEP; ADMIN_GEN y ADMIN_REG conservan sus roles y pueden recibir también el resumen de su grupo cuando se seleccionan explícitamente. Los suspendidos/inactivos no reciben resúmenes ni ejercen el ámbito operativo.
 
@@ -54,3 +56,5 @@ Renombrar un grupo no cambia su ID ni los pedidos. Reasignar un colaborador no t
 La exposición de valoraciones identificadas se limita mediante el ID de pedido histórico; los votos Legacy de proveedor sin ese ID exigen además pertenencia actual compatible. Una etiqueta repetida no autoriza datos ajenos. Los agregados comunitarios regionales siguen disponibles.
 
 Las migraciones de ambos proveedores separan los datos NamesV1 ya verificados, sin cambiar miembros, roles, grupos, pedidos o preferencias. Las pruebas cubren incorporación pendiente, asignación, agrupación de varios departamentos, permisos negativos, responsables ADMIN_GEN, cambios AD, traslados regionales, históricos, login JSON con CSRF y actualización de una base previa.
+
+Desde v0.4.0 la proyección del ranking nacional cruza regionales deliberadamente y solo devuelve nombre, regional/grupo y estadísticas del juego de cuentas habilitadas. No concede consultas operativas nacionales a USER, ADMIN_DEP ni ADMIN_REG. El filtro «Mi regional» usa la regional del actor, sin aceptar IDs arbitrarios. No incluye correo, código, cargo, datos AD o pedidos. Véanse [calendario y juego](CALENDAR-AND-GAME.md).

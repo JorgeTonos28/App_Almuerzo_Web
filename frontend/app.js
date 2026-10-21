@@ -11,6 +11,25 @@ createApp({
     const brandingForm = reactive({ footerText: footerText.value, favicon: null, stamp: null, resetFavicon: false, removeStamp: false });
     const brandingSaving = ref(false);
     const brandingMessage = ref('');
+    const configPanel = reactive({ section: 'operation', saving: '', message: '', error: '', testing: false });
+    const configDraft = reactive({});
+    const configSections = [
+      { id: 'operation', label: 'Operación', icon: 'fa-clock' },
+      { id: 'mail', label: 'Correos', icon: 'fa-envelope' },
+      { id: 'provider', label: 'Proveedor y precio', icon: 'fa-utensils' },
+      { id: 'appearance', label: 'Apariencia', icon: 'fa-palette' },
+      { id: 'announcements', label: 'Avisos', icon: 'fa-bullhorn' }
+    ];
+    const configKeysBySection = {
+      operation: ['APP_TITLE', 'APP_URL', 'HORA_ENVIO', 'HORA_RECORDATORIO', 'MINUTOS_PREV_CIERRE'],
+      mail: ['MAIL_SENDER_NAME', 'ADMIN_EMAILS', 'TEST_EMAIL_MODE', 'TEST_EMAIL_DEST', 'RESPONSIBLES_EMAILS_JSON'],
+      provider: ['MEAL_PRICE_CURRENT']
+    };
+    const configCloseTime = computed(() => {
+      const parts = String(configDraft.HORA_ENVIO || '15:00').split(':').map(Number);
+      const total = parts[0] * 60 + parts[1] - Number(configDraft.MINUTOS_PREV_CIERRE || 0);
+      return Number.isFinite(total) && total >= 0 ? `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}` : '—';
+    });
     const clearBrandingFile = kind => { brandingForm[kind] = null; const input = document.getElementById('branding-' + kind); if (input) input.value = ''; };
     const selectBrandingFile = (event, kind) => {
       brandingForm[kind] = event.target.files?.[0] || null;
@@ -64,6 +83,8 @@ createApp({
     const mealPricing = ref({ current: 57, history: [{ from: '1900-01-01', price: 57 }] });
     const currentUserPrefs = ref({});
     const todayYmd = ref('');
+    const calendarYear = ref(new Date().getFullYear());
+    const calendarHolidays = computed(() => adminState.holidays.filter(h => h.date.startsWith(String(calendarYear.value))).sort((a,b) => a.date.localeCompare(b.date)));
     const serverHour = ref(12);
     const serverTime = ref('');
 
@@ -92,9 +113,9 @@ createApp({
       monthLabel: ''
     });
     const chefGame = reactive({ active: false, dirty: false, syncing: false });
-    const lunchRush = createLunchRush(state => { setChefGameState(state); chefRanking.loaded = false; }, () => chefScore.value);
+    const lunchRush = createLunchRush(state => { setChefGameState(state); chefRanking.loaded = false; });
     const rush = lunchRush.state;
-    const startRush = lunchRush.start, finishRush = lunchRush.finish, moveRush = lunchRush.move;
+    const startRush = lunchRush.start, finishRush = lunchRush.finish, moveRush = lunchRush.move, rushClock = lunchRush.clock;
     const chefRanking = reactive({
       loading: false,
       loaded: false,
@@ -103,7 +124,7 @@ createApp({
       currentUser: null,
       monthKey: '',
       monthLabel: '',
-      showRules: false
+      showRules: false, scope: 'NATIONAL', page: 1, total: 0, pageSize: 50
     });
 
     // Summary Date Range
@@ -712,6 +733,7 @@ createApp({
             chefRanking.currentUser = res.currentUser || null;
             chefRanking.monthKey = res.monthKey || '';
             chefRanking.monthLabel = res.monthLabel || '';
+             chefRanking.page = res.page || 1; chefRanking.total = res.total || 0; chefRanking.pageSize = res.pageSize || 50;
           } else {
             chefRanking.error = (res && res.msg) || 'No se pudo cargar el ranking.';
           }
@@ -720,7 +742,7 @@ createApp({
           chefRanking.loading = false;
           chefRanking.error = 'Error de conexion cargando el ranking.';
         })
-        .apiGetChefGameRanking(user.value?.email || '');
+        .apiGetChefGameRanking(user.value?.email || '', chefRanking.scope, chefRanking.page);
     };
 
     const loadData = (targetDate = null) => {
@@ -913,6 +935,7 @@ createApp({
                adminState.orders = res.orders;
                adminState.departments = res.departments || [];
                adminState.config = res.config || {};
+                Object.assign(configDraft, adminState.config);
                adminState.configList = (res.configList || []).filter(x => !x.key.startsWith('PROVIDER_'));
                adminState.configKeys = res.configKeys || [];
                adminState.holidays = res.holidays || [];
@@ -1072,46 +1095,50 @@ createApp({
     };
 
     // Config Actions
-    const saveConfig = () => {
-       const payload = { ...adminState.config };
-       let responsibleEmails = [];
-       try {
-          responsibleEmails = normalizeResponsibleEmails(adminState.responsiblesList, { throwOnInvalid: true });
-       } catch (e) {
-          showModal(e.message || "Corrige los correos de responsables del resumen diario.", "Configuracion");
-          return;
-       }
-       payload['RESPONSIBLES_EMAILS_JSON'] = JSON.stringify(responsibleEmails);
-       delete payload['MEAL_PRICE_HISTORY_JSON'];
-       adminState.loading = true;
-       almuerzo.run.withSuccessHandler(res => {
-          adminState.loading = false;
-          if(res.ok) { adminState.configEdit = false; loadAdminData(true); }
-          else showModal(res.msg, "Error");
-       }).apiSaveConfig(payload);
+    const saveConfig = (section = configPanel.section) => {
+      if (configPanel.saving || !configKeysBySection[section]) return;
+      const payload = {};
+      for (const key of configKeysBySection[section]) payload[key] = String(configDraft[key] ?? '');
+      if (section === 'mail') {
+        try { payload.RESPONSIBLES_EMAILS_JSON = JSON.stringify(normalizeResponsibleEmails(adminState.responsiblesList, { throwOnInvalid: true })); }
+        catch (error) { configPanel.error = error.message; return; }
+      }
+      configPanel.saving = section; configPanel.message = ''; configPanel.error = '';
+      almuerzo.run.withSuccessHandler(res => {
+        configPanel.saving = '';
+        if (!res.ok) { configPanel.error = res.msg || 'No se pudo guardar.'; return; }
+        Object.assign(adminState.config, payload); Object.assign(configDraft, payload);
+        if (res.mealPricing) mealPricing.value = res.mealPricing;
+        configPanel.message = 'Cambios guardados.';
+      }).withFailureHandler(error => { configPanel.saving = ''; configPanel.error = error.message || 'No se pudo guardar. Reintenta.'; }).apiSaveConfig(payload);
+    };
+    const cancelConfig = () => {
+      for (const key of configKeysBySection[configPanel.section] || []) configDraft[key] = adminState.config[key] ?? '';
+      adminState.responsiblesList = normalizeResponsibleEmails(adminState.config.RESPONSIBLES_EMAILS_JSON);
+      configPanel.error = ''; configPanel.message = '';
     };
 
     const runTestDailyCloseEmails = () => {
        if (!isTestEmailMode.value) return;
        if (!String(adminState.config['TEST_EMAIL_DEST'] || '').trim()) {
-          showModal("Configura TEST_EMAIL_DEST antes de enviar la prueba.", "Modo prueba");
+          showModal("Guarda un destinatario de prueba antes de enviar.", "Modo prueba");
           return;
        }
 
        showModal("Se enviaran los correos de cierre en modo prueba. No se guardaran respaldos ni se ejecutara mantenimiento.", "Enviar prueba", "CONFIRM", () => {
-          adminState.loading = true;
+           configPanel.testing = true;
           almuerzo.run
             .withSuccessHandler(res => {
-               adminState.loading = false;
-               if (res && res.ok) {
-                  showModal(res.msg || "Prueba enviada correctamente.", "Modo prueba");
+                configPanel.testing = false;
+                if (res && res.ok) {
+                   showModal(res.msg || "Prueba encolada correctamente.", "Modo prueba");
                } else {
                   showModal((res && res.msg) || "No se pudo enviar la prueba.", "Error");
                }
             })
             .withFailureHandler(err => {
-               adminState.loading = false;
-               showModal(err.message || "Error enviando la prueba.", "Error");
+                configPanel.testing = false;
+                showModal(err.message || "Error enviando la prueba.", "Error");
             })
             .apiSendDailyCloseEmailsTest();
        });
@@ -1120,6 +1147,8 @@ createApp({
     // Menu Actions
     const checkMenuDate = () => {
        if (!adminState.menuDate) return;
+       const holiday = adminState.holidays.find(h => h.date === adminState.menuDate);
+       if (holiday) { showModal(`No hay servicio de almuerzo: ${holiday.desc}.`, 'Día no laborable'); adminState.menuDate = ''; adminState.menuItems = []; return; }
        const d = new Date(adminState.menuDate + 'T12:00:00');
        const day = d.getDay();
        const now = new Date();
@@ -1473,7 +1502,9 @@ createApp({
             adminState.loading = false;
             if(res.ok) {
                adminState.holidayModal.open = false;
-               adminState.holidays.push({ date: adminState.holidayModal.data.date, desc: adminState.holidayModal.data.desc });
+               const holiday = { date: adminState.holidayModal.data.date, desc: adminState.holidayModal.data.desc, automatic: false };
+               const index = adminState.holidays.findIndex(h => h.date === holiday.date);
+               if (index < 0) adminState.holidays.push(holiday); else adminState.holidays.splice(index, 1, holiday);
                loadData(); // Refresh user view
             }
             else showModal(res.msg, "Error");
@@ -1724,7 +1755,9 @@ createApp({
           if (res.ok) {
             providerResetModal.value.open = false;
             providerInfo.value = res.providerInfo;
-            mealPricing.value = res.mealPricing; if (adminState.loaded) loadAdminData(true);
+            mealPricing.value = res.mealPricing;
+            adminState.config.MEAL_PRICE_CURRENT = String(res.mealPricing.current);
+            configDraft.MEAL_PRICE_CURRENT = String(res.mealPricing.current);
             userProviderRating.value = null;
             showModal("Período de evaluación del proveedor actualizado exitosamente.", "Éxito");
             loadRatingsSummary();
@@ -1962,7 +1995,7 @@ createApp({
       csrfToken, footerText, footerSignatureUrl, faviconUrl, brandingForm, brandingSaving, brandingMessage, clearBrandingFile, selectBrandingFile, saveBranding, loading, submitting, user, menu, myOrder, adminData,
       currentDate, dates, comments,
       summaryDateStart, summaryDateEnd, activeUsersCount,
-      chefGameState, chefGame, chefRanking,
+      chefGameState, chefGame, chefRanking, rushClock, configPanel, configDraft, configSections, configCloseTime, cancelConfig, calendarYear, calendarHolidays, todayYmd,
 
       // Computed
       isAdmin, isDeptAdmin, isAdminGen, canManageRegion, regions, regionalId, regionalName, regionalForm, regionalSaving, regionalError, saveRegion, editRegion, rush, startRush, finishRush, moveRush, isTestEmailMode, menuLoaded, categories, menuCategories, activeMenuCategories, adminMenuCategories,
@@ -1985,7 +2018,7 @@ createApp({
       addAnnouncementSlide, removeAnnouncementSlide, saveAnnouncementConfig,
 
       // Proveedor y Valoraciones
-      providerInfo, userMealRatings, userProviderRating, serverHour, serverTime,
+      providerInfo, mealPricing, userMealRatings, userProviderRating, serverHour, serverTime,
       mealRatingModal, providerRatingModal, providerResetModal, ratingsSummary,
       satisfactionCommunityModal, openSatisfactionCommunityModal,
       canRateMeal, openMealRatingModal, saveMealRating,

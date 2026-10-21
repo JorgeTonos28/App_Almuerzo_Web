@@ -264,27 +264,28 @@
       <!-- Order Confirmed / No Menu State (Receipt Style) -->
       <div v-if="chefGameCardVisible" class="lunch-rush-stage mt-8">
         <div class="rush-toolbar">
-          <div><span class="rush-eyebrow">Pausa de cocina</span><h3>Bandeja Express</h3></div>
-          <div class="rush-time"><i class="fa-regular fa-clock" aria-hidden="true"></i> {{ chefRemainingLabel }} hoy</div>
+          <div><span class="rush-eyebrow">Pausa de cocina</span><h3>Olla Express</h3></div>
+          <div class="rush-time"><i class="fa-regular fa-clock" aria-hidden="true"></i> {{ rush.active ? rushClock(rush.remaining) : chefRemainingLabel }} disponibles hoy</div>
           <button v-if="!rush.active" @click="startRush" :disabled="rush.busy || rush.pending || !chefGameAvailable || !!impersonateEmail || activeUser.regionalId !== regionalId" class="rush-play"><i :class="rush.busy ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-play'"></i> {{ rush.busy ? 'Preparando…' : 'Jugar' }}</button>
-          <button v-else @click="finishRush" :disabled="rush.busy" class="rush-stop">Terminar</button>
+          <button v-else @click="finishRush" :disabled="rush.busy" class="rush-stop">Detener y guardar</button>
         </div>
         <p v-if="rush.error" class="rush-error" role="alert">{{ rush.error }} <button v-if="rush.pending" @click="finishRush" :disabled="rush.busy">Reintentar guardado</button></p>
         <p v-if="rush.message" class="rush-result" role="status">{{ rush.message }}</p>
         <transition name="rush-expand">
-          <section v-if="rush.active" id="rush-board" tabindex="0" class="rush-board" aria-label="Bandeja Express: usa flechas izquierda y derecha o A y D para mover la bandeja">
-            <div class="rush-hud"><span>Nivel {{ rush.level }}</span><strong>{{ rush.points }} pts</strong><span>{{ rush.remaining }}s</span></div>
+          <section v-if="rush.active" id="rush-board" tabindex="0" :class="['rush-board', { 'rush-feast': rush.effects.some(e => e.kind === 'feast') }]" aria-label="Olla Express: usa flechas izquierda y derecha o A y D para mover la olla. Escape detiene y guarda.">
+            <div class="rush-hud"><span>Nivel {{ rush.level }}<small>{{ rush.syncing ? 'Guardando…' : 'Guardado automático' }}</small></span><strong>{{ rush.points >= 0 ? '+' : '' }}{{ rush.points }} pts</strong><span>{{ rushClock(rush.remaining) }}<small>restantes hoy</small></span></div>
             <div class="rush-kitchen" aria-hidden="true"><span>COCINA</span><i class="fa-solid fa-utensils"></i><span>EN SERVICIO</span></div>
             <div class="rush-lanes" aria-hidden="true">
               <div v-for="lane in 4" :key="lane" :class="['rush-lane', { selected: rush.lane === lane - 1 }]"></div>
-              <span v-for="drop in rush.drops" :key="drop.id" :class="['rush-food', { burnt: drop.burnt }]" :style="{ left: (drop.lane * 25 + 12.5) + '%', top: drop.y + '%' }">{{ drop.icon }}</span>
-              <div class="rush-tray" :style="{ left: (rush.lane * 25 + 12.5) + '%' }"><span>🍽️</span></div>
+              <span v-for="drop in rush.drops" :key="drop.id" :class="['rush-food', drop.kind]" :style="{ left: (drop.lane * 25 + 12.5) + '%', top: drop.y + '%' }">{{ drop.icon }}</span>
+              <div :class="['rush-pot', { protected: rush.effects.some(e => e.kind === 'shield') }]" :style="{ left: (rush.lane * 25 + 12.5) + '%' }"><div class="rush-pot-steam"><i></i><i></i><i></i></div><div class="rush-pot-body"></div><div class="rush-pot-rim"></div></div>
+              <div class="rush-effects"><span v-for="effect in rush.effects" :key="effect.kind" :class="effect.kind">{{ effect.label }} · {{ effect.seconds }}s</span></div>
             </div>
-            <div class="rush-feedback" aria-live="off">{{ rush.feedback }} <span v-if="rush.streak > 1"> · Racha {{ rush.streak }}</span></div>
+            <div class="rush-feedback" aria-live="off"><span :key="rush.event" class="rush-pop">{{ rush.feedback }}</span><span v-if="rush.streak > 1"> · Racha {{ rush.streak }}</span></div>
             <div class="rush-touch"><button @pointerdown.prevent="moveRush(rush.lane - 1)" aria-label="Mover a la izquierda">←</button><span>← → o A / D</span><button @pointerdown.prevent="moveRush(rush.lane + 1)" aria-label="Mover a la derecha">→</button></div>
           </section>
         </transition>
-        <p v-if="!rush.active" class="rush-instructions">Atrapa los ingredientes y esquiva el fuego. Flechas o A/D en computadora, botones en móvil. Partidas de hasta 45 segundos · 15 minutos diarios.</p>
+        <p v-if="!rush.active" class="rush-instructions">Ingredientes a la olla, fuego fuera. ← → o A/D; botones en móvil. Cruza los extremos del tablero. Juega a tu ritmo y detente cuando quieras · 15 minutos diarios.<span class="rush-legend">⭐ Festín ×3 y sin fuego · 🧊 Menos velocidad · 🛡️ Protección</span></p>
 
         <transition name="receipt-swap" mode="out-in">
         <div v-if="!rush.active" :key="chefGameCardKey" class="order-confirmation-card max-w-md mx-auto bg-white rounded-[2rem] shadow-xl shadow-green-900/5 overflow-hidden text-center relative border border-gray-100">
@@ -455,7 +456,7 @@
           </button>
           <div>
             <span class="chef-ranking-kicker">Ranking mensual</span>
-            <h2>Bandeja Express</h2>
+            <h2>Olla Express</h2>
             <p>{{ chefRanking.monthLabel || chefGameState.monthLabel || 'Mes actual' }}</p>
           </div>
           <div class="chef-ranking-score">
@@ -463,7 +464,7 @@
             <strong>{{ chefScore }}</strong>
           </div>
         </div>
-
+        <div class="ranking-scope" aria-label="Ámbito del ranking"><button type="button" :disabled="chefRanking.loading" :aria-pressed="chefRanking.scope === 'NATIONAL'" @click="chefRanking.scope = 'NATIONAL'; chefRanking.page = 1; loadChefRanking(true)"><i class="fa-solid fa-earth-americas" aria-hidden="true"></i> Todo INFOTEP</button><button type="button" :disabled="chefRanking.loading" :aria-pressed="chefRanking.scope === 'REGIONAL'" @click="chefRanking.scope = 'REGIONAL'; chefRanking.page = 1; loadChefRanking(true)">Mi regional</button><span>{{ chefRanking.total }} colaboradores</span></div>
         <div v-if="chefRanking.currentUser" class="chef-ranking-current">
           <div>
             <span class="chef-ranking-kicker">Tu posicion</span>
@@ -509,42 +510,42 @@
               <i class="fa-solid fa-utensils"></i>
               <div>
                 <strong>Atrapa el almuerzo</strong>
-                <p>Mueve la bandeja con ← → o A/D. Cada ingrediente recogido suma 10 puntos.</p>
+                <p>Mueve la olla con ← → o A/D. Los extremos se conectan. El ingrediente cuenta al tocar la olla: 10 puntos más bono de racha.</p>
               </div>
             </div>
             <div class="chef-ranking-rule">
               <i class="fa-solid fa-bowl-rice"></i>
               <div>
                 <strong>Esquiva el fuego</strong>
-                <p>Un plato quemado resta 8 puntos y rompe la racha. Dejar caer comida también rompe la racha.</p>
+                <p>El fuego resta 12 puntos y rompe la racha. Dejar caer comida rompe la racha. El puntaje nunca baja de cero.</p>
               </div>
             </div>
             <div class="chef-ranking-rule">
               <i class="fa-solid fa-clock"></i>
               <div>
                 <strong>Tiempo diario</strong>
-                <p>15 minutos al día, reservados por el servidor en partidas de hasta 45 segundos. Salir antes no devuelve ese tiempo.</p>
+                <p>15 minutos al día, repartidos como prefieras. Detener y guardar o Escape guarda puntos y tiempo jugado. Cambiar de pestaña detiene la partida.</p>
               </div>
             </div>
             <div class="chef-ranking-rule">
               <i class="fa-solid fa-wand-magic-sparkles"></i>
               <div>
-                <strong>Racha de servicio</strong>
-                <p>Cada 5 ingredientes consecutivos aumenta el bonus, hasta 5 puntos extra por ingrediente.</p>
+                <strong>Especiales poco frecuentes</strong>
+                <p>⭐ Festín: puntos ×3 y sin fuego por 10 s. 🛡️ Protección: ignora fuego por 10 s. 🧊 Frío: ralentiza 8 s, a partir del nivel 3.</p>
               </div>
             </div>
             <div class="chef-ranking-rule">
               <i class="fa-solid fa-cake-candles"></i>
               <div>
                 <strong>Dificultad progresiva</strong>
-                <p>Sube un nivel cada 300 puntos del mes, hasta nivel 7. La velocidad tiene un límite.</p>
+                <p>Sube un nivel cada 300 puntos del mes, hasta nivel 8, incluso durante la partida. Más velocidad y frecuencia, con un límite jugable.</p>
               </div>
             </div>
             <div class="chef-ranking-rule">
               <i class="fa-solid fa-cloud-arrow-up"></i>
               <div>
                 <strong>Guardado</strong>
-                <p>Los puntos se calculan en el servidor al terminar la partida. El ranking corresponde a tu regional.</p>
+                <p>El servidor verifica y guarda cada 10 s y al detenerte. El ranking es nacional; puedes filtrar tu regional. Si se pierde la conexión, se detiene el juego; un cierre abrupto puede consumir hasta 20 s adicionales.</p>
               </div>
             </div>
           </div>
@@ -571,7 +572,7 @@
                 <tr>
                   <th>Posicion</th>
                   <th>Usuario</th>
-                  <th>Grupo de almuerzo</th>
+                  <th>Regional</th>
                   <th>Puntos</th>
                   <th>Aciertos</th>
                   <th>Racha</th>
@@ -588,7 +589,7 @@
                       <strong>{{ row.nombre }}</strong>
                     </div>
                   </td>
-                  <td>{{ row.departamento || '-' }}</td>
+                  <td>{{ row.regional || '-' }}</td>
                   <td><strong>{{ row.score }}</strong></td>
                   <td>{{ row.hits }}</td>
                   <td>{{ row.bestStreak }}</td>
@@ -597,6 +598,7 @@
             </table>
           </div>
         </div>
+        <div v-if="chefRanking.total > chefRanking.pageSize" class="ranking-pagination"><button :disabled="chefRanking.loading || chefRanking.page <= 1" @click="chefRanking.page--; loadChefRanking(true)">Anterior</button><span>Página {{ chefRanking.page }} de {{ Math.ceil(chefRanking.total / chefRanking.pageSize) }}</span><button :disabled="chefRanking.loading || chefRanking.page * chefRanking.pageSize >= chefRanking.total" @click="chefRanking.page++; loadChefRanking(true)">Siguiente</button></div>
       </div>
 
       <!-- ADMIN VIEW -->
@@ -898,30 +900,50 @@
                <p>Solo el Administrador General puede editar la configuración.</p>
             </div>
             <div v-else>
-               <div v-if="isAdminGen" class="flex justify-between items-center mb-6">
-                  <h2 class="text-xl font-bold text-gray-900">Variables del Sistema</h2>
-                  <div class="flex gap-2">
-                     <button v-if="adminState.configEdit" @click="adminState.configEdit = false" class="text-gray-500 hover:bg-gray-100 text-xs font-bold py-2 px-4 rounded-lg" :disabled="adminState.loading">Cancelar</button>
-                     <button v-if="adminState.configEdit" @click="saveConfig" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" :disabled="adminState.loading">
-                        <i v-if="adminState.loading" class="fa-solid fa-circle-notch fa-spin"></i> Guardar
-                     </button>
-                     <button v-if="!adminState.configEdit" @click="adminState.configEdit = true" class="text-blue-600 hover:bg-blue-50 text-xs font-bold py-2 px-4 rounded-lg"><i class="fa-solid fa-pen"></i> Editar</button>
-                  </div>
+                <div class="settings-heading">
+                  <div><span class="settings-eyebrow">Administración · {{ regionalName }}</span><h2>{{ isAdminGen ? 'Configuración' : 'Avisos de la regional' }}</h2><p>Ajusta la experiencia y la operación de esta regional.</p></div>
+                  <span class="settings-access"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> {{ isAdminGen ? 'Administración general' : 'Administración regional' }}</span>
                </div>
-
-               <div v-if="isAdminGen && isTestEmailMode" class="mb-6 border border-amber-200 bg-amber-50 rounded-xl p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                <nav v-if="isAdminGen" class="settings-nav" aria-label="Secciones de configuración">
+                  <button v-for="section in configSections" :key="section.id" type="button" :aria-current="configPanel.section === section.id ? 'page' : undefined" :class="{ selected: configPanel.section === section.id }" @click="configPanel.section = section.id; configPanel.message = ''; configPanel.error = ''"><i :class="['fa-solid', section.icon]" aria-hidden="true"></i>{{ section.label }}</button>
+                </nav>
+                <p v-if="configPanel.error" class="settings-alert error" role="alert">{{ configPanel.error }}</p>
+                <p v-if="configPanel.message" class="settings-alert success" role="status">{{ configPanel.message }}</p>
+                <fieldset v-if="isAdminGen && configPanel.section === 'operation'" class="settings-section" :disabled="!!configPanel.saving">
+                  <legend>El almuerzo, a tiempo</legend><p class="settings-description">Define cuándo se recuerda, se cierra y se envía el resumen. Horario de Santo Domingo.</p>
+                  <div class="settings-fields">
+                    <label>Nombre de la aplicación<input v-model="configDraft.APP_TITLE" maxlength="150" type="text"><small>Se utiliza en las comunicaciones del sistema.</small></label>
+                    <label>Dirección pública de la app<input v-model="configDraft.APP_URL" type="url" placeholder="https://almuerzo.infotep.gob.do"><small>Enlace incluido en los correos. Puedes dejarlo vacío en local.</small></label>
+                    <label>Recordatorio diario<input v-model="configDraft.HORA_RECORDATORIO" type="time"><small>Aviso para quienes aún no han pedido.</small></label>
+                    <label>Envío del resumen diario<input v-model="configDraft.HORA_ENVIO" type="time"><small>Entrega del consolidado a responsables.</small></label>
+                    <label>Anticipación del cierre<input v-model="configDraft.MINUTOS_PREV_CIERRE" type="number" min="0" max="300" step="1"><small>Minutos antes del envío del resumen.</small></label>
+                    <div class="settings-preview"><i class="fa-regular fa-clock" aria-hidden="true"></i><span>Los pedidos cierran a las <strong>{{ configCloseTime }}</strong><small>para el siguiente día laborable.</small></span></div>
+                  </div>
+                  <div class="settings-note"><i class="fa-regular fa-calendar-check" aria-hidden="true"></i>Los feriados nacionales se calculan automáticamente. Agrega cierres institucionales desde Calendario.</div>
+                </fieldset>
+                <fieldset v-if="isAdminGen && configPanel.section === 'mail'" class="settings-section" :disabled="!!configPanel.saving || configPanel.testing">
+                  <legend>Correos y destinatarios</legend><p class="settings-description">Configura quién recibe los resúmenes de esta regional. Los responsables de cada grupo se administran desde Grupos de almuerzo.</p>
+                  <div class="settings-fields">
+                    <label>Nombre del remitente<input v-model="configDraft.MAIL_SENDER_NAME" maxlength="150"><small>Nombre visible en los mensajes enviados.</small></label>
+                    <label>Destinatarios del consolidado<textarea v-model="configDraft.ADMIN_EMAILS" rows="2" placeholder="correo@infotep.gob.do, otro@infotep.gob.do"></textarea><small>Separa varios correos con comas. No concede permisos en la app.</small></label>
+                    <label class="settings-toggle"><input type="checkbox" v-model="configDraft.TEST_EMAIL_MODE" true-value="TRUE" false-value="FALSE"><span>Usar modo de prueba<small>Redirige todos los mensajes a un único destinatario.</small></span></label>
+                    <label>Destinatario de prueba<input v-model="configDraft.TEST_EMAIL_DEST" type="email" placeholder="tu.correo@infotep.gob.do"><small>Guarda los cambios antes de enviar una prueba.</small></label>
+                  </div>
+                  <div class="settings-note"><i class="fa-solid fa-lock" aria-hidden="true"></i>TI configura SendGrid o SMTP y sus credenciales en el servidor. La aceptación del servicio no confirma entrega al buzón.</div>
+                </fieldset>
+                <div v-if="isAdminGen && configPanel.section === 'mail' && isTestEmailMode" class="mb-6 border border-amber-200 bg-amber-50 rounded-xl p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                   <div>
                      <div class="text-xs font-black text-amber-700 uppercase tracking-wide">Modo prueba activo</div>
                      <div class="text-sm text-amber-900 font-semibold break-all">Destino: {{ adminState.config['TEST_EMAIL_DEST'] || 'Sin configurar' }}</div>
                   </div>
-                  <button @click="runTestDailyCloseEmails" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold py-2 px-4 rounded-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" :disabled="adminState.loading">
-                     <i class="fa-solid fa-paper-plane"></i> Enviar correos de prueba
+                   <button @click="runTestDailyCloseEmails" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold py-2 px-4 rounded-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" :disabled="configPanel.testing || !!configPanel.saving">
+                      <i :class="configPanel.testing ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-paper-plane'"></i> {{ configPanel.testing ? 'Encolando…' : 'Enviar correos de prueba' }}
                   </button>
                </div>
 
                <!-- Quick Management Actions: Announcement & Provider -->
-               <div class="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div class="p-4 bg-indigo-50/70 border border-indigo-100 rounded-xl flex items-center justify-between gap-3">
+                <div class="mb-6 grid gap-4">
+                   <div v-if="!isAdminGen || configPanel.section === 'announcements'" class="p-5 bg-indigo-50/70 border border-indigo-100 rounded-xl flex items-center justify-between gap-3">
                      <div>
                         <div class="text-xs font-bold text-indigo-900 flex items-center gap-1.5">
                            <i class="fa-solid fa-bullhorn text-indigo-600"></i> Aviso de la regional
@@ -935,7 +957,7 @@
                      </button>
                   </div>
 
-                  <div v-if="isAdminGen" class="p-4 bg-amber-50/70 border border-amber-100 rounded-xl flex items-center justify-between gap-3">
+                   <div v-if="isAdminGen && configPanel.section === 'provider'" class="p-5 bg-amber-50/70 border border-amber-100 rounded-xl flex items-center justify-between gap-3">
                      <div>
                         <div class="text-xs font-bold text-amber-900 flex items-center gap-1.5">
                            <i class="fa-solid fa-award text-amber-600"></i> Proveedor de Alimentos
@@ -945,12 +967,12 @@
                         </div>
                      </div>
                      <button v-if="isAdminGen" @click="openProviderResetModal" type="button" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold transition-colors shrink-0 shadow-sm shadow-amber-600/20">
-                        Gestionar
+                        Cambiar proveedor
                      </button>
                   </div>
                </div>
 
-                <section v-if="isAdminGen" class="mb-6 p-5 bg-blue-50/50 border border-blue-100 rounded-xl" aria-labelledby="branding-heading">
+                 <section v-if="isAdminGen && configPanel.section === 'appearance'" class="mb-6 p-5 bg-blue-50/50 border border-blue-100 rounded-xl" aria-labelledby="branding-heading">
                   <h3 id="branding-heading" class="font-bold text-sm text-gray-900 mb-4"><i class="fa-solid fa-palette text-blue-600 mr-2" aria-hidden="true"></i>Identidad visual y pie de página</h3>
                   <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
                      <div class="md:col-span-2"><label for="branding-footer" class="block text-xs font-semibold text-gray-600 mb-2">Texto del pie de página</label><textarea id="branding-footer" v-model="brandingForm.footerText" maxlength="200" rows="2" :disabled="brandingSaving" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white"></textarea></div>
@@ -960,50 +982,38 @@
                   <div class="mt-4 flex flex-wrap gap-3 items-center"><button type="button" @click="saveBranding" :disabled="brandingSaving" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-lg disabled:opacity-50"><i :class="brandingSaving ? 'fa-solid fa-circle-notch fa-spin mr-2' : 'fa-solid fa-floppy-disk mr-2'" aria-hidden="true"></i>{{ brandingSaving ? 'Guardando…' : 'Guardar identidad visual' }}</button><p v-if="brandingMessage" role="status" class="text-xs text-gray-700">{{ brandingMessage }}</p></div>
                </section>
 
-               <!-- Customized Inputs for specific keys -->
-               <div v-if="isAdminGen" class="grid gap-4 md:grid-cols-2">
-                  <div v-for="item in adminState.configList" :key="item.key" v-show="item.key !== 'RESPONSIBLES_EMAILS_JSON' && item.key !== 'MEAL_PRICE_HISTORY_JSON'" class="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                     <div class="flex justify-between items-start mb-2">
-                        <div class="text-xs font-bold text-gray-500 uppercase tracking-wider">{{ item.key }}</div>
-                        <div class="text-[10px] text-gray-400 max-w-[50%] text-right leading-tight">{{ item.desc }}</div>
-                     </div>
-
-                     <div v-if="!adminState.configEdit" class="font-mono text-sm text-gray-900 font-medium break-all bg-white px-3 py-2 rounded-lg border border-transparent">
-                        {{ formatConfigValue(item.key, adminState.config[item.key]) }}
-                     </div>
-                     <div v-else>
-                        <input v-if="item.key === 'HORA_ENVIO' || item.key === 'HORA_RECORDATORIO'" type="time" v-model="adminState.config[item.key]" class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
-                        <input v-else-if="item.key === 'MEAL_PRICE_CURRENT'" :disabled="!isAdminGen" type="number" min="0" step="0.01" v-model="adminState.config[item.key]" class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
-                        <input v-else-if="item.key.includes('LIMIT') || item.key.includes('MINUTOS')" type="number" v-model="adminState.config[item.key]" class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
-                        <input v-else type="text" v-model="adminState.config[item.key]" class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
-                     </div>
-                  </div>
-               </div>
+                <fieldset v-if="isAdminGen && configPanel.section === 'provider'" class="settings-section" :disabled="!!configPanel.saving">
+                  <legend>Precio del almuerzo</legend><p class="settings-description">El cambio se aplica a partir de hoy. Los reportes conservan los precios históricos de cada fecha.</p>
+                  <div class="settings-fields"><label>Precio por plato (RD$)<input v-model="configDraft.MEAL_PRICE_CURRENT" type="number" min="0" max="100000" step="0.01"></label><div class="settings-preview"><i class="fa-solid fa-receipt" aria-hidden="true"></i><span>Precio vigente<strong>RD$ {{ Number(mealPricing.current).toFixed(2) }}</strong></span></div></div>
+                  <div class="settings-note">Al cambiar de proveedor, debes indicar su precio en la misma operación.</div>
+                  <details class="settings-history"><summary>Ver historial de precios</summary><ul><li v-for="price in mealPricing.history" :key="price.from"><span>Desde {{ price.from }}</span><strong>RD$ {{ Number(price.price).toFixed(2) }}</strong></li></ul></details>
+                </fieldset>
 
                <!-- Responsibles Editor -->
-               <div v-if="isAdminGen" class="mt-8">
+                <div v-if="isAdminGen && configPanel.section === 'mail'" class="mt-6">
                   <h3 class="font-bold text-sm text-gray-900 mb-4 flex items-center gap-2">
-                     <i class="fa-solid fa-envelope-circle-check text-gray-400"></i> Responsables (Resumen Diario)
+                      <i class="fa-solid fa-envelope-circle-check text-gray-400"></i> Copias del consolidado (CC)
                   </h3>
                   <div class="bg-gray-50 border border-gray-200 rounded-xl overflow-hidden p-4">
-                     <p class="text-xs text-gray-500 mb-4">Estos correos se agregan como copia (CC) al resumen diario enviado a ADMIN_EMAILS con el Excel consolidado adjunto. No otorgan acceso a la plataforma.</p>
+                      <p class="text-xs text-gray-500 mb-4">Copias del consolidado diario con su Excel adjunto. Estos destinatarios no reciben permisos ni sustituyen a los responsables de grupo.</p>
 
                      <div class="space-y-3">
                         <div v-if="adminState.responsiblesList.length === 0" class="text-xs text-gray-400 bg-white border border-dashed border-gray-200 rounded-lg px-3 py-3">
                            Sin correos configurados.
                         </div>
                         <div v-for="(email, idx) in adminState.responsiblesList" :key="idx" class="flex flex-col sm:flex-row gap-2 sm:items-center">
-                           <input :disabled="!adminState.configEdit" v-model="adminState.responsiblesList[idx]" type="email" placeholder="correo@ejemplo.com" class="flex-1 min-w-0 bg-white border border-gray-200 rounded px-2 py-2 text-xs outline-none focus:ring-1 focus:ring-blue-500 disabled:text-gray-500">
+                            <input :disabled="!!configPanel.saving" v-model="adminState.responsiblesList[idx]" type="email" placeholder="correo@infotep.gob.do" aria-label="Correo en copia" class="flex-1 min-w-0 bg-white border border-gray-200 rounded px-2 py-2 text-xs outline-none focus:ring-1 focus:ring-blue-500 disabled:text-gray-500">
                            <span class="hidden sm:inline-flex text-[10px] font-bold uppercase tracking-wide text-gray-400 px-2">CC</span>
-                           <button v-if="adminState.configEdit" @click="removeResponsible(idx)" class="self-start sm:self-auto text-red-500 hover:bg-red-50 p-2 rounded" title="Eliminar correo"><i class="fa-solid fa-trash"></i></button>
+                            <button :disabled="!!configPanel.saving" @click="removeResponsible(idx)" class="self-start sm:self-auto text-red-500 hover:bg-red-50 p-2 rounded" title="Eliminar correo"><i class="fa-solid fa-trash"></i></button>
                         </div>
                      </div>
 
-                     <button v-if="adminState.configEdit" @click="addResponsible" class="mt-4 text-blue-600 hover:bg-blue-50 text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-2">
+                      <button :disabled="!!configPanel.saving" @click="addResponsible" class="mt-4 text-blue-600 hover:bg-blue-50 text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-2">
                         <i class="fa-solid fa-plus"></i> Agregar correo
                      </button>
                   </div>
                </div>
+               <div v-if="isAdminGen && ['operation','mail','provider'].includes(configPanel.section)" class="settings-actions"><span>Los cambios afectan a {{ regionalName }}.</span><button type="button" @click="cancelConfig" :disabled="!!configPanel.saving" class="settings-cancel">Deshacer cambios</button><button type="button" @click="saveConfig()" :disabled="!!configPanel.saving" class="settings-save"><i :class="configPanel.saving ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-check'" aria-hidden="true"></i>{{ configPanel.saving ? 'Guardando…' : 'Guardar cambios' }}</button></div>
             </div>
          </div>
 
@@ -1067,10 +1077,11 @@
 
          <!-- Holidays Module (New) -->
          <div v-if="adminState.tab === 'DIAS_LIBRES'" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <h2 class="text-xl font-bold text-gray-900 mb-4">Días Libres (Feriados)</h2>
+             <div class="flex flex-wrap items-center justify-between gap-3 mb-4"><h2 class="text-xl font-bold text-gray-900">Calendario de servicio</h2><label class="text-xs text-gray-500">Año <select v-model="calendarYear" class="border border-gray-200 rounded-lg p-2 ml-2" aria-label="Año del calendario"><option v-for="year in [Number(todayYmd.slice(0,4)) - 1, Number(todayYmd.slice(0,4)), Number(todayYmd.slice(0,4)) + 1]" :key="year" :value="year">{{ year }}</option></select></label></div>
+             <p class="text-xs text-gray-500 leading-relaxed mb-5">Los feriados nacionales se calculan automáticamente, con sus fechas de traslado. Se excluyen del menú y los pedidos en todas las regionales. Agrega aquí cierres institucionales adicionales de esta regional.</p>
             <div class="flex flex-col md:flex-row gap-4 mb-6 bg-gray-50 p-4 rounded-xl border border-gray-200">
-               <input v-model="adminState.holidayModal.data.date" type="date" class="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
-               <input v-model="adminState.holidayModal.data.desc" type="text" placeholder="Descripción (ej. Navidad)" class="flex-grow bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
+               <input v-model="adminState.holidayModal.data.date" :min="todayYmd" type="date" aria-label="Fecha del cierre institucional" class="min-w-0 bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
+               <input v-model="adminState.holidayModal.data.desc" type="text" aria-label="Motivo del cierre institucional" placeholder="Motivo (ej. actividad institucional)" class="min-w-0 flex-grow bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
                <button @click="saveHoliday" class="bg-gray-900 hover:bg-black text-white font-bold py-2 px-6 rounded-lg text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2" :disabled="adminState.loading">
                   <i v-if="adminState.loading" class="fa-solid fa-circle-notch fa-spin"></i>
                   Agregar
@@ -1083,16 +1094,16 @@
                      <tr><th class="p-3 rounded-l">Fecha</th><th class="p-3">Motivo</th><th v-if="canManageRegion" class="p-3 rounded-r">Acciones</th></tr>
                   </thead>
                   <tbody class="divide-y divide-gray-100">
-                     <tr v-for="h in adminState.holidays" :key="h.date" class="hover:bg-gray-50">
+                     <tr v-for="h in calendarHolidays" :key="h.date" :class="['hover:bg-gray-50', { 'opacity-50': h.date < todayYmd }]">
                         <td class="p-3 font-medium text-gray-900">{{ h.date.split('-').reverse().join('/') }}</td>
-                        <td class="p-3 text-gray-600">{{ h.desc }}</td>
+                        <td class="p-3 text-gray-600">{{ h.desc }}<span class="block text-[10px] mt-1" :class="h.automatic ? 'text-blue-600' : 'text-amber-700'">{{ h.automatic ? 'Nacional · automático' : 'Cierre de esta regional' }}</span></td>
                         <td class="p-3">
-                           <button @click="deleteHoliday(h.date)" class="text-red-500 hover:bg-red-50 p-2 rounded text-xs font-bold border border-red-100">
+                           <button v-if="!h.automatic && h.date >= todayYmd" @click="deleteHoliday(h.date)" class="text-red-500 hover:bg-red-50 p-2 rounded text-xs font-bold border border-red-100">
                              Eliminar
                            </button>
                         </td>
                      </tr>
-                     <tr v-if="adminState.holidays.length === 0">
+                     <tr v-if="calendarHolidays.length === 0">
                         <td colspan="3" class="p-4 text-center text-gray-400">No hay días libres futuros registrados.</td>
                      </tr>
                   </tbody>

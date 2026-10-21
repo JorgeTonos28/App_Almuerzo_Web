@@ -49,7 +49,25 @@ public partial class LunchService(AppDbContext db, BusinessRules rules, ReportSe
         Require(Enabled(u) && (RegionalAdmin(actor) || u!.DepartmentId == actor.DepartmentId), "Usuario fuera de tu ámbito o inactivo."); return u!;
     }
     public async Task<Dictionary<string, string>> Config() => await db.Settings.ToDictionaryAsync(x => x.Key, x => x.Value);
-    public async Task<HashSet<string>> Holidays() => (await db.Holidays.Select(x => x.Date).ToListAsync()).ToHashSet();
+    public async Task<HashSet<string>> Holidays() => (await Calendar()).Select(x => x.Date).ToHashSet();
+    private async Task<CalendarDay[]> Calendar()
+    {
+        var local = await db.Holidays.AsNoTracking().Select(x => new CalendarDay(x.Date, x.Reason, false)).ToListAsync();
+        return DominicanCalendar.Around(rules.Now.Year).Concat(local).GroupBy(x => x.Date)
+            .Select(g => new CalendarDay(g.Key, string.Join(" · ", g.Select(x => x.Description).Distinct()), g.Any(x => x.Automatic)))
+            .OrderBy(x => x.Date).ToArray();
+    }
+    public async Task ReconcileNationalCalendar()
+    {
+        var dates = DominicanCalendar.Around(rules.Now.Year).Where(x => string.CompareOrdinal(x.Date, rules.Today) >= 0).Select(x => x.Date).ToArray();
+        var orders = await db.Orders.Where(x => x.Status == "ACTIVO" && dates.Contains(x.Date)).ToListAsync();
+        foreach (var order in orders) {
+            order.Status = "CANCELADO"; order.ModifiedAt = rules.Now.ToString("O");
+            Queue(order.Email, "Almuerzo suspendido por feriado nacional", $"El pedido del {order.Date} fue cancelado porque corresponde a un feriado nacional. No se realizará servicio de almuerzo.");
+            db.Audit.Add(new AuditEvent { Actor = "SYSTEM", Action = "NationalHolidayOrderCancelled", EntityId = order.Id });
+        }
+        await db.SaveChangesAsync();
+    }
     private async Task Set(string key, string value)
     {
         var s = await db.Settings.FindAsync(db.RegionId, key); Require(s != null, "Clave de configuración desconocida."); s!.Value = value;
@@ -76,10 +94,10 @@ public partial class LunchService(AppDbContext db, BusinessRules rules, ReportSe
     };
     public JsonObject Game(AppUser u)
     {
-        var saved = Obj(u.GameJson); var month = rules.Today[..7]; var sameMonth = Str(saved, "monthKey") == month && Str(saved, "gameVersion") == "rush-v1"; var sameDay = Str(saved, "dayKey") == rules.Today;
-        var used = sameDay ? Math.Clamp(Num(saved, "usedSeconds"), 0, 900) : 0;
+        var saved = Obj(u.GameJson); var month = rules.Today[..7]; var sameMonth = Str(saved, "monthKey") == month && Str(saved, "gameVersion") is "rush-v1" or "pot-v2"; var sameDay = Str(saved, "dayKey") == rules.Today;
+        var used = sameDay ? Math.Clamp(Str(saved, "gameVersion") == "pot-v2" ? RushCharged(saved) : Num(saved, "usedSeconds"), 0, 900) : 0;
         return new JsonObject {
-            ["gameVersion"] = "rush-v1", ["monthKey"] = month, ["monthLabel"] = rules.Now.ToString("MMMM yyyy", CultureInfo.GetCultureInfo("es-DO")), ["dayKey"] = rules.Today,
+            ["gameVersion"] = "pot-v2", ["monthKey"] = month, ["monthLabel"] = rules.Now.ToString("MMMM yyyy", CultureInfo.GetCultureInfo("es-DO")), ["dayKey"] = rules.Today,
             ["score"] = sameMonth ? Num(saved, "score") : 0, ["hits"] = sameMonth ? Num(saved, "hits") : 0, ["misses"] = sameMonth ? Num(saved, "misses") : 0,
             ["usedSeconds"] = used, ["remainingSeconds"] = 900 - used, ["dailyLimitSeconds"] = 900, ["streak"] = sameDay ? Num(saved, "streak") : 0,
             ["bestStreak"] = sameMonth ? Num(saved, "bestStreak") : 0, ["penaltySeconds"] = sameDay ? Num(saved, "penaltySeconds") : 0
@@ -99,7 +117,7 @@ public partial class LunchService(AppDbContext db, BusinessRules rules, ReportSe
         if (actor.Role == Roles.DepartmentAdmin && providerRating?.Department != actor.DepartmentId) providerRating = null;
         var deptUsers = actor.Role == Roles.DepartmentAdmin ? await db.Users.AsNoTracking().Where(x => x.DepartmentId == actor.DepartmentId && x.Status == "ACTIVO" && !x.RegionalBlocked && x.Email != actor.Email).Select(x => new { email = x.Email, nombre = x.Name }).ToArrayAsync() : [];
         return new {
-            ok = true, appVersion = "0.3.0", organizationManaged = configuration.GetValue<bool>("Ad:AutoProvisioningEnabled"), regionalId = db.RegionId, regionalName = (await db.Regions.FindAsync(db.RegionId))?.DisplayName ?? db.RegionId, regions = await db.Regions.Where(x => actor.Role == Roles.GeneralAdmin || x.Id == actor.RegionId).OrderBy(x => x.Name).Select(x => new { id = x.Id, nombre = x.Name, displayName = x.Alias != "" ? x.Alias : x.Name, alias = x.Alias, directoryKey = x.DirectoryKey, directoryCode = x.DirectoryCode, directoryManaged = x.DirectoryManaged || db.Users.IgnoreQueryFilters().Any(u => u.RegionId == x.Id && u.DirectoryManaged), estado = x.Status }).ToArrayAsync(), nextBusinessDay = rules.NextBusinessDay(holidays).ToString("yyyy-MM-dd"), user = UserDto(target), activeUser = UserDto(actor), deptUsers,
+            ok = true, appVersion = "0.4.0", organizationManaged = configuration.GetValue<bool>("Ad:AutoProvisioningEnabled"), regionalId = db.RegionId, regionalName = (await db.Regions.FindAsync(db.RegionId))?.DisplayName ?? db.RegionId, regions = await db.Regions.Where(x => actor.Role == Roles.GeneralAdmin || x.Id == actor.RegionId).OrderBy(x => x.Name).Select(x => new { id = x.Id, nombre = x.Name, displayName = x.Alias != "" ? x.Alias : x.Name, alias = x.Alias, directoryKey = x.DirectoryKey, directoryCode = x.DirectoryCode, directoryManaged = x.DirectoryManaged || db.Users.IgnoreQueryFilters().Any(u => u.RegionId == x.Id && u.DirectoryManaged), estado = x.Status }).ToArrayAsync(), nextBusinessDay = rules.NextBusinessDay(holidays).ToString("yyyy-MM-dd"), user = UserDto(target), activeUser = UserDto(actor), deptUsers,
             userPrefs = Obj(target.PreferencesJson), currentDate = date, dates = openDates.Select(d => new { value = d, label = BusinessRules.Date(d).ToString("ddd dd MMM", CultureInfo.GetCultureInfo("es-DO")) }),
             menu = date != null ? MenuOf(date) : new Dictionary<string, object>(), allMenus = openDates.ToDictionary(d => d, MenuOf), allOrders = orders.ToDictionary(x => x.Date, OrderDto),
             myOrder = orders.Where(x => x.Date == date).Select(OrderDto).FirstOrDefault(), adminData = actor.Role == Roles.User ? null : await Stats(actor, date),
@@ -126,7 +144,7 @@ public partial class LunchService(AppDbContext db, BusinessRules rules, ReportSe
             departments = departments.Where(x => RegionalAdmin(actor) || x.Id == actor.DepartmentId).Select(x => new { id = x.Id, nombre = x.Name, displayName = x.DisplayName, alias = x.Alias, admins = x.Admins, estado = x.Status,
                 adDepartments = users.Where(u => u.DepartmentId == x.Id && u.DirectoryDepartment != null).Select(u => u.DirectoryDepartment!.Name).Distinct().OrderBy(n => n), memberCount = users.Count(u => u.DepartmentId == x.Id) }),
             config = cfg, configKeys = cfg.Keys, configList = (await db.Settings.AsNoTracking().ToListAsync()).Where(x => cfg.ContainsKey(x.Key)).Select(x => new { key = x.Key, value = x.Value, desc = x.Description }),
-            holidays = RegionalAdmin(actor) ? (await db.Holidays.ToListAsync()).Select(x => new { date = x.Date, desc = x.Reason }) : [],
+            holidays = RegionalAdmin(actor) ? (await Calendar()).Select(x => new { date = x.Date, desc = x.Description, automatic = x.Automatic }) : [],
             menuCategories = RegionalAdmin(actor) ? (await db.Categories.OrderBy(x => x.SortOrder).ToListAsync()).Select(CategoryDto) : []
         };
     }
@@ -197,21 +215,22 @@ public partial class LunchService(AppDbContext db, BusinessRules rules, ReportSe
                 ManageRegion(actor); var m = await db.Menu.SingleOrDefaultAsync(x => x.Id == first); Require(m != null, "Plato no encontrado."); rules.MenuDate(m!.Date, await Holidays()); var n = await CancelAffected(m.Date, [m], []); db.Menu.Remove(m); return new { ok = true, cancellations = n, cancellationEmails = n };
             }
             case "apiSaveWeeklyMenu": return await SaveWeekly(actor, P() as JsonObject ?? throw new BusinessException("Formato de menú inválido."));
-            case "apiGetHolidays": return new { ok = true, holidays = (await db.Holidays.ToListAsync()).Select(x => new { date = x.Date, desc = x.Reason }) };
+            case "apiGetHolidays": return new { ok = true, holidays = (await Calendar()).Select(x => new { date = x.Date, desc = x.Description, automatic = x.Automatic }) };
             case "apiSaveHoliday":
             {
-                ManageRegion(actor); Require(BusinessRules.Date(S()) >= BusinessRules.Date(rules.Today), "No puedes suspender fechas pasadas."); var h = await db.Holidays.FindAsync(db.RegionId, S()); if (h == null) { h = new Holiday { Date = S() }; db.Holidays.Add(h); } h.Reason = Bounded(S(1), 500, "Motivo");
+                ManageRegion(actor); var date = BusinessRules.Date(S()); Require(date >= BusinessRules.Date(rules.Today), "No puedes suspender fechas pasadas."); Require(!DominicanCalendar.Year(date.Year).Any(x => x.Date == S()), "Esta fecha ya es un feriado nacional automático."); var h = await db.Holidays.FindAsync(db.RegionId, S()); if (h == null) { h = new Holiday { Date = S() }; db.Holidays.Add(h); } h.Reason = Bounded(S(1), 500, "Motivo");
                 var orders = await db.Orders.Where(x => x.Date == first && x.Status == "ACTIVO").ToListAsync(); foreach (var o in orders) { o.Status = "CANCELADO"; o.ModifiedAt = rules.Now.ToString("O"); Queue(o.Email, "Almuerzo suspendido", $"Se suspendió el almuerzo de {o.Date}. Motivo: {h.Reason}"); }
                 return new { ok = true, cancellations = orders.Count, cancellationEmails = orders.Count };
             }
-            case "apiDeleteHoliday": { ManageRegion(actor); BusinessRules.Date(S()); var h = await db.Holidays.FindAsync(db.RegionId, S()); if (h != null) db.Holidays.Remove(h); return Ok(); }
+            case "apiDeleteHoliday": { ManageRegion(actor); var date = BusinessRules.Date(S()); Require(!DominicanCalendar.Year(date.Year).Any(x => x.Date == S()), "Los feriados nacionales automáticos no se eliminan desde la regional."); var h = await db.Holidays.FindAsync(db.RegionId, S()); if (h != null) db.Holidays.Remove(h); return Ok(); }
             case "apiSubmitMealRating": case "apiSubmitProviderRating": return await SubmitRating(actor, P()!, method == "apiSubmitMealRating");
             case "apiResetProviderPeriod":
             {
                 return await ChangeProvider(actor, P()!);
             }
             case "apiGetRatingsSummary": return await RatingSummary(actor);
-            case "apiGetChefGameRanking": return await Ranking(actor, S());
+            case "apiGetChefGameRanking": return await Ranking(actor, S(), S(1), P(2));
+            case "apiCheckpointLunchRush": return await FinishRush(actor, P()!, true);
             case "apiSyncChefGameState": throw new BusinessException("Esta versión del juego fue reemplazada. Recarga la página.");
             case "apiStartLunchRush": return await StartRush(actor);
             case "apiFinishLunchRush": return await FinishRush(actor, P()!);
@@ -323,6 +342,15 @@ public partial class LunchService(AppDbContext db, BusinessRules rules, ReportSe
     private async Task<object> SaveConfig(AppUser actor, JsonNode p)
     {
         Admin(actor, true); var cfg = await Config(); var changes = p as JsonObject ?? throw new BusinessException("Configuración inválida.");
+        if (changes.ContainsKey("HORA_ENVIO") || changes.ContainsKey("HORA_RECORDATORIO") || changes.ContainsKey("MINUTOS_PREV_CIERRE")) {
+            var sendValue = changes["HORA_ENVIO"]?.ToString() ?? cfg["HORA_ENVIO"];
+            var reminderValue = changes["HORA_RECORDATORIO"]?.ToString() ?? cfg["HORA_RECORDATORIO"];
+            var minutesValue = changes["MINUTOS_PREV_CIERRE"]?.ToString() ?? cfg["MINUTOS_PREV_CIERRE"];
+            Require(TimeOnly.TryParseExact(sendValue, "HH:mm", out var send) && TimeOnly.TryParseExact(reminderValue, "HH:mm", out _), "Hora inválida.");
+            Require(decimal.TryParse(minutesValue, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var lead) && lead is >= 0 and <= 300 && decimal.Truncate(lead) == lead, "Minutos inválidos.");
+            var close = send.ToTimeSpan().TotalMinutes - (double)lead;
+            Require(close >= 0 && TimeOnly.ParseExact(reminderValue, "HH:mm").ToTimeSpan().TotalMinutes <= close, "El recordatorio debe ocurrir antes del cierre y el cierre debe permanecer en el mismo día.");
+        }
         foreach (var key in changes.Select(x => x.Key).Where(x => x.StartsWith("PROVIDER_") || x.StartsWith("MEAL_PRICE_")))
         {
             if (key == "MEAL_PRICE_HISTORY_JSON") continue;
@@ -358,7 +386,8 @@ public partial class LunchService(AppDbContext db, BusinessRules rules, ReportSe
             if (pair.Key.EndsWith("_JSON")) JsonNode.Parse(value);
             await Set(pair.Key, value);
         }
-        return Ok();
+        var current = await CurrentConfig();
+        return new { ok = true, mealPricing = new { current = decimal.Parse(current["MEAL_PRICE_CURRENT"], CultureInfo.InvariantCulture), history = JsonNode.Parse(current["MEAL_PRICE_HISTORY_JSON"]) } };
     }
     private async Task<object> SaveCategory(AppUser actor, JsonNode p)
     {
@@ -444,11 +473,19 @@ public partial class LunchService(AppDbContext db, BusinessRules rules, ReportSe
         }
         return new { ok = true, providerStats = Stats("PROVIDER"), mealStats = Stats("MEAL") };
     }
-    private async Task<object> Ranking(AppUser actor, string targetEmail)
+    private async Task<object> Ranking(AppUser actor, string targetEmail, string scope, JsonNode? pageValue)
     {
-        var target = await Target(actor, targetEmail); var users = await db.Users.AsNoTracking().Include(x => x.Department).Include(x => x.DirectoryDepartment).Where(x => x.Status == "ACTIVO" && !x.RegionalBlocked).ToListAsync();
+        Require(scope is "" or "NATIONAL" or "REGIONAL", "Ámbito de ranking inválido.");
+        int page = int.TryParse(pageValue?.ToString(), out var p) ? p : 1; Require(page is >= 1 and <= 10000, "Página inválida.");
+        var target = await Target(actor, targetEmail);
+        var regions = await db.Regions.AsNoTracking().Where(x => x.Status == "ACTIVO").ToDictionaryAsync(x => x.Id, x => x.Alias != "" ? x.Alias : x.Name);
+        // Deliberate national projection: only enabled participants and public game statistics.
+        // No identity codes, AD details, emails, orders or administrative data leave this endpoint.
+        var users = await db.Users.IgnoreQueryFilters().AsNoTracking().Include(x => x.Department).Include(x => x.DirectoryDepartment)
+            .Where(x => x.Status == "ACTIVO" && !x.RegionalBlocked && (scope != "REGIONAL" || x.RegionId == actor.RegionId)).ToListAsync();
+        users = users.Where(u => Enabled(u) && regions.ContainsKey(u.RegionId)).ToList();
         var sorted = users.Select(u => new { u, g = Game(u) }).OrderByDescending(x => Num(x.g, "score")).ThenByDescending(x => Num(x.g, "hits")).ThenBy(x => Num(x.g, "misses")).ThenBy(x => x.u.Name);
-        var rows = sorted.Select((x, i) => new { rank = i + 1, nombre = x.u.Name, departamento = x.u.Department?.DisplayName ?? "", score = Num(x.g, "score"), hits = Num(x.g, "hits"), misses = Num(x.g, "misses"), bestStreak = Num(x.g, "bestStreak"), isCurrent = x.u.Email == target.Email }).ToArray();
-        return new { ok = true, monthKey = rules.Today[..7], monthLabel = rules.Now.ToString("MMMM yyyy", CultureInfo.GetCultureInfo("es-DO")), rows = rows.Take(50), currentUser = rows.FirstOrDefault(x => x.isCurrent) };
+        var rows = sorted.Select((x, i) => new { rank = i + 1, nombre = x.u.Name, regional = regions[x.u.RegionId], departamento = x.u.Department?.DisplayName ?? "", score = Num(x.g, "score"), hits = Num(x.g, "hits"), misses = Num(x.g, "misses"), bestStreak = Num(x.g, "bestStreak"), isCurrent = x.u.Email == target.Email }).ToArray();
+        return new { ok = true, scope = scope == "REGIONAL" ? scope : "NATIONAL", page, total = rows.Length, pageSize = 50, monthKey = rules.Today[..7], monthLabel = rules.Now.ToString("MMMM yyyy", CultureInfo.GetCultureInfo("es-DO")), rows = rows.Skip((page - 1) * 50).Take(50), currentUser = rows.FirstOrDefault(x => x.isCurrent) };
     }
 }

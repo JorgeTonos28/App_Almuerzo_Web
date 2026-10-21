@@ -113,6 +113,13 @@ using (var scope = app.Services.CreateScope()) {
     }
     db.RegionId = Region.LegacyId;
     if (args.Contains("--demo")) await DemoData.InitializeAsync(db, scope.ServiceProvider.GetRequiredService<BusinessRules>());
+    foreach (var regionId in await db.Regions.Where(x => x.Status == "ACTIVO").Select(x => x.Id).ToListAsync()) {
+        db.RegionId = regionId;
+        await using var calendarTx = await db.Database.BeginTransactionAsync();
+        await scope.ServiceProvider.GetRequiredService<LunchService>().ReconcileNationalCalendar();
+        await calendarTx.CommitAsync();
+    }
+    db.RegionId = Region.LegacyId;
 }
 if (!app.Environment.IsDevelopment()) { app.UseHsts(); app.UseHttpsRedirection(); }
 app.UseExceptionHandler(handler => handler.Run(async c => { c.Response.StatusCode = 500; await c.Response.WriteAsJsonAsync(new { ok = false, msg = "Ocurrió un error. Intenta nuevamente o contacta al administrador.", traceId = c.TraceIdentifier }); }));

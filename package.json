@@ -1,9 +1,10 @@
 {
   "name": "almuerzo-web-assets",
   "private": true,
-  "version": "0.3.0",
+  "version": "0.4.0",
   "scripts": {
     "build:css": "tailwindcss -c tailwind.config.cjs -i frontend/tailwind.css -o src/Almuerzo.Web/wwwroot/assets/tailwind.css --minify",
+    "test:game": "node tools/test-lunch-rush.mjs",
     "build": "node tools/vendor-assets.mjs && node tools/compile-frontend.mjs && npm run build:css"
   },
   "devDependencies": {

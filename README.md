@@ -1,4 +1,4 @@
-# App Almuerzo Web · 0.3.0
+# App Almuerzo Web · 0.4.0
 
 ASP.NET Core 10 MVC, EF Core y **SQL Server**, con la interfaz de App_Almuerzo v7.36 adaptada a operación nacional. Cada regional tiene grupos de almuerzo, catálogo institucional AD, menú, proveedor, precio, pedidos, valoraciones, configuración y reportes. La autorización se verifica en el servidor en cada petición.
 
@@ -14,7 +14,9 @@ La [matriz de autoridad y permisos](docs/ACCESS-CONTROL.md) define quién puede 
 - Nuevo AD NamesV1: lee CodigoEmpleado, Cargo, Departamento y Regional del DataTable/diffgram. Con opt-in crea organizaciones nuevas y USER; conserva nombres AD y permite alias solo a ADMIN_GEN. Catálogos importados requieren mapeos explícitos privados antes del primer vínculo. Los grupos operativos de Legacy se conservan; varios departamentos AD pueden compartir el mismo grupo. Los nuevos usuarios quedan PENDIENTE hasta que ADMIN_GEN asigne grupo y acceso. ADMIN_DEP gestiona el grupo y recibe su resumen conjunto. Un ADMIN_GEN/ADMIN_REG puede recibir también el resumen de su grupo sin cambiar de rol.
 - SendGrid por API HTTPS, con adjuntos Excel/PDF, cola transaccional y reintentos. Pickup sigue siendo el modo inicial seguro; SMTP se conserva por compatibilidad.
 - Migraciones específicas de SQL Server y transferencia offline desde SQLite, transaccional y reconciliada. SQLite sigue disponible para demo y pruebas.
-- **Bandeja Express**: cuatro carriles, ingredientes y fuego, flechas/A-D y controles táctiles. Siete niveles de dificultad progresiva, partidas de hasta 45 segundos y máximo de 15 minutos diarios reservado en el servidor. El servidor reconstruye la puntuación; el ranking mensual usa la versión nueva del juego. La tarjeta del pedido se oculta con animación durante la partida y regresa al terminar.
+- **Calendario automático dominicano**: feriados y traslados calculados en el servidor, sin depender de Google ni de acceso a Internet. Se combinan con cierres institucionales regionales y gobiernan menú, importación, pedidos y resúmenes. Los nacionales aparecen identificados y no pueden eliminarse desde una regional. Ver [fuentes, revisión anual y operación](docs/CALENDAR-AND-GAME.md).
+- **Config por secciones**: Operación, Correos, Proveedor y precio, Apariencia y Avisos, con formularios, vista previa del cierre, historial de precios y guardado independiente. Solo ADMIN_GEN modifica Config; ADMIN_REG mantiene su editor de avisos.
+- **Olla Express**: sesiones abiertas, detención voluntaria, 15 minutos diarios de tiempo jugado y guardado automático cada 10 s. Cuatro carriles conectados por los extremos, contacto con el borde de la olla, ocho niveles dinámicos, fuego y especiales raros (festín ×3, protección y ralentización). El servidor reproduce los controles y calcula los resultados. Se conserva el puntaje mensual anterior. Ranking nacional paginado y filtro de la regional del colaborador. La tarjeta del pedido se oculta durante la partida.
 
 ## Ejecutar una demostración
 
@@ -27,6 +29,7 @@ npm run build
 dotnet restore Almuerzo.sln
 dotnet build Almuerzo.sln -c Release --no-restore
 dotnet test Almuerzo.sln -c Release --no-build
+npm run test:game
 set ASPNETCORE_ENVIRONMENT=Development
 dotnet run --project src\Almuerzo.Web -c Release --no-build --no-launch-profile --urls http://localhost:5062 -- --demo
 ```
@@ -81,6 +84,8 @@ set ALMUERZO_TEST_SQLSERVER=
 ```
 
 Cada prueba SQL usa una BD temporal `AlmuerzoTest_<GUID>` y la elimina al terminar. Auditorías: `npm audit` y `dotnet list Almuerzo.sln package --vulnerable --include-transitive`. Mantener snapshots EF de ambos proveedores; ver comandos en la guía. La revisión visual incluye escritorio/móvil, selector regional, precio y juego sintéticos.
+
+La versión 0.4.0 no cambia entidades ni necesita una migración adicional. Al arrancar reconcilia pedidos activos presentes/futuros que coincidan con un feriado nacional: cancela cada uno una sola vez, registra auditoría y encola la notificación en la misma transacción. Conserva el menú y todos los históricos. TI debe revisar la cola y los pedidos afectados tras actualizar. Los correos se procesan según la configuración de envío vigente.
 
 Producción requiere HTTPS, dominio en AllowedHosts, cuenta de servicio y almacenamiento privado persistente. Las claves de Data Protection se cifran con DPAPI en Windows o certificado en otros sistemas. TI administra respaldos SQL y pruebas de restauración. Operar **una instancia y un worker**: la cola no tiene bloqueo distribuido y un fallo después de aceptar un correo puede causar reintento duplicado. No se promete entrega exactamente una vez.
 

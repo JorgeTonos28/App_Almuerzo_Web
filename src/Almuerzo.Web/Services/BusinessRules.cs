@@ -9,7 +9,8 @@ public class BusinessRules(TimeProvider clock)
     public string Today => Now.ToString("yyyy-MM-dd");
     public static DateOnly Date(string value) => DateOnly.TryParseExact(value, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date)
         ? date : throw new BusinessException("Fecha inválida. Usa YYYY-MM-DD.");
-    public static bool BusinessDay(DateOnly date, HashSet<string> holidays) => date.DayOfWeek is not DayOfWeek.Saturday and not DayOfWeek.Sunday && !holidays.Contains(date.ToString("yyyy-MM-dd"));
+    public static bool BusinessDay(DateOnly date, HashSet<string> holidays) => date.DayOfWeek is not DayOfWeek.Saturday and not DayOfWeek.Sunday
+        && !holidays.Contains(date.ToString("yyyy-MM-dd")) && !DominicanCalendar.Year(date.Year).Any(x => x.Date == date.ToString("yyyy-MM-dd"));
     public DateOnly NextBusinessDay(HashSet<string> holidays)
     {
         var day = DateOnly.FromDateTime(Now.DateTime).AddDays(1);

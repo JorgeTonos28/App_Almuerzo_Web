@@ -114,15 +114,17 @@ public class RegionalTests
         app.Profiles["regional@infotep.gob.do"] = new("regional@infotep.gob.do", "Persona", "1005", "E", "D1", "Departamento A");
         using var c = app.Client(); Assert.Equal("/Auth/Denied", await app.Login(c, "regional@infotep.gob.do"));
     }
-    [Fact] public async Task RushTimeIsReservedOnServerAndAResultCannotBeReplayed()
+    [Fact] public async Task OpenSessionChargesOnlyPlayedTimeAndFinalRetryIsIdempotent()
     {
         await using var app = new AppFactory(); await app.Seed(); using var c = app.Client(); await app.Login(c, "user@infotep.gob.do");
-        var start = await app.Rpc(c, "apiStartLunchRush"); Assert.True(start["ok"]!.GetValue<bool>()); Assert.Equal(855, start["state"]!["remainingSeconds"]!.GetValue<int>());
+        var start = await app.Rpc(c, "apiStartLunchRush"); Assert.True(start["ok"]!.GetValue<bool>()); Assert.Equal(900, start["duration"]!.GetValue<int>()); Assert.Equal(900, start["state"]!["remainingSeconds"]!.GetValue<int>());
         Assert.False((await app.Rpc(c, "apiStartLunchRush"))["ok"]!.GetValue<bool>());
-        app.Clock.Current = app.Clock.Current.AddSeconds(45);
+        app.Clock.Current = app.Clock.Current.AddSeconds(7);
         var finish = await app.Rpc(c, "apiFinishLunchRush", new { id = start["id"]!.ToString(), moves = new[] { new { t = 100, lane = 2 } }, score = 999999 });
-        Assert.True(finish["ok"]!.GetValue<bool>()); Assert.True(finish["state"]!["score"]!.GetValue<int>() < 999999);
-        Assert.False((await app.Rpc(c, "apiFinishLunchRush", new { id = start["id"]!.ToString(), moves = Array.Empty<object>() }))["ok"]!.GetValue<bool>());
+        Assert.True(finish["ok"]!.GetValue<bool>()); Assert.True(finish["state"]!["score"]!.GetValue<int>() < 999999); Assert.Equal(893, finish["state"]!["remainingSeconds"]!.GetValue<int>());
+        var retry = await app.Rpc(c, "apiFinishLunchRush", new { id = start["id"]!.ToString(), moves = Array.Empty<object>() });
+        Assert.True(retry["ok"]!.GetValue<bool>()); Assert.Equal(finish["state"]!.ToJsonString(), retry["state"]!.ToJsonString());
+        Assert.Equal(893, (await app.Rpc(c, "apiStartLunchRush"))["duration"]!.GetValue<int>());
     }
     [Fact] public async Task HistoricalReportKeepsEmployeeCodeAfterRegionalTransfer()
     {
@@ -145,9 +147,9 @@ public class RegionalTests
     [Fact] public async Task RushDailyLimitCannotBeBypassedByAbandoningRoundsOrRelogging()
     {
         await using var app = new AppFactory(); await app.Seed(); using var c = app.Client(); await app.Login(c, "user@infotep.gob.do");
-        for (var i = 0; i < 20; i++) {
+        for (var i = 0; i < 45; i++) {
             Assert.True((await app.Rpc(c, "apiStartLunchRush"))["ok"]!.GetValue<bool>());
-            app.Clock.Current = app.Clock.Current.AddSeconds(45);
+            app.Clock.Current = app.Clock.Current.AddSeconds(21);
         }
         using var again = app.Client(); await app.Login(again, "user@infotep.gob.do");
         Assert.False((await app.Rpc(again, "apiStartLunchRush"))["ok"]!.GetValue<bool>());
