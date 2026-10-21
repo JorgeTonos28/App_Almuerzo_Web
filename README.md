@@ -1,4 +1,4 @@
-# App Almuerzo Web · 0.4.0
+# App Almuerzo Web · 0.4.1
 
 ASP.NET Core 10 MVC, EF Core y **SQL Server**, con la interfaz de App_Almuerzo v7.36 adaptada a operación nacional. Cada regional tiene grupos de almuerzo, catálogo institucional AD, menú, proveedor, precio, pedidos, valoraciones, configuración y reportes. La autorización se verifica en el servidor en cada petición.
 
@@ -17,6 +17,8 @@ La [matriz de autoridad y permisos](docs/ACCESS-CONTROL.md) define quién puede 
 - **Calendario automático dominicano**: feriados y traslados calculados en el servidor, sin depender de Google ni de acceso a Internet. Se combinan con cierres institucionales regionales y gobiernan menú, importación, pedidos y resúmenes. Los nacionales aparecen identificados y no pueden eliminarse desde una regional. Ver [fuentes, revisión anual y operación](docs/CALENDAR-AND-GAME.md).
 - **Config por secciones**: Operación, Correos, Proveedor y precio, Apariencia y Avisos, con formularios, vista previa del cierre, historial de precios y guardado independiente. Solo ADMIN_GEN modifica Config; ADMIN_REG mantiene su editor de avisos.
 - **Olla Express**: sesiones abiertas, detención voluntaria, 15 minutos diarios de tiempo jugado y guardado automático cada 10 s. Cuatro carriles conectados por los extremos, contacto con el borde de la olla, ocho niveles dinámicos, fuego y especiales raros (festín ×3, protección y ralentización). El servidor reproduce los controles y calcula los resultados. Se conserva el puntaje mensual anterior. Ranking nacional paginado y filtro de la regional del colaborador. La tarjeta del pedido se oculta durante la partida.
+
+En v0.4.1, el juego interpola el movimiento en cada cuadro y usa transformaciones gráficas, con simulación del servidor en pasos de 20 ms. El nivel máximo cae aproximadamente un 34% más rápido. 🔥 💣 🦠 🪨 son variantes del mismo negativo: −12 puntos; cada tercer impacto diario sin protección añade −30/−60/−90… puntos y 3/6/9… segundos de pausa, consumiendo tiempo diario. El contador y la espera sobreviven a detener, recargar o iniciar sesión nuevamente. El escudo evita cualquier efecto del negativo, incluido romper racha o sumar impactos. Perder un ingrediente sigue rompiendo la racha.
 
 ## Ejecutar una demostración
 

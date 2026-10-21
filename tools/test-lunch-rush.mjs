@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 const context = vm.createContext({});
 vm.runInContext(await fs.readFile('frontend/lunch-rush.js', 'utf8'), context);
 const create = context.createPotSimulation;
-const moves = Array.from({ length: 800 }, (_, i) => ({ t: 100 + i * 250, lane: (i + 2) % 4 }));
+const moves = Array.from({ length: 800 }, (_, i) => ({ t: 100 + i * 240, lane: (i + 2) % 4 }));
 const vectors = [];
 for (const [seed, base] of [[1, 0], [123456, 900], [2147483646, 299]]) {
   const sim = create(seed, base); sim.advance(200000, moves);
@@ -14,7 +14,7 @@ for (const [seed, base] of [[1, 0], [123456, 900], [2147483646, 299]]) {
 }
 // These vectors are also checked by the C# simulator tests.
 console.log(JSON.stringify(vectors));
-assert.deepEqual(vectors, [[1,0,960,92,76,10,185100,0,207350],[123456,900,1714,96,111,6,54800,0,84850],[2147483646,299,1213,99,78,11,175950,145900,0]]);
+assert.deepEqual(vectors, [[1,0,181,66,51,8,141380,0,0],[123456,900,409,60,56,5,0,0,60260],[2147483646,299,138,54,55,5,43100,0,0]]);
 const touch = create(1, 299);
 touch.state.drops.push({ id: 99, lane: 1, food: 0, kind: 'food', progress: 7550 });
 touch.advance(0, []);
@@ -35,7 +35,7 @@ assert.equal(touch.state.score, before + 30); assert.equal(touch.state.drops.som
 let bad = 0, normal = 0, specials = 0;
 for (let seed = 1; seed <= 100; seed++) {
   const sim = create(seed, 900), seen = new Set(); let lastSpecial = -18000;
-  for (let t = 0; t <= 120000; t += 50) {
+  for (let t = 0; t <= 120000; t += 20) {
     sim.advance(t, []);
     for (const d of sim.state.drops) if (!seen.has(d.id)) {
       seen.add(d.id);
@@ -48,3 +48,24 @@ for (let seed = 1; seed <= 100; seed++) {
 assert.ok(bad / (bad + normal) > .18 && bad / (bad + normal) < .35);
 assert.ok(specials / (bad + normal + specials) < .06);
 console.log(`Mecánicas verificadas: fuego ${(bad / (bad + normal) * 100).toFixed(1)}%, especiales ${(specials / (bad + normal + specials) * 100).toFixed(1)}%.`);
+const protection = create(1, 300, 2);
+const inject = (sim, kind, lane = 1) => sim.state.drops.push({ id: 9000, lane, food: 0, kind, progress: 7550 });
+inject(protection, 'food'); protection.advance(0, []);
+inject(protection, 'shield'); protection.advance(20, []);
+for (const t of [40,60,80]) { inject(protection,'burnt'); protection.advance(t, []); }
+assert.equal(protection.state.streak, 1); assert.equal(protection.state.score,310);
+assert.equal(protection.state.negativeHits, 2); assert.equal(protection.state.pauseUntil,0); assert.equal(protection.state.misses,0);
+const penalties = create(1, 1000);
+for (const [t, kind] of [[0,'burnt'],[20,'food'],[40,'burnt'],[60,'food'],[80,'burnt']]) { inject(penalties,kind); penalties.advance(t, []); }
+assert.equal(penalties.state.negativeHits,3); assert.equal(penalties.state.pauseUntil,3080); assert.equal(penalties.state.score,954);
+assert.equal(penalties.state.drops.length,0);
+penalties.advance(3060, []); assert.equal(penalties.state.score,954); assert.equal(penalties.state.drops.length,0);
+penalties.advance(3080, []);
+for (const t of [3100,3120,3140]) { inject(penalties,'burnt'); penalties.advance(t, []); }
+assert.equal(penalties.state.score,858); assert.equal(penalties.state.pauseUntil,9140); assert.equal(penalties.state.penaltySeconds,9);
+const smooth = create(1,0); smooth.advance(620, []);
+const progress = smooth.state.drops[0].progress;
+assert.ok(smooth.renderDrops(625,330)[0].y > smooth.renderDrops(620,330)[0].y);
+assert.ok(smooth.renderDrops(630,330)[0].y > smooth.renderDrops(625,330)[0].y);
+assert.equal(smooth.state.drops[0].progress,progress,'Rendering must not advance authoritative physics');
+console.log('Protección, penalizaciones acumulativas y movimiento entre pasos verificados.');

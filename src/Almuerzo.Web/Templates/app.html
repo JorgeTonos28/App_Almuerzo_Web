@@ -266,26 +266,29 @@
         <div class="rush-toolbar">
           <div><span class="rush-eyebrow">Pausa de cocina</span><h3>Olla Express</h3></div>
           <div class="rush-time"><i class="fa-regular fa-clock" aria-hidden="true"></i> {{ rush.active ? rushClock(rush.remaining) : chefRemainingLabel }} disponibles hoy</div>
-          <button v-if="!rush.active" @click="startRush" :disabled="rush.busy || rush.pending || !chefGameAvailable || !!impersonateEmail || activeUser.regionalId !== regionalId" class="rush-play"><i :class="rush.busy ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-play'"></i> {{ rush.busy ? 'Preparando…' : 'Jugar' }}</button>
+          <button v-if="!rush.active" @click="startRush" :disabled="rush.busy || rush.pending || rush.waitRemaining > 0 || !chefGameAvailable || !!impersonateEmail || activeUser.regionalId !== regionalId" class="rush-play"><i :class="rush.busy ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-play'"></i> {{ rush.busy ? 'Preparando…' : rush.waitRemaining > 0 ? 'Espera ' + rush.waitRemaining + 's' : 'Jugar' }}</button>
           <button v-else @click="finishRush" :disabled="rush.busy" class="rush-stop">Detener y guardar</button>
         </div>
         <p v-if="rush.error" class="rush-error" role="alert">{{ rush.error }} <button v-if="rush.pending" @click="finishRush" :disabled="rush.busy">Reintentar guardado</button></p>
         <p v-if="rush.message" class="rush-result" role="status">{{ rush.message }}</p>
+        <p v-if="!rush.active && rush.waitRemaining > 0" class="rush-error" role="status">La pausa de cocina continúa. Tu tiempo diario sigue corriendo.</p>
         <transition name="rush-expand">
           <section v-if="rush.active" id="rush-board" tabindex="0" :class="['rush-board', { 'rush-feast': rush.effects.some(e => e.kind === 'feast') }]" aria-label="Olla Express: usa flechas izquierda y derecha o A y D para mover la olla. Escape detiene y guarda.">
             <div class="rush-hud"><span>Nivel {{ rush.level }}<small>{{ rush.syncing ? 'Guardando…' : 'Guardado automático' }}</small></span><strong>{{ rush.points >= 0 ? '+' : '' }}{{ rush.points }} pts</strong><span>{{ rushClock(rush.remaining) }}<small>restantes hoy</small></span></div>
+            <div class="rush-danger-meter"><span>Negativos sin protección <strong>{{ rush.negativeHits % 3 }}/3</strong></span><span v-if="rush.negativeHits >= 3">{{ Math.floor(rush.negativeHits / 3) }} {{ Math.floor(rush.negativeHits / 3) === 1 ? 'penalización hoy' : 'penalizaciones hoy' }}</span><span v-else>Cada 3, pausa y pérdida extra</span></div>
             <div class="rush-kitchen" aria-hidden="true"><span>COCINA</span><i class="fa-solid fa-utensils"></i><span>EN SERVICIO</span></div>
             <div class="rush-lanes" aria-hidden="true">
               <div v-for="lane in 4" :key="lane" :class="['rush-lane', { selected: rush.lane === lane - 1 }]"></div>
-              <span v-for="drop in rush.drops" :key="drop.id" :class="['rush-food', drop.kind]" :style="{ left: (drop.lane * 25 + 12.5) + '%', top: drop.y + '%' }">{{ drop.icon }}</span>
+              <span v-for="drop in rush.drops" :key="drop.id" :class="['rush-food', drop.kind]" :style="{ left: (drop.lane * 25 + 12.5) + '%', transform: 'translate3d(-50%, ' + drop.y + 'px, 0) translateY(-50%)' }">{{ drop.icon }}</span>
               <div :class="['rush-pot', { protected: rush.effects.some(e => e.kind === 'shield') }]" :style="{ left: (rush.lane * 25 + 12.5) + '%' }"><div class="rush-pot-steam"><i></i><i></i><i></i></div><div class="rush-pot-body"></div><div class="rush-pot-rim"></div></div>
               <div class="rush-effects"><span v-for="effect in rush.effects" :key="effect.kind" :class="effect.kind">{{ effect.label }} · {{ effect.seconds }}s</span></div>
             </div>
+            <div v-if="rush.paused" class="rush-penalty" role="status"><span class="rush-penalty-icon" aria-hidden="true">⏳</span><strong>Cocina en pausa</strong><span class="rush-penalty-clock">{{ rush.pauseSeconds }}s</span><p>−{{ rush.penaltyLoss }} puntos adicionales por acumular 3 negativos.</p><small>Tu tiempo diario sigue corriendo.</small></div>
             <div class="rush-feedback" aria-live="off"><span :key="rush.event" class="rush-pop">{{ rush.feedback }}</span><span v-if="rush.streak > 1"> · Racha {{ rush.streak }}</span></div>
-            <div class="rush-touch"><button @pointerdown.prevent="moveRush(rush.lane - 1)" aria-label="Mover a la izquierda">←</button><span>← → o A / D</span><button @pointerdown.prevent="moveRush(rush.lane + 1)" aria-label="Mover a la derecha">→</button></div>
+            <div class="rush-touch"><button :disabled="rush.paused" @pointerdown.prevent="moveRush(rush.lane - 1)" aria-label="Mover a la izquierda">←</button><span>← → o A / D</span><button :disabled="rush.paused" @pointerdown.prevent="moveRush(rush.lane + 1)" aria-label="Mover a la derecha">→</button></div>
           </section>
         </transition>
-        <p v-if="!rush.active" class="rush-instructions">Ingredientes a la olla, fuego fuera. ← → o A/D; botones en móvil. Cruza los extremos del tablero. Juega a tu ritmo y detente cuando quieras · 15 minutos diarios.<span class="rush-legend">⭐ Festín ×3 y sin fuego · 🧊 Menos velocidad · 🛡️ Protección</span></p>
+        <p v-if="!rush.active" class="rush-instructions">Ingredientes a la olla; evita 🔥 💣 🦠 🪨. ← → o A/D; botones en móvil. Cruza los extremos del tablero. Juega a tu ritmo · 15 minutos diarios.<span class="rush-legend">Cada 3 negativos: pérdida extra y pausa crecientes, con el tiempo corriendo.<br>⭐ Festín ×3 y sin negativos · 🧊 Menos velocidad · 🛡️ Protección</span></p>
 
         <transition name="receipt-swap" mode="out-in">
         <div v-if="!rush.active" :key="chefGameCardKey" class="order-confirmation-card max-w-md mx-auto bg-white rounded-[2rem] shadow-xl shadow-green-900/5 overflow-hidden text-center relative border border-gray-100">
@@ -516,8 +519,9 @@
             <div class="chef-ranking-rule">
               <i class="fa-solid fa-bowl-rice"></i>
               <div>
-                <strong>Esquiva el fuego</strong>
-                <p>El fuego resta 12 puntos y rompe la racha. Dejar caer comida rompe la racha. El puntaje nunca baja de cero.</p>
+                <strong>Evita los ingredientes peligrosos</strong>
+                <p>🔥 💣 🦠 🪨 tienen el mismo efecto: −12 puntos y rompen la racha. Con protección no hacen nada ni cuentan para penalizaciones. Perder comida sigue rompiendo la racha.</p>
+                <p>Cada 3 negativos sin protección en el día: −30 puntos extra y 3 s de pausa; luego −60 y 6 s, −90 y 9 s… El cronómetro continúa y detener/reabrir no elimina la espera ni el contador. El puntaje no baja de cero.</p>
               </div>
             </div>
             <div class="chef-ranking-rule">
@@ -531,7 +535,7 @@
               <i class="fa-solid fa-wand-magic-sparkles"></i>
               <div>
                 <strong>Especiales poco frecuentes</strong>
-                <p>⭐ Festín: puntos ×3 y sin fuego por 10 s. 🛡️ Protección: ignora fuego por 10 s. 🧊 Frío: ralentiza 8 s, a partir del nivel 3.</p>
+                <p>⭐ Festín: puntos ×3 y sin negativos por 10 s. 🛡️ Protección: ignora los negativos por 10 s y conserva la racha. 🧊 Frío: ralentiza 8 s, a partir del nivel 3.</p>
               </div>
             </div>
             <div class="chef-ranking-rule">

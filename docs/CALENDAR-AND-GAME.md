@@ -1,4 +1,4 @@
-# Calendario, configuración y juego · v0.4.0
+# Calendario, configuración y juego · v0.4.1
 
 ## Feriados y cierres
 
@@ -26,15 +26,18 @@ El jugador puede repartir 900 segundos diarios entre las sesiones que prefiera. 
 
 El servidor mantiene una reserva renovable de 20 segundos y verifica cada 10 segundos. Una segunda pestaña no puede iniciar otra sesión durante la reserva. Al perder conectividad, la interfaz detiene el juego y permite reintentar el guardado congelado. Si se cierra abruptamente el navegador, se conserva el último puntaje confirmado y se consume como máximo la reserva de 20 segundos posterior al último control. El cliente intenta guardar al salir; esto no se garantiza al cerrar un proceso o apagar el equipo.
 
-Cuatro carriles, controles ←/→ o A/D y botones táctiles. Los extremos se conectan. Un ingrediente se recoge desde el primer contacto con el borde superior de la olla, con una ventana tolerante. La simulación usa pasos de 50 ms, controles separados por al menos 100 ms y velocidad limitada.
+Cuatro carriles, controles ←/→ o A/D y botones táctiles. Los extremos se conectan. Un ingrediente se recoge desde el primer contacto con el borde superior de la olla, con una ventana tolerante. Desde v0.4.1 la simulación usa pasos de 20 ms, controles separados por al menos 100 ms y velocidad limitada. La presentación interpola cada cuadro con transformaciones `translate3d`, sin modificar la física ni los resultados. La altura se mide al iniciar o redimensionar, sin lecturas de geometría por cuadro. La caída máxima pasa de 1720 a 1280 ms de recorrido: aproximadamente 34% más velocidad. La frecuencia máxima también aumenta.
 
 - Ingrediente: 10 puntos más 1 por cada cinco aciertos consecutivos, hasta 5 adicionales. Perder comida rompe la racha.
-- Fuego: −12 puntos y rompe la racha. No reduce el total por debajo de cero. Se fuerza presencia regular y se añade una probabilidad moderada; no aparece durante Festín.
-- ⭐ Festín: durante 10 segundos, puntos ×3; elimina el fuego presente e impide fuego nuevo.
-- 🛡️ Protección: ignora el fuego durante 10 segundos y conserva la racha.
+- Negativos 🔥 💣 🦠 🪨: son variantes visuales de la misma mecánica: −12 puntos y rompe la racha. No reduce el total por debajo de cero. Se fuerza presencia regular y se añade una probabilidad moderada; no aparecen durante Festín.
+- Cada tres negativos sin protección en el día, aunque haya aciertos entre ellos: penalización adicional de 30 puntos y pausa de 3 segundos la primera vez; 60 puntos/6 segundos la segunda; 90/9 la tercera, y así sucesivamente. Durante la pausa se despeja el tablero, no se generan ingredientes y se bloquean los controles; no se penalizan ingredientes omitidos durante esa espera. El reloj y el guardado automático continúan. Se conserva una breve entrada de ingredientes al reanudar. La espera queda limitada por el tiempo diario disponible y el fin del día.
+- ⭐ Festín: durante 10 segundos, puntos ×3; elimina los negativos presentes e impide negativos nuevos.
+- 🛡️ Protección: ignora los negativos durante 10 segundos; conserva puntos, racha y contador de impactos. Los ingredientes que se dejen caer siguen rompiendo la racha y tienen un mensaje explícito.
 - 🧊 Frío: ralentiza durante 8 segundos. Solo aparece desde nivel 3.
 
 Los especiales no están garantizados: aproximadamente 3% en simulaciones sintéticas, con mínimo 18 segundos entre apariciones. Los efectos diferentes pueden coexistir. Un efecto termina por tiempo, no por detener el juego; una sesión nueva comienza sin efectos ni racha. Los puntos mensuales y mejor racha se conservan. Cada 300 puntos del mes aumenta el nivel hasta 8; también aumenta durante una sesión. La velocidad y frecuencia tienen topes jugables.
+
+El contador de negativos y la escalada son diarios, persisten en GameJson y se verifican en el servidor. Detener durante una pausa guarda el resultado y permite cerrar la partida, pero no comenzar otra hasta que transcurra la espera; el presupuesto diario sigue disminuyendo. Al volver a cargar o autenticar se recupera la espera restante. El servidor calcula la deuda temporal sin descontarla dos veces, incluso si la pausa supera la reserva de 20 segundos. Los negativos protegidos no cuentan. Se reinician al cambiar el día en Santo Domingo; el puntaje continúa siendo mensual. La versión `pot-v3` conserva puntajes y tiempo diario de versiones anteriores, y requiere recargar clientes anteriores tras desplegar.
 
 Navegador y servidor comparten reglas equivalentes deterministas. El servidor ignora puntuaciones enviadas por el cliente, reproduce movimientos/capturas/efectos, rechaza controles imposibles, tiempos futuros y reescritura de un tramo confirmado. El reintento final es idempotente. Esto verifica integridad de resultados; no pretende distinguir una persona de controles automatizados.
 

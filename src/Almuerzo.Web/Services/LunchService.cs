@@ -10,6 +10,7 @@ namespace Almuerzo.Web.Services;
 // The legacy view contract is retained; all identity, scope and integrity checks live here.
 public partial class LunchService(AppDbContext db, BusinessRules rules, ReportService reports, IConfiguration configuration)
 {
+    public const string Version = "0.4.1";
     public static JsonObject Obj(string? raw) => JsonNode.Parse(string.IsNullOrWhiteSpace(raw) ? "{}" : raw) as JsonObject ?? new();
     public static string Str(JsonNode? node, string key, string fallback = "") => node?[key]?.ToString() ?? fallback;
     public static int Num(JsonNode? node, string key, int fallback = 0) => int.TryParse(Str(node, key), out var v) ? v : fallback;
@@ -94,13 +95,17 @@ public partial class LunchService(AppDbContext db, BusinessRules rules, ReportSe
     };
     public JsonObject Game(AppUser u)
     {
-        var saved = Obj(u.GameJson); var month = rules.Today[..7]; var sameMonth = Str(saved, "monthKey") == month && Str(saved, "gameVersion") is "rush-v1" or "pot-v2"; var sameDay = Str(saved, "dayKey") == rules.Today;
-        var used = sameDay ? Math.Clamp(Str(saved, "gameVersion") == "pot-v2" ? RushCharged(saved) : Num(saved, "usedSeconds"), 0, 900) : 0;
+        var saved = Obj(u.GameJson); var month = rules.Today[..7]; var sameMonth = Str(saved, "monthKey") == month && Str(saved, "gameVersion") is "rush-v1" or "pot-v2" or "pot-v3"; var sameDay = Str(saved, "dayKey") == rules.Today;
+        var used = sameDay ? Math.Clamp(Str(saved, "gameVersion") is "pot-v2" or "pot-v3" ? RushCharged(saved) : Num(saved, "usedSeconds"), 0, 900) : 0;
+        var cooldown = sameDay && Str(saved, "gameVersion") == "pot-v3" && DateTimeOffset.TryParse(Str(saved, "rushStarted"), out var start)
+            ? (int)Math.Clamp((start.AddMilliseconds(Num(saved, "rushPauseUntil")) - rules.Now).TotalMilliseconds, 0, 900000) : 0;
+        var waitBudget = cooldown > 0 ? Math.Max(0, Math.Min(900, Num(saved, "rushUsedBefore") + (Num(saved, "rushPauseUntil") + 999) / 1000) - used) : 0;
         return new JsonObject {
-            ["gameVersion"] = "pot-v2", ["monthKey"] = month, ["monthLabel"] = rules.Now.ToString("MMMM yyyy", CultureInfo.GetCultureInfo("es-DO")), ["dayKey"] = rules.Today,
+            ["gameVersion"] = "pot-v3", ["monthKey"] = month, ["monthLabel"] = rules.Now.ToString("MMMM yyyy", CultureInfo.GetCultureInfo("es-DO")), ["dayKey"] = rules.Today,
             ["score"] = sameMonth ? Num(saved, "score") : 0, ["hits"] = sameMonth ? Num(saved, "hits") : 0, ["misses"] = sameMonth ? Num(saved, "misses") : 0,
             ["usedSeconds"] = used, ["remainingSeconds"] = 900 - used, ["dailyLimitSeconds"] = 900, ["streak"] = sameDay ? Num(saved, "streak") : 0,
-            ["bestStreak"] = sameMonth ? Num(saved, "bestStreak") : 0, ["penaltySeconds"] = sameDay ? Num(saved, "penaltySeconds") : 0
+            ["bestStreak"] = sameMonth ? Num(saved, "bestStreak") : 0, ["penaltySeconds"] = sameDay ? Num(saved, "penaltySeconds") : 0,
+            ["negativeHits"] = sameDay ? Num(saved, "negativeHits") : 0, ["cooldownRemainingMs"] = cooldown, ["cooldownBudgetSeconds"] = waitBudget
         };
     }
     public async Task<object> Init(AppUser actor, string? requested = null, string? targetEmail = null)
@@ -117,7 +122,7 @@ public partial class LunchService(AppDbContext db, BusinessRules rules, ReportSe
         if (actor.Role == Roles.DepartmentAdmin && providerRating?.Department != actor.DepartmentId) providerRating = null;
         var deptUsers = actor.Role == Roles.DepartmentAdmin ? await db.Users.AsNoTracking().Where(x => x.DepartmentId == actor.DepartmentId && x.Status == "ACTIVO" && !x.RegionalBlocked && x.Email != actor.Email).Select(x => new { email = x.Email, nombre = x.Name }).ToArrayAsync() : [];
         return new {
-            ok = true, appVersion = "0.4.0", organizationManaged = configuration.GetValue<bool>("Ad:AutoProvisioningEnabled"), regionalId = db.RegionId, regionalName = (await db.Regions.FindAsync(db.RegionId))?.DisplayName ?? db.RegionId, regions = await db.Regions.Where(x => actor.Role == Roles.GeneralAdmin || x.Id == actor.RegionId).OrderBy(x => x.Name).Select(x => new { id = x.Id, nombre = x.Name, displayName = x.Alias != "" ? x.Alias : x.Name, alias = x.Alias, directoryKey = x.DirectoryKey, directoryCode = x.DirectoryCode, directoryManaged = x.DirectoryManaged || db.Users.IgnoreQueryFilters().Any(u => u.RegionId == x.Id && u.DirectoryManaged), estado = x.Status }).ToArrayAsync(), nextBusinessDay = rules.NextBusinessDay(holidays).ToString("yyyy-MM-dd"), user = UserDto(target), activeUser = UserDto(actor), deptUsers,
+            ok = true, appVersion = Version, organizationManaged = configuration.GetValue<bool>("Ad:AutoProvisioningEnabled"), regionalId = db.RegionId, regionalName = (await db.Regions.FindAsync(db.RegionId))?.DisplayName ?? db.RegionId, regions = await db.Regions.Where(x => actor.Role == Roles.GeneralAdmin || x.Id == actor.RegionId).OrderBy(x => x.Name).Select(x => new { id = x.Id, nombre = x.Name, displayName = x.Alias != "" ? x.Alias : x.Name, alias = x.Alias, directoryKey = x.DirectoryKey, directoryCode = x.DirectoryCode, directoryManaged = x.DirectoryManaged || db.Users.IgnoreQueryFilters().Any(u => u.RegionId == x.Id && u.DirectoryManaged), estado = x.Status }).ToArrayAsync(), nextBusinessDay = rules.NextBusinessDay(holidays).ToString("yyyy-MM-dd"), user = UserDto(target), activeUser = UserDto(actor), deptUsers,
             userPrefs = Obj(target.PreferencesJson), currentDate = date, dates = openDates.Select(d => new { value = d, label = BusinessRules.Date(d).ToString("ddd dd MMM", CultureInfo.GetCultureInfo("es-DO")) }),
             menu = date != null ? MenuOf(date) : new Dictionary<string, object>(), allMenus = openDates.ToDictionary(d => d, MenuOf), allOrders = orders.ToDictionary(x => x.Date, OrderDto),
             myOrder = orders.Where(x => x.Date == date).Select(OrderDto).FirstOrDefault(), adminData = actor.Role == Roles.User ? null : await Stats(actor, date),

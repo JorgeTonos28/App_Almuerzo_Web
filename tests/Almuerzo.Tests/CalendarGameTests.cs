@@ -20,12 +20,12 @@ public class CalendarGameTests
         Assert.Equal(new DateOnly(2027, 1, 5), new BusinessRules(clock).NextBusinessDay([]));
     }
     [Theory]
-    [InlineData(1, 0, 960, 92, 76, 10, 185100, 0, 207350)]
-    [InlineData(123456, 900, 1714, 96, 111, 6, 54800, 0, 84850)]
-    [InlineData(2147483646, 299, 1213, 99, 78, 11, 175950, 145900, 0)]
+    [InlineData(1, 0, 181, 66, 51, 8, 141380, 0, 0)]
+    [InlineData(123456, 900, 409, 60, 56, 5, 0, 0, 60260)]
+    [InlineData(2147483646, 299, 138, 54, 55, 5, 43100, 0, 0)]
     public void ServerReplayMatchesBrowserVectors(int seed, int score, int final, int hits, int misses, int best, int frenzy, int slow, int shield)
     {
-        var moves = Enumerable.Range(0, 800).Select(i => new RushMove(100 + i * 250, (i + 2) % 4)).ToArray();
+        var moves = Enumerable.Range(0, 800).Select(i => new RushMove(100 + i * 240, (i + 2) % 4)).ToArray();
         var sim = new PotSimulation(seed, score); sim.Advance(200000, moves);
         Assert.Equal((final, hits, misses, best, frenzy, slow, shield), (sim.Score, sim.Hits, sim.Misses, sim.Best, sim.FrenzyUntil, sim.SlowUntil, sim.ShieldUntil));
     }
