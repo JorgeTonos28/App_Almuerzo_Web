@@ -10,7 +10,7 @@ namespace Almuerzo.Web.Services;
 // The legacy view contract is retained; all identity, scope and integrity checks live here.
 public partial class LunchService(AppDbContext db, BusinessRules rules, ReportService reports, IConfiguration configuration)
 {
-    public const string Version = "0.4.1";
+    public const string Version = "0.4.2";
     public static JsonObject Obj(string? raw) => JsonNode.Parse(string.IsNullOrWhiteSpace(raw) ? "{}" : raw) as JsonObject ?? new();
     public static string Str(JsonNode? node, string key, string fallback = "") => node?[key]?.ToString() ?? fallback;
     public static int Num(JsonNode? node, string key, int fallback = 0) => int.TryParse(Str(node, key), out var v) ? v : fallback;
@@ -95,13 +95,13 @@ public partial class LunchService(AppDbContext db, BusinessRules rules, ReportSe
     };
     public JsonObject Game(AppUser u)
     {
-        var saved = Obj(u.GameJson); var month = rules.Today[..7]; var sameMonth = Str(saved, "monthKey") == month && Str(saved, "gameVersion") is "rush-v1" or "pot-v2" or "pot-v3"; var sameDay = Str(saved, "dayKey") == rules.Today;
-        var used = sameDay ? Math.Clamp(Str(saved, "gameVersion") is "pot-v2" or "pot-v3" ? RushCharged(saved) : Num(saved, "usedSeconds"), 0, 900) : 0;
-        var cooldown = sameDay && Str(saved, "gameVersion") == "pot-v3" && DateTimeOffset.TryParse(Str(saved, "rushStarted"), out var start)
+        var saved = Obj(u.GameJson); var month = rules.Today[..7]; var sameMonth = Str(saved, "monthKey") == month && Str(saved, "gameVersion") is "rush-v1" or "pot-v2" or "pot-v3" or "pot-v4"; var sameDay = Str(saved, "dayKey") == rules.Today;
+        var used = sameDay ? Math.Clamp(Str(saved, "gameVersion") is "pot-v2" or "pot-v3" or "pot-v4" ? RushCharged(saved) : Num(saved, "usedSeconds"), 0, 900) : 0;
+        var cooldown = sameDay && Str(saved, "gameVersion") is "pot-v3" or "pot-v4" && DateTimeOffset.TryParse(Str(saved, "rushStarted"), out var start)
             ? (int)Math.Clamp((start.AddMilliseconds(Num(saved, "rushPauseUntil")) - rules.Now).TotalMilliseconds, 0, 900000) : 0;
         var waitBudget = cooldown > 0 ? Math.Max(0, Math.Min(900, Num(saved, "rushUsedBefore") + (Num(saved, "rushPauseUntil") + 999) / 1000) - used) : 0;
         return new JsonObject {
-            ["gameVersion"] = "pot-v3", ["monthKey"] = month, ["monthLabel"] = rules.Now.ToString("MMMM yyyy", CultureInfo.GetCultureInfo("es-DO")), ["dayKey"] = rules.Today,
+            ["gameVersion"] = "pot-v4", ["monthKey"] = month, ["monthLabel"] = rules.Now.ToString("MMMM yyyy", CultureInfo.GetCultureInfo("es-DO")), ["dayKey"] = rules.Today,
             ["score"] = sameMonth ? Num(saved, "score") : 0, ["hits"] = sameMonth ? Num(saved, "hits") : 0, ["misses"] = sameMonth ? Num(saved, "misses") : 0,
             ["usedSeconds"] = used, ["remainingSeconds"] = 900 - used, ["dailyLimitSeconds"] = 900, ["streak"] = sameDay ? Num(saved, "streak") : 0,
             ["bestStreak"] = sameMonth ? Num(saved, "bestStreak") : 0, ["penaltySeconds"] = sameDay ? Num(saved, "penaltySeconds") : 0,
@@ -237,7 +237,7 @@ public partial class LunchService(AppDbContext db, BusinessRules rules, ReportSe
             case "apiGetChefGameRanking": return await Ranking(actor, S(), S(1), P(2));
             case "apiCheckpointLunchRush": return await FinishRush(actor, P()!, true);
             case "apiSyncChefGameState": throw new BusinessException("Esta versión del juego fue reemplazada. Recarga la página.");
-            case "apiStartLunchRush": return await StartRush(actor);
+            case "apiStartLunchRush": return await StartRush(actor, S());
             case "apiFinishLunchRush": return await FinishRush(actor, P()!);
             case "apiSaveRegion": Admin(actor, true); return await RegionManagement.Save(db, P()!, configuration);
             case "apiHeartbeat":

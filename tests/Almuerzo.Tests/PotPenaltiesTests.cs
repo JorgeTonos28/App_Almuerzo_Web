@@ -45,7 +45,7 @@ public class PotPenaltiesTests
                 ["usedSeconds"] = 200, ["negativeHits"] = previousNegatives
             }.ToJsonString(); await db.SaveChangesAsync();
         }
-        var start = await app.Rpc(c, "apiStartLunchRush"); Assert.True(start["ok"]!.GetValue<bool>());
+        var start = await app.Rpc(c, "apiStartLunchRush", "pot-v4"); Assert.True(start["ok"]!.GetValue<bool>());
         var id = start["id"]!.ToString(); var begin = app.Clock.Current;
         using (var scope = app.Services.CreateScope()) {
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>(); var u = await db.Users.SingleAsync(x => x.Email == "user@infotep.gob.do");
@@ -63,21 +63,21 @@ public class PotPenaltiesTests
         Assert.True(finish["ok"]!.GetValue<bool>()); Assert.Equal(previousNegatives + 1, finish["state"]!["negativeHits"]!.GetValue<int>());
         Assert.Equal(expectedPauseSeconds * 1000, finish["state"]!["cooldownRemainingMs"]!.GetValue<int>());
         Assert.Equal(sim.Score, finish["state"]!["score"]!.GetValue<int>());
-        Assert.False((await app.Rpc(c, "apiStartLunchRush"))["ok"]!.GetValue<bool>());
+        Assert.False((await app.Rpc(c, "apiStartLunchRush", "pot-v4"))["ok"]!.GetValue<bool>());
         app.Clock.Current = app.Clock.Current.AddSeconds(1);
         using var again = app.Client(); await app.Login(again, "user@infotep.gob.do");
         var init = await app.Rpc(again, "apiGetInitData");
         Assert.Equal(700 - (end + 999) / 1000 - 1, init["chefGame"]!["remainingSeconds"]!.GetValue<int>());
-        Assert.False((await app.Rpc(again, "apiStartLunchRush"))["ok"]!.GetValue<bool>());
+        Assert.False((await app.Rpc(again, "apiStartLunchRush", "pot-v4"))["ok"]!.GetValue<bool>());
         var retry = await app.Rpc(again, "apiFinishLunchRush", new { id, elapsedMs = end, moves = Array.Empty<object>() });
         Assert.Equal(sim.Score, retry["state"]!["score"]!.GetValue<int>()); Assert.Equal(previousNegatives + 1, retry["state"]!["negativeHits"]!.GetValue<int>());
         app.Clock.Current = begin.AddMilliseconds(sim.PauseUntil + 20);
-        var resume = await app.Rpc(again, "apiStartLunchRush"); Assert.True(resume["ok"]!.GetValue<bool>());
+        var resume = await app.Rpc(again, "apiStartLunchRush", "pot-v4"); Assert.True(resume["ok"]!.GetValue<bool>());
         Assert.Equal(previousNegatives + 1, resume["baseNegatives"]!.GetValue<int>());
         Assert.Equal(700 - (sim.PauseUntil + 999) / 1000, resume["duration"]!.GetValue<int>());
         Assert.True((await app.Rpc(again, "apiFinishLunchRush", new { id = resume["id"]!.ToString(), elapsedMs = 0, moves = Array.Empty<object>() }))["ok"]!.GetValue<bool>());
         app.Clock.Current = app.Clock.Current.AddDays(1); using var nextDay = app.Client(); await app.Login(nextDay, "user@infotep.gob.do");
-        var next = await app.Rpc(nextDay, "apiStartLunchRush"); Assert.True(next["ok"]!.GetValue<bool>());
+        var next = await app.Rpc(nextDay, "apiStartLunchRush", "pot-v4"); Assert.True(next["ok"]!.GetValue<bool>());
         Assert.Equal(900, next["duration"]!.GetValue<int>()); Assert.Equal(0, next["baseNegatives"]!.GetValue<int>());
     }
 }

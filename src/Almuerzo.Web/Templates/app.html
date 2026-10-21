@@ -616,21 +616,41 @@
             </div>
          </div>
 
-                   <div class="regional-header">
-            <div><span class="rush-eyebrow">Contexto de administración</span><h2>{{ regionalName }}</h2></div>
-            <form v-if="isAdminGen" action="/regions/select" method="post" class="regional-selector">
-              <input type="hidden" name="__RequestVerificationToken" :value="csrfToken">
-              <label for="regional-select">Regional</label><select id="regional-select" name="regionId" :value="regionalId" @change="$event.target.form.requestSubmit()"><option v-for="region in regions.filter(r => r.estado === 'ACTIVO')" :key="region.id" :value="region.id">{{ region.displayName || region.nombre }}</option></select>
-            </form>
-          </div>
-          <details v-if="isAdminGen" class="regional-catalog"><summary>Regionales: alias y acceso</summary>
-            <div class="regional-list"><button v-for="region in regions" :key="region.id" @click="editRegion(region)">{{ region.displayName || region.nombre }} · {{ region.estado }}</button></div>
-            <form @submit.prevent="saveRegion" class="regional-form">
-              <label>Nombre institucional<input v-model="regionalForm.nombre" :readonly="organizationManaged || regionalForm.directoryManaged" maxlength="150" required></label><label>Alias en Almuerzo<input v-model="regionalForm.alias" maxlength="150" placeholder="Opcional: nombre para mostrar"></label><label v-if="regionalForm.directoryCode || !organizationManaged">Código AD anterior (si existe)<input v-model="regionalForm.directoryCode" :readonly="organizationManaged || regionalForm.directoryManaged" maxlength="64"></label>
-              <label>Estado<select v-model="regionalForm.estado"><option>ACTIVO</option><option>INACTIVO</option></select></label>
-              <button type="submit" :disabled="regionalSaving">{{ regionalSaving ? 'Guardando…' : 'Guardar regional' }}</button><button v-if="!organizationManaged" type="button" @click="Object.assign(regionalForm, {id:'',nombre:'',alias:'',directoryCode:'',directoryKey:'',directoryManaged:false,estado:'ACTIVO'})">Nueva</button>
-            </form><p v-if="regionalError" role="alert">{{ regionalError }}</p>
-          </details>
+          <section class="regional-context" aria-label="Administración regional">
+            <div class="regional-header">
+              <div class="regional-heading">
+                <span class="regional-icon" aria-hidden="true"><i class="fa-solid fa-location-dot"></i></span>
+                <div><span class="settings-eyebrow">Administración regional</span><h2>{{ regionalName }}</h2><p>Menú, pedidos y calendario de esta regional.</p></div>
+              </div>
+              <form v-if="isAdminGen" action="/regions/select" method="post" class="regional-selector" :aria-busy="regionalSwitchLoading">
+                <input type="hidden" name="__RequestVerificationToken" :value="csrfToken">
+                <label for="regional-select">Regional de trabajo</label>
+                <div class="regional-select-wrap"><select id="regional-select" name="regionId" :value="regionalId" :disabled="regionalSaving" :aria-disabled="regionalSwitchLoading" @change="selectRegion"><option v-for="region in regions.filter(r => r.estado === 'ACTIVO')" :key="region.id" :value="region.id">{{ region.displayName || region.nombre }}</option></select><i :class="regionalSwitchLoading ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-chevron-down'" aria-hidden="true"></i></div>
+                <span v-if="regionalSwitchLoading" role="status" class="regional-switch-status">Cambiando regional…</span>
+              </form>
+            </div>
+            <details v-if="isAdminGen" class="regional-catalog">
+              <summary><span class="regional-config-icon" aria-hidden="true"><i class="fa-solid fa-sliders"></i></span><span><strong>Configurar regionales</strong><small>Alias y disponibilidad en Almuerzo</small></span><i class="fa-solid fa-chevron-down regional-chevron" aria-hidden="true"></i></summary>
+              <div class="regional-editor">
+                <nav class="regional-list" aria-label="Regional a configurar">
+                  <span class="settings-eyebrow">Regionales</span>
+                  <div class="regional-list-items"><button v-for="region in regions" :key="region.id" type="button" :aria-pressed="regionalForm.id === region.id" :disabled="regionalSaving" @click="editRegion(region)"><span>{{ region.displayName || region.nombre }}<small v-if="region.id === regionalId">Regional de trabajo</small></span><span :class="['regional-status', { inactive: region.estado !== 'ACTIVO' }]">{{ region.estado === 'ACTIVO' ? 'Activa' : 'Inactiva' }}</span></button></div>
+                  <button v-if="!organizationManaged" type="button" class="regional-new" :disabled="regionalSaving" @click="newRegion"><i class="fa-solid fa-plus" aria-hidden="true"></i> Nueva regional</button>
+                </nav>
+                <form @submit.prevent="saveRegion" class="regional-form" :aria-busy="regionalSaving">
+                  <div class="regional-form-heading"><h3>{{ regionalForm.id ? (regionalForm.alias || regionalForm.nombre) : 'Nueva regional' }}</h3><p>El alias es el nombre que se muestra dentro de Almuerzo.</p></div>
+                  <fieldset :disabled="regionalSaving" class="regional-fields">
+                    <label>Nombre institucional<span class="regional-input-wrap"><input v-model="regionalForm.nombre" :readonly="organizationManaged || regionalForm.directoryManaged" maxlength="150" required><i v-if="organizationManaged || regionalForm.directoryManaged" class="fa-solid fa-lock" aria-hidden="true"></i></span><small>{{ organizationManaged || regionalForm.directoryManaged ? 'Sincronizado con AD. Solo lectura.' : 'Nombre del catálogo institucional.' }}</small></label>
+                    <label>Alias en Almuerzo<input v-model="regionalForm.alias" maxlength="150" placeholder="Ej.: Oficina Nacional"><small>Opcional. Si lo dejas vacío, se muestra el nombre institucional.</small></label>
+                    <label>Disponibilidad<select v-model="regionalForm.estado"><option value="ACTIVO">Activa</option><option value="INACTIVO">Inactiva</option></select><small>Una regional inactiva impide el acceso de sus colaboradores.</small></label>
+                    <label v-if="regionalForm.directoryCode || !organizationManaged">Referencia AD heredada<input v-model="regionalForm.directoryCode" :readonly="organizationManaged || regionalForm.directoryManaged" maxlength="64"><small>Dato de vinculación del catálogo anterior.</small></label>
+                  </fieldset>
+                  <p v-if="regionalError" class="regional-feedback error" role="alert">{{ regionalError }}</p><p v-if="regionalSuccess" class="regional-feedback success" role="status">{{ regionalSuccess }}</p>
+                  <div class="regional-actions"><span>Editar esta ficha no cambia tu regional de trabajo.</span><button type="submit" :disabled="regionalSaving || regionalSwitchLoading"><i :class="regionalSaving ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-check'" aria-hidden="true"></i> {{ regionalSaving ? 'Guardando…' : 'Guardar cambios' }}</button></div>
+                </form>
+              </div>
+            </details>
+          </section>
 <!-- Navigation -->
           <p v-if="!isAdminGen" class="text-xs text-gray-500 mb-4">{{ canManageRegion ? 'Gestión operativa de tu regional. Identidades, roles, departamentos y configuración institucional son de solo lectura.' : 'Consulta y gestión de pedidos de tu departamento. La identidad y los accesos los administra ADMIN_GEN.' }}</p>
           <div class="flex gap-1 border-b border-gray-200 mb-6 overflow-x-auto no-scrollbar pb-1">

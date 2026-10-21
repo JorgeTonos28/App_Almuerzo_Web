@@ -7,15 +7,24 @@ vm.runInContext(await fs.readFile('frontend/lunch-rush.js', 'utf8'), context);
 const create = context.createPotSimulation;
 const moves = Array.from({ length: 800 }, (_, i) => ({ t: 100 + i * 240, lane: (i + 2) % 4 }));
 const vectors = [];
-for (const [seed, base] of [[1, 0], [123456, 900], [2147483646, 299]]) {
+for (const [seed, base] of [[1, 0], [123456, 900], [2147483646, 299], [42, 3999], [98765, 6000]]) {
   const sim = create(seed, base); sim.advance(200000, moves);
   const s = sim.state;
   vectors.push([seed, base, s.score, s.hits, s.misses, s.best, s.frenzyUntil, s.slowUntil, s.shieldUntil]);
 }
 // These vectors are also checked by the C# simulator tests.
 console.log(JSON.stringify(vectors));
-assert.deepEqual(vectors, [[1,0,181,66,51,8,141380,0,0],[123456,900,409,60,56,5,0,0,60260],[2147483646,299,138,54,55,5,43100,0,0]]);
-const touch = create(1, 299);
+assert.deepEqual(vectors, [[1,0,341,63,56,7,191300,0,0],[123456,900,972,65,62,8,35780,0,200180],[2147483646,299,740,67,58,8,194900,0,93140],[42,3999,4294,76,148,5,191680,26240,110420],[98765,6000,5192,56,109,3,0,183440,0]]);
+const thresholds = [[0,1,3135],[499,1,3135],[500,2,2836],[999,2,2836],[1000,3,2537],[1499,3,2537],[1500,4,2238],[1999,4,2238],[2000,5,1938],[2499,5,1938],[2500,6,1639],[2999,6,1639],[3000,7,1340],[3500,7,1340],[3999,7,1340],[4000,8,1040],[999999,8,1040]];
+for (const [score, expectedLevel, expectedFall] of thresholds) {
+  const sim = create(1, score); assert.equal(sim.level(), expectedLevel); assert.equal(sim.fallDuration(), expectedFall);
+}
+const finalLevel = create(1,3999);
+finalLevel.state.drops.push({ id:999,lane:1,food:0,kind:'food',progress:7550 }); finalLevel.advance(0,[]);
+assert.equal(finalLevel.level(),8); assert.equal(finalLevel.fallDuration(),1040);
+finalLevel.state.drops.push({ id:1000,lane:1,food:0,kind:'burnt',progress:7550 }); finalLevel.advance(20,[]);
+assert.equal(finalLevel.level(),7);
+const touch = create(1, 499);
 touch.state.drops.push({ id: 99, lane: 1, food: 0, kind: 'food', progress: 7550 });
 touch.advance(0, []);
 assert.equal(touch.state.hits, 1, 'Catch on first contact with the rim');

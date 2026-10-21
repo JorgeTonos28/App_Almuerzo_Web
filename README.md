@@ -1,4 +1,4 @@
-# App Almuerzo Web · 0.4.1
+# App Almuerzo Web · 0.4.2
 
 ASP.NET Core 10 MVC, EF Core y **SQL Server**, con la interfaz de App_Almuerzo v7.36 adaptada a operación nacional. Cada regional tiene grupos de almuerzo, catálogo institucional AD, menú, proveedor, precio, pedidos, valoraciones, configuración y reportes. La autorización se verifica en el servidor en cada petición.
 
@@ -19,6 +19,8 @@ La [matriz de autoridad y permisos](docs/ACCESS-CONTROL.md) define quién puede 
 - **Olla Express**: sesiones abiertas, detención voluntaria, 15 minutos diarios de tiempo jugado y guardado automático cada 10 s. Cuatro carriles conectados por los extremos, contacto con el borde de la olla, ocho niveles dinámicos, fuego y especiales raros (festín ×3, protección y ralentización). El servidor reproduce los controles y calcula los resultados. Se conserva el puntaje mensual anterior. Ranking nacional paginado y filtro de la regional del colaborador. La tarjeta del pedido se oculta durante la partida.
 
 En v0.4.1, el juego interpola el movimiento en cada cuadro y usa transformaciones gráficas, con simulación del servidor en pasos de 20 ms. El nivel máximo cae aproximadamente un 34% más rápido. 🔥 💣 🦠 🪨 son variantes del mismo negativo: −12 puntos; cada tercer impacto diario sin protección añade −30/−60/−90… puntos y 3/6/9… segundos de pausa, consumiendo tiempo diario. El contador y la espera sobreviven a detener, recargar o iniciar sesión nuevamente. El escudo evita cualquier efecto del negativo, incluido romper racha o sumar impactos. Perder un ingrediente sigue rompiendo la racha.
+
+En v0.4.2, Olla Express conserva la velocidad inicial y extiende la progresión mensual: niveles 1–8 desde 0, 500, 1,000, 1,500, 2,000, 2,500, 3,000 y 4,000 puntos. El último tramo abarca 3,000–3,999; el máximo reduce el recorrido de 1,280 a 1,040 ms (aproximadamente 23% más velocidad). Se conservan puntos, tiempo y penalizaciones anteriores. Recarga la página tras desplegar: los clientes con reglas antiguas deben actualizarse antes de iniciar una partida. El panel regional integra selector, catálogo y formulario en una tarjeta con estados de carga/guardado y diseño adaptable. Cambiar la ficha a editar no cambia la regional de trabajo; la identidad AD y los permisos mantienen sus reglas.
 
 ## Ejecutar una demostración
 

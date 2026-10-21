@@ -20,9 +20,11 @@ public class CalendarGameTests
         Assert.Equal(new DateOnly(2027, 1, 5), new BusinessRules(clock).NextBusinessDay([]));
     }
     [Theory]
-    [InlineData(1, 0, 181, 66, 51, 8, 141380, 0, 0)]
-    [InlineData(123456, 900, 409, 60, 56, 5, 0, 0, 60260)]
-    [InlineData(2147483646, 299, 138, 54, 55, 5, 43100, 0, 0)]
+    [InlineData(1, 0, 341, 63, 56, 7, 191300, 0, 0)]
+    [InlineData(123456, 900, 972, 65, 62, 8, 35780, 0, 200180)]
+    [InlineData(2147483646, 299, 740, 67, 58, 8, 194900, 0, 93140)]
+    [InlineData(42, 3999, 4294, 76, 148, 5, 191680, 26240, 110420)]
+    [InlineData(98765, 6000, 5192, 56, 109, 3, 0, 183440, 0)]
     public void ServerReplayMatchesBrowserVectors(int seed, int score, int final, int hits, int misses, int best, int frenzy, int slow, int shield)
     {
         var moves = Enumerable.Range(0, 800).Select(i => new RushMove(100 + i * 240, (i + 2) % 4)).ToArray();
@@ -31,11 +33,11 @@ public class CalendarGameTests
     }
     [Fact] public void FirstContactSpecialEffectsAndDynamicDifficultyAreDeterministic()
     {
-        var sim = new PotSimulation(1, 299);
+        var sim = new PotSimulation(1, 499);
         void Drop(string kind, int lane = 1) => sim.Drops.Add(new() { Id = 99, Lane = lane, Kind = kind, Progress = 7550 });
-        Drop("food"); sim.Advance(0, []); Assert.Equal(309, sim.Score); Assert.Equal(2, sim.Level);
-        Drop("shield"); sim.Advance(50, []); Drop("burnt"); sim.Advance(100, []); Assert.Equal(309, sim.Score); Assert.Equal(0, sim.Misses);
-        Drop("feast"); sim.Advance(150, []); Drop("burnt", 2); Drop("food"); sim.Advance(200, []); Assert.Equal(339, sim.Score); Assert.DoesNotContain(sim.Drops, x => x.Kind == "burnt");
+        Drop("food"); sim.Advance(0, []); Assert.Equal(509, sim.Score); Assert.Equal(2, sim.Level);
+        Drop("shield"); sim.Advance(50, []); Drop("burnt"); sim.Advance(100, []); Assert.Equal(509, sim.Score); Assert.Equal(0, sim.Misses);
+        Drop("feast"); sim.Advance(150, []); Drop("burnt", 2); Drop("food"); sim.Advance(200, []); Assert.Equal(539, sim.Score); Assert.DoesNotContain(sim.Drops, x => x.Kind == "burnt");
         sim.Advance(10200, []); sim.Drops.Clear(); var before = sim.Score;
         Drop("burnt"); sim.Advance(10250, []); Assert.Equal(before - 12, sim.Score); Assert.Equal(0, sim.Streak);
     }
@@ -65,7 +67,7 @@ public class CalendarGameTests
     [Fact] public async Task CheckpointRejectsFutureTimeRewrittenHistoryAndImpossibleControls()
     {
         await using var app = new AppFactory(); await app.Seed(); using var c = app.Client(); await app.Login(c, "user@infotep.gob.do");
-        var start = await app.Rpc(c, "apiStartLunchRush"); var id = start["id"]!.ToString();
+        var start = await app.Rpc(c, "apiStartLunchRush", "pot-v4"); var id = start["id"]!.ToString();
         Assert.False((await app.Rpc(c, "apiFinishLunchRush", new { id, elapsedMs = 15000, moves = Array.Empty<object>() }))["ok"]!.GetValue<bool>());
         app.Clock.Current = app.Clock.Current.AddSeconds(10);
         var moves = new[] { new { t = 100, lane = 0 }, new { t = 200, lane = 3 } }; // includes left-edge wrap

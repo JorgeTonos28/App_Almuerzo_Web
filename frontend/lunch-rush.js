@@ -4,7 +4,9 @@ function createPotSimulation(seed, baseScore, baseNegatives = 0) {
   const s = { time: -20, lane: 1, score: Math.max(0, Math.min(999999, baseScore)), hits: 0, misses: 0,
     streak: 0, best: 0, frenzyUntil: 0, slowUntil: 0, shieldUntil: 0, negativeHits: Math.max(0, baseNegatives),
     pauseUntil: 0, penaltySeconds: 0, drops: [], feedback: '¡A cocinar!', event: 0 };
-  const level = () => Math.max(1, Math.min(8, Math.floor(s.score / 300) + 1));
+  // 0, 500, 1000, 1500, 2000, 2500, 3000, 4000: the final climb spans 1000 points.
+  const level = () => s.score >= 4000 ? 8 : Math.min(7, Math.floor(s.score / 500) + 1);
+  const fallDuration = () => 3135 - Math.floor((level() - 1) * 2095 / 7);
   const next = max => { random ^= random << 13; random ^= random >>> 17; random ^= random << 5; random >>>= 0; return random % max; };
   const say = text => { s.feedback = text; s.event++; };
   function advance(elapsed, moves) {
@@ -23,7 +25,7 @@ function createPotSimulation(seed, baseScore, baseNegatives = 0) {
         s.drops.push({ id: serial++, lane: next(4), food: next(6), kind, progress: 0 });
         nextSpawn = t + Math.max(480, 1150 - level() * 80);
       }
-      let fall = Math.max(1250, 3400 - level() * 265);
+      let fall = fallDuration();
       if (t < s.slowUntil) fall = Math.floor(fall * 17 / 10);
       const kept = []; let paused = false;
       for (const drop of s.drops) {
@@ -58,12 +60,12 @@ function createPotSimulation(seed, baseScore, baseNegatives = 0) {
   }
   function renderDrops(realElapsed, height) {
     if (realElapsed < s.pauseUntil) return [];
-    let fall = Math.max(1250, 3400 - level() * 265);
+    let fall = fallDuration();
     if (s.time < s.slowUntil) fall = Math.floor(fall * 17 / 10);
     const fraction = Math.min(1, Math.max(0, (realElapsed - s.time) / 20));
     return s.drops.map(d => ({ ...d, y: (d.progress + fraction * Math.floor(200000 / fall)) / 10000 * height }));
   }
-  return { state: s, advance, level, renderDrops };
+  return { state: s, advance, level, fallDuration, renderDrops };
 }
 
 function createLunchRush(setState) {
@@ -160,7 +162,7 @@ function createLunchRush(setState) {
     if (state.busy || state.active || state.pending || state.waitRemaining > 0) return;
     state.busy = true; state.error = ''; state.message = '';
     try {
-      const res = await rpc('apiStartLunchRush');
+      const res = await rpc('apiStartLunchRush', 'pot-v4');
       clearInterval(restTimer); restTimer = 0; state.waitRemaining = 0;
       setState(res.state); baseScore = res.baseScore; simulation = createPotSimulation(res.seed, baseScore, res.baseNegatives);
       Object.assign(state, { id: res.id, duration: res.duration, remaining: res.duration, level: simulation.level(), points: 0,

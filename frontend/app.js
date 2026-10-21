@@ -241,11 +241,19 @@ createApp({
     const regionalForm = reactive({ id: '', nombre: '', alias: '', directoryCode: '', directoryKey: '', directoryManaged: false, estado: 'ACTIVO', ...(regions.value.find(r => r.id === regionalId.value) || {}) });
     const regionalSaving = ref(false);
     const regionalError = ref('');
-    const saveRegion = () => {
-      if (regionalSaving.value) return; regionalSaving.value = true; regionalError.value = '';
-      almuerzo.run.withSuccessHandler(res => { regionalSaving.value = false; if (res.ok) { regionalForm.id = res.id; const region = { ...regionalForm, displayName: regionalForm.alias.trim() || regionalForm.nombre }; const index = regions.value.findIndex(r => r.id === res.id); if (index < 0) regions.value.push(region); else regions.value.splice(index, 1, region); if (regionalId.value === res.id) regionalName.value = region.displayName; } else regionalError.value = res.msg; }).withFailureHandler(err => { regionalSaving.value = false; regionalError.value = err.message; }).apiSaveRegion({ ...regionalForm });
+    const regionalSuccess = ref('');
+    const regionalSwitchLoading = ref(false);
+    const selectRegion = event => {
+      if (regionalSwitchLoading.value || regionalSaving.value || event.target.value === regionalId.value) return;
+      regionalSwitchLoading.value = true;
+      event.target.form.requestSubmit();
     };
-    const editRegion = region => Object.assign(regionalForm, { ...region });
+    const saveRegion = () => {
+      if (regionalSaving.value) return; regionalSaving.value = true; regionalError.value = ''; regionalSuccess.value = '';
+      almuerzo.run.withSuccessHandler(res => { regionalSaving.value = false; if (res.ok) { regionalForm.id = res.id; const region = { ...regionalForm, displayName: regionalForm.alias.trim() || regionalForm.nombre }; const index = regions.value.findIndex(r => r.id === res.id); if (index < 0) regions.value.push(region); else regions.value.splice(index, 1, region); if (regionalId.value === res.id) regionalName.value = region.displayName; regionalSuccess.value = 'Cambios de la regional guardados.'; } else regionalError.value = res.msg; }).withFailureHandler(err => { regionalSaving.value = false; regionalError.value = err.message; }).apiSaveRegion({ ...regionalForm });
+    };
+    const editRegion = region => { if (regionalSaving.value) return; regionalError.value = ''; regionalSuccess.value = ''; Object.assign(regionalForm, { ...region }); };
+    const newRegion = () => editRegion({ id:'', nombre:'', alias:'', directoryCode:'', directoryKey:'', directoryManaged:false, estado:'ACTIVO' });
     const isAdminGen = computed(() => activeUser.value.rol === 'ADMIN_GEN');
     const adminTabs = computed(() => isAdminGen.value ? ['USUARIOS','PEDIDOS','VALORACIONES','DEPTOS','CONFIG','MENU','DIAS_LIBRES'] : (canManageRegion.value ? ['USUARIOS','PEDIDOS','VALORACIONES','DEPTOS','AVISOS','MENU','DIAS_LIBRES'] : ['USUARIOS','PEDIDOS','VALORACIONES']));
     const canBlockUser = u => canManageRegion.value && ['USER','ADMIN_DEP'].includes(u.rol) && u.email !== activeUser.value.email;
@@ -1998,7 +2006,7 @@ createApp({
       chefGameState, chefGame, chefRanking, rushClock, configPanel, configDraft, configSections, configCloseTime, cancelConfig, calendarYear, calendarHolidays, todayYmd,
 
       // Computed
-      isAdmin, isDeptAdmin, isAdminGen, canManageRegion, regions, regionalId, regionalName, regionalForm, regionalSaving, regionalError, saveRegion, editRegion, rush, startRush, finishRush, moveRush, isTestEmailMode, menuLoaded, categories, menuCategories, activeMenuCategories, adminMenuCategories,
+      isAdmin, isDeptAdmin, isAdminGen, canManageRegion, regions, regionalId, regionalName, regionalForm, regionalSaving, regionalError, regionalSuccess, regionalSwitchLoading, selectRegion, saveRegion, editRegion, newRegion, rush, startRush, finishRush, moveRush, isTestEmailMode, menuLoaded, categories, menuCategories, activeMenuCategories, adminMenuCategories,
       selectedCount, validationError, hasBlockingErrors, showGrainWarning,
       isDefaultSummary,
       displayDate, isCutoffPassed,

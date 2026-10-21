@@ -34,7 +34,9 @@ public sealed class PotSimulation(int seed, int baseScore, int baseNegatives = 0
     public int NegativeHits { get; private set; } = Math.Max(0, baseNegatives);
     public int PauseUntil { get; private set; }
     public int PenaltySeconds { get; private set; }
-    public int Level => Math.Clamp(Score / 300 + 1, 1, 8);
+    // Final level starts at 4000; earlier levels use 500-point steps.
+    public int Level => Score >= 4000 ? 8 : Math.Min(7, Score / 500 + 1);
+    public int FallMilliseconds => 3135 - (Level - 1) * 2095 / 7;
     public List<PotDrop> Drops { get; } = [];
     private int Next(int max) { random ^= random << 13; random ^= random >> 17; random ^= random << 5; return (int)(random % (uint)max); }
     public void Advance(int elapsed, IReadOnlyList<RushMove> moves)
@@ -54,7 +56,7 @@ public sealed class PotSimulation(int seed, int baseScore, int baseNegatives = 0
                 Drops.Add(new() { Id = serial++, Lane = Next(4), Food = Next(6), Kind = kind });
                 nextSpawn = t + Math.Max(480, 1150 - Level * 80);
             }
-            int fall = Math.Max(1250, 3400 - Level * 265);
+            int fall = FallMilliseconds;
             if (t < SlowUntil) fall = fall * 17 / 10;
             foreach (var drop in Drops.ToArray()) {
                 drop.Progress += 200000 / fall;
@@ -98,11 +100,12 @@ public partial class LunchService
         elapsed = Math.Min(elapsed, Num(saved, "rushElapsed") + 20000);
         return Math.Min(900, Num(saved, "rushUsedBefore") + (elapsed + 999) / 1000);
     }
-    private async Task<object> StartRush(AppUser actor)
+    private async Task<object> StartRush(AppUser actor, string clientVersion)
     {
+        Require(clientVersion == "pot-v4", "El juego fue actualizado. Recarga la página antes de jugar.");
         Require(actor.RegionId == db.RegionId, "Selecciona tu regional para jugar.");
         var saved = Obj(actor.GameJson);
-        var active = Str(saved, "rushCompleted") == "false" && Str(saved, "dayKey") == rules.Today && Str(saved, "gameVersion") == "pot-v3";
+        var active = Str(saved, "rushCompleted") == "false" && Str(saved, "dayKey") == rules.Today && Str(saved, "gameVersion") is "pot-v3" or "pot-v4";
         if (active) {
             Require(!DateTimeOffset.TryParse(Str(saved, "rushUntil"), out var until) || until <= rules.Now, "Ya tienes una partida abierta. Detén y guarda esa partida o espera 20 segundos.");
             saved["usedSeconds"] = RushCharged(saved); saved["rushCompleted"] = true; actor.GameJson = saved.ToJsonString();
@@ -124,7 +127,7 @@ public partial class LunchService
     {
         Require(actor.RegionId == db.RegionId, "Selecciona tu regional para jugar.");
         var saved = Obj(actor.GameJson);
-        Require(Str(saved, "rushId") == Str(p, "id") && Str(saved, "gameVersion") == "pot-v3", "La partida no está vigente. Recarga la página.");
+        Require(Str(saved, "rushId") == Str(p, "id") && Str(saved, "gameVersion") == "pot-v4", "La partida no está vigente. Recarga la página.");
         if (!checkpoint && Str(saved, "rushCompleted") == "true") return Task.FromResult<object>(new { ok = true, state = Game(actor), earned = Num(saved, "rushEarned") });
         Require(Str(saved, "rushCompleted") == "false", "La partida ya fue guardada.");
         Require(DateTimeOffset.TryParse(Str(saved, "rushStarted"), out var started), "Partida inválida.");

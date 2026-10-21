@@ -14,3 +14,9 @@
   .proxy-selector { position:absolute; left:16px; right:16px; bottom:8px; margin:0; }
   .proxy-selector select { width:100%; max-width:none; }
 }
+@media (max-width:380px) {
+  .app-header-row { height:auto; min-height:108px; flex-wrap:wrap; gap:10px; padding-top:10px; padding-bottom:10px; }
+  .app-brand { flex:1 0 100%; min-width:0; }
+  .app-toolbar { width:100%; justify-content:flex-end; flex-shrink:0; }
+  .app-header-row:has(.proxy-selector) { height:auto; min-height:156px; padding-bottom:54px; }
+}
