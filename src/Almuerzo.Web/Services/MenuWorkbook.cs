@@ -17,7 +17,10 @@ public record MenuWorkbookPreview(string WeekStart, string? SourceWeek, string S
 public static class MenuWorkbook
 {
     public const int MaxBytes = 2_000_000;
-    private const string Marker = "ALMUERZO_MENU_V1";
+    private const string MarkerV1 = "ALMUERZO_MENU_V1";
+    private const string MarkerV2 = "ALMUERZO_MENU_V2";
+    // Shared editing guard, deliberately documented in README; never an authentication secret.
+    public const string TemplateProtectionPassword = "MenuINFOTEP2026!";
     private static readonly string[] Days = ["LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES"];
     private static readonly string[] ReferenceHeaders = ["ARROCES", "GRANOS", "CARNES", "VIVERES", "ENSALADAS", "LASANAS Y O PASTELONES", "CALDOS", "FRITURITAS", "VEGETARIANA", "ALMUERZO VEGANO", "COMIDA RAPIDA"];
     private static string Key(string text) => Regex.Replace(string.Concat(text.Normalize(NormalizationForm.FormD).Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)).ToUpperInvariant(), "[^A-Z0-9]+", " ").Trim();
@@ -29,7 +32,7 @@ public static class MenuWorkbook
         LunchService.Require(date.Year is >= 2000 and <= 2100 && date.DayOfWeek == DayOfWeek.Monday, "Selecciona un lunes entre 2000 y 2100 como inicio de semana.");
         return date;
     }
-    private sealed record Sheet(string Name, List<object?[]> Rows);
+    private sealed record Sheet(string Name, List<object?[]> Rows, HashSet<int> HiddenRows);
     private static string Cell(Sheet sheet, int row, int column) => row < sheet.Rows.Count && column < sheet.Rows[row].Length ? Text(sheet.Rows[row][column]) : "";
 
     private static List<Sheet> Read(byte[] bytes, string extension, CancellationToken ct)
@@ -59,7 +62,7 @@ public static class MenuWorkbook
         do {
             ct.ThrowIfCancellationRequested();
             LunchService.Require(result.Count < 5 && reader.FieldCount <= 32 && reader.RowCount <= 1000, "El Excel admite hasta 5 hojas, 32 columnas y 1000 filas por hoja.");
-            var rows = new List<object?[]>();
+            var rows = new List<object?[]>(); var hiddenRows = new HashSet<int>();
             while (reader.Read()) {
                 ct.ThrowIfCancellationRequested();
                 LunchService.Require(watch.Elapsed < TimeSpan.FromSeconds(5) && rows.Count < 1000, "El Excel es demasiado complejo. Usa la plantilla de Almuerzo.");
@@ -69,9 +72,10 @@ public static class MenuWorkbook
                     LunchService.Require(value is not string s || s.Length <= 2000, $"Celda demasiado larga en {reader.Name}, fila {rows.Count + 1}.");
                     cells[c] = value;
                 }
+                if (reader.RowHeight == 0) hiddenRows.Add(rows.Count);
                 rows.Add(cells);
             }
-            result.Add(new(reader.Name, rows));
+            result.Add(new(reader.Name, rows, hiddenRows));
         } while (reader.NextResult());
         return result;
     }
@@ -113,13 +117,15 @@ public static class MenuWorkbook
     {
         var sheets = Read(bytes, Path.GetExtension(filename).ToLowerInvariant(), ct);
         var metadata = sheets.SingleOrDefault(s => s.Name == "_Almuerzo");
-        var standard = metadata != null && Cell(metadata, 0, 0) == Marker;
+        var compact = metadata != null && Cell(metadata, 0, 0) == MarkerV2;
+        var standard = metadata != null && (compact || Cell(metadata, 0, 0) == MarkerV1);
         if (metadata != null) LunchService.Require(standard && Cell(metadata, 1, 0) == regionId, "La plantilla pertenece a otra regional o no es una plantilla válida. Descarga una nueva desde esta regional.");
+        int offset = compact ? 1 : 0;
         var candidates = sheets.Where(s => s.Name != "_Almuerzo").SelectMany(s => s.Rows.Take(20).Select((row, i) => (sheet: s, row, i)))
-            .Where(x => x.row.Length >= 5 && Enumerable.Range(0, 5).All(c => Key(Text(x.row[c])) == Days[c])).ToArray();
-        LunchService.Require(candidates.Length == 1, "Debe existir una sola hoja de menú con Lunes, Martes, Miércoles, Jueves y Viernes en las primeras cinco columnas.");
+            .Where(x => x.row.Length >= 5 + offset && Enumerable.Range(0, 5).All(c => Key(Text(x.row[c + offset])) == Days[c])).ToArray();
+        LunchService.Require(candidates.Length == 1, "Debe existir una sola hoja de menú con las cinco columnas de lunes a viernes. Usa la plantilla o el formato de cinco columnas del proveedor.");
         var candidate = candidates[0]; var sheet = candidate.sheet;
-        LunchService.Require(!sheet.Rows.Skip(candidate.i).Any(row => row.Skip(5).Any(v => Text(v).Length > 0)), "El menú debe ocupar únicamente las cinco columnas de lunes a viernes.");
+        LunchService.Require(!sheet.Rows.Skip(candidate.i).Any(row => row.Skip(5 + offset).Any(v => Text(v).Length > 0)), "Hay contenido fuera de las columnas del menú.");
         var source = standard && sheet.Rows.Count > 2 && sheet.Rows[2].Length > 1 && sheet.Rows[2][1] is DateTime dt ? DateOnly.FromDateTime(dt) : SourceWeek(sheet, candidate.i);
         LunchService.Require(!standard || source != null, "La plantilla necesita una fecha de lunes válida en B3.");
         if (standard) _ = Monday(source!.Value.ToString("yyyy-MM-dd"));
@@ -130,15 +136,29 @@ public static class MenuWorkbook
         string Category(string value, int row, int col) => map.TryGetValue(Key(value), out var cat) ? cat : throw new BusinessException($"Categoría «{value}» no configurada o inactiva ({(char)('A' + col)}{row + 1}). ADMIN_GEN debe revisar el catálogo o sus alias.");
         void Dish(string value, string? cat, int row, int col) {
             if (Empty(value)) return;
-            LunchService.Require(cat != null, $"El plato en {(char)('A' + col)}{row + 1} necesita una categoría.");
-            LunchService.Require(value.Length <= 300, $"El plato en {(char)('A' + col)}{row + 1} supera 300 caracteres.");
+            LunchService.Require(cat != null, $"El plato en {(char)('A' + col + offset)}{row + 1} necesita una categoría.");
+            LunchService.Require(value.Length <= 300, $"El plato en {(char)('A' + col + offset)}{row + 1} supera 300 caracteres.");
             if (!all[col].TryGetValue(cat!, out var items)) all[col][cat!] = items = [];
             var dish = BusinessRules.Text(value);
-            LunchService.Require(!items.Contains(dish, StringComparer.OrdinalIgnoreCase), $"Plato duplicado en {(char)('A' + col)}{row + 1}, dentro de la misma categoría.");
+            LunchService.Require(!items.Contains(dish, StringComparer.OrdinalIgnoreCase), $"Plato duplicado en {(char)('A' + col + offset)}{row + 1}, dentro de la misma categoría.");
             items.Add(dish);
             LunchService.Require(all[col].Values.Sum(v => v.Count) <= 200, "El menú de un día no puede superar 200 platos.");
         }
-        if (standard) {
+        if (compact) {
+            LunchService.Require(candidate.i == 4 && Key(Cell(sheet, 4, 0)) == "CATEGORIA" && int.TryParse(Cell(metadata!, 2, 0), out _), "La estructura de la plantilla fue modificada. Descarga una nueva.");
+            int blocks = int.Parse(Cell(metadata!, 2, 0)); LunchService.Require(blocks is >= 1 and <= 20, "Cantidad de categorías inválida.");
+            int excluded = 0;
+            for (int block = 0; block < blocks; block++) {
+                int row = 5 + block * 3;
+                int hidden = Enumerable.Range(row, 3).Count(sheet.HiddenRows.Contains);
+                LunchService.Require(hidden is 0 or 3, "Hay una categoría parcialmente oculta. Quita los filtros y selecciona únicamente las categorías desde la flecha de Categoría.");
+                var cat = Category(Cell(sheet, row, 0), row, 0);
+                if (hidden == 3) { excluded++; continue; }
+                for (int col = 0; col < 5; col++) for (int slot = 0; slot < 3; slot++) Dish(Cell(sheet, row + slot, col + 1), cat, row + slot, col);
+            }
+            LunchService.Require(!sheet.Rows.Skip(5 + blocks * 3).Any(row => row.Any(v => Text(v).Length > 0)), "Hay contenido fuera de las categorías de la plantilla.");
+            if (excluded > 0) warnings.Add($"Se excluyeron {excluded} categorías ocultas mediante el filtro del Excel; sus platos no se importarán.");
+        } else if (standard) {
             LunchService.Require(candidate.i == 4 && int.TryParse(Cell(metadata!, 2, 0), out _), "La estructura de la plantilla fue modificada. Descarga una nueva.");
             int blocks = int.Parse(Cell(metadata!, 2, 0)); LunchService.Require(blocks is >= 1 and <= 20, "Cantidad de bloques inválida.");
             for (int block = 0; block < blocks; block++) for (int col = 0; col < 5; col++) {
@@ -162,7 +182,7 @@ public static class MenuWorkbook
             if (!BusinessRules.BusinessDay(day, holidays)) { warnings.Add($"Se omitió {day:yyyy-MM-dd}: feriado nacional o cierre regional."); continue; }
             preview.Add(new(day.ToString("yyyy-MM-dd"), all[col]));
         }
-        LunchService.Require(preview.Count > 0, "No se encontraron platos para días habilitados de esa semana.");
+        LunchService.Require(preview.Count > 0, "No se encontraron platos para días habilitados de esa semana. Revisa también las categorías visibles en el filtro del Excel.");
         var savePayload = preview.ToDictionary(d => d.Date, d => d.Items.SelectMany(c => c.Value.Select(dish => new { cat = c.Key, plato = dish })).ToArray());
         // Reserve space for the RPC envelope, and conservatively account for escaped Unicode.
         LunchService.Require(JsonSerializer.SerializeToUtf8Bytes(savePayload).Length <= 240_000, "El menú supera el tamaño permitido para guardar. Divídelo en archivos más pequeños, dejando vacíos los otros días.");
@@ -177,32 +197,52 @@ public static class MenuWorkbook
         LunchService.Require(active.Length is >= 1 and <= 20, "La plantilla requiere entre 1 y 20 categorías activas.");
         _ = CategoryMap(active);
         using var book = new XLWorkbook(); var sheet = book.AddWorksheet("Menú semanal"); var meta = book.AddWorksheet("_Almuerzo");
-        int blocks = Math.Max(10, active.Length);
-        meta.Cell("A1").Value = Marker; meta.Cell("A2").Value = regionId; meta.Cell("A3").Value = blocks;
+        int blocks = active.Length, lastRow = 5 + blocks * 3;
+        meta.Cell("A1").Value = MarkerV2; meta.Cell("A2").Value = regionId; meta.Cell("A3").Value = blocks;
         for (int i = 0; i < active.Length; i++) meta.Cell(i + 6, 1).Value = active[i].Name;
         book.DefinedNames.Add("CategoriasAlmuerzo", meta.Range(6, 1, 5 + active.Length, 1));
-        sheet.Style.Font.FontName = "Calibri"; sheet.Style.Font.FontSize = 11; sheet.Columns(1, 5).Width = 34;
-        sheet.Cell("A1").Value = "Menú semanal"; sheet.Range("A1:E1").Merge().Style.Fill.BackgroundColor = XLColor.FromHtml("#EFF6FF"); sheet.Range("A1:E1").Style.Font.FontColor = XLColor.FromHtml("#17243A"); sheet.Range("A1:E1").Style.Font.FontSize = 18; sheet.Range("A1:E1").Style.Font.Bold = true; sheet.Row(1).Height = 36;
-        sheet.Cell("A2").Value = regionName; sheet.Range("A2:E2").Merge().Style.Font.FontColor = XLColor.FromHtml("#64748B"); sheet.Row(2).Height = 24;
-        sheet.Cell("A3").Value = "Semana (lunes):"; sheet.Cell("B3").Value = week.ToDateTime(TimeOnly.MinValue); sheet.Cell("B3").Style.DateFormat.Format = "dd/mm/yyyy"; sheet.Cell("B3").Style.Fill.BackgroundColor = XLColor.FromHtml("#EFF6FF");
-        var monday = sheet.Cell("B3").CreateDataValidation(); monday.Custom("AND(ISNUMBER(B3),WEEKDAY(B3,2)=1)"); monday.ErrorTitle = "Selecciona un lunes"; monday.ErrorMessage = "La semana debe comenzar un lunes."; monday.ShowErrorMessage = true;
-        sheet.Cell("C3").Value = "Una categoría y hasta tres platos por bloque."; sheet.Range("C3:E3").Merge(); sheet.Row(3).Height = 25;
-        sheet.Cell("A4").Value = "Elige las categorías azules. Un plato por casilla. Para más platos, repite la categoría en otro bloque. Deja en blanco lo que no ofreces."; sheet.Range("A4:E4").Merge().Style.Alignment.WrapText = true; sheet.Range("A4:E4").Style.Font.FontSize = 10; sheet.Row(4).Height = 32;
-        for (int col = 1; col <= 5; col++) { sheet.Cell(5, col).Value = Days[col - 1]; sheet.Cell(6, col).FormulaA1 = $"$B$3+{col - 1}"; sheet.Cell(6, col).Style.DateFormat.Format = "dd/mm/yyyy"; }
-        sheet.Range("A5:E5").Style.Fill.BackgroundColor = XLColor.FromHtml("#DBEAFE"); sheet.Range("A5:E5").Style.Font.FontColor = XLColor.FromHtml("#1D4ED8"); sheet.Range("A5:E6").Style.Font.Bold = true; sheet.Range("A5:E6").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center; sheet.Row(5).Height = 25; sheet.Row(6).Height = 23;
+        var navy = XLColor.FromHtml("#17243A"); var blue = XLColor.FromHtml("#1D4ED8"); var pale = XLColor.FromHtml("#EFF6FF"); var line = XLColor.FromHtml("#DBEAFE");
+        sheet.Style.Font.FontName = "Calibri"; sheet.Style.Font.FontSize = 11; sheet.Style.Font.FontColor = navy;
+        sheet.Style.Protection.Locked = true; sheet.Column(1).Width = 24; sheet.Columns(2, 6).Width = 29;
+        sheet.Range(1, 1, lastRow, 6).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+
+        sheet.Cell("A1").Value = "Menú Semanal INFOTEP";
+        var title = sheet.Range("A1:F1").Merge(); title.Style.Fill.BackgroundColor = pale; title.Style.Font.FontSize = 23; title.Style.Font.Bold = true; title.Style.Alignment.Indent = 1; sheet.Row(1).Height = 46;
+        sheet.Cell("A2").Value = regionName + " · Planificación de almuerzos";
+        var subtitle = sheet.Range("A2:F2").Merge(); subtitle.Style.Font.FontSize = 11; subtitle.Style.Font.FontColor = XLColor.FromHtml("#64748B"); subtitle.Style.Alignment.Indent = 2; subtitle.Style.Border.BottomBorder = XLBorderStyleValues.Thin; subtitle.Style.Border.BottomBorderColor = line; sheet.Row(2).Height = 28;
+
+        sheet.Cell("A3").Value = "Semana (lunes)"; sheet.Cell("A3").Style.Font.Bold = true; sheet.Cell("A3").Style.Alignment.Indent = 1;
+        var date = sheet.Cell("B3"); date.Value = week.ToDateTime(TimeOnly.MinValue); date.Style.DateFormat.Format = "dd/mm/yyyy"; date.Style.Fill.BackgroundColor = line; date.Style.Font.FontColor = blue; date.Style.Font.FontSize = 14; date.Style.Font.Bold = true; date.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center; date.Style.Protection.Locked = false;
+        var monday = date.CreateDataValidation(); monday.Custom("AND(ISNUMBER(B3),B3=INT(B3),YEAR(B3)>=2000,YEAR(B3)<=2100,WEEKDAY(B3,2)=1)"); monday.IgnoreBlanks = false; monday.ErrorStyle = XLErrorStyle.Stop; monday.ErrorTitle = "Selecciona un lunes"; monday.ErrorMessage = "Escribe una fecha de lunes entre 2000 y 2100."; monday.ShowErrorMessage = true; monday.InputTitle = "Inicio de la semana"; monday.InputMessage = "Cambia solo este lunes. Las cinco fechas se actualizan automáticamente."; monday.ShowInputMessage = true;
+        sheet.Cell("C3").Value = "En la flecha de Categoría, marca las que ofrecerás. Para volver a agregarlas, márcalas otra vez.";
+        var instructions = sheet.Range("C3:F3").Merge(); instructions.Style.Font.FontSize = 10; instructions.Style.Font.FontColor = XLColor.FromHtml("#64748B"); instructions.Style.Alignment.WrapText = true; instructions.Style.Alignment.Indent = 1; sheet.Row(3).Height = 42;
+
+        sheet.Cell("A4").Value = "Categorías de la semana"; sheet.Cell("A4").Style.Font.FontSize = 10; sheet.Cell("A4").Style.Font.FontColor = XLColor.FromHtml("#64748B"); sheet.Cell("A4").Style.Alignment.Indent = 1;
+        sheet.Cell("A5").Value = "Categoría";
+        for (int col = 2; col <= 6; col++) { sheet.Cell(5, col).Value = Days[col - 2]; sheet.Cell(4, col).FormulaA1 = $"$B$3+{col - 2}"; sheet.Cell(4, col).Style.DateFormat.Format = "dd/mm/yyyy"; }
+        sheet.Range("B4:F4").Style.Font.FontColor = blue; sheet.Range("B4:F4").Style.Font.Bold = true; sheet.Range("B4:F4").Style.Protection.Hidden = true; sheet.Range("B4:F4").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center; sheet.Row(4).Height = 27;
+        var headers = sheet.Range("A5:F5"); headers.Style.Fill.BackgroundColor = line; headers.Style.Font.FontColor = blue; headers.Style.Font.Bold = true; headers.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center; sheet.Row(5).Height = 30;
         for (int block = 0; block < blocks; block++) {
-            int row = 7 + block * 5;
-            for (int col = 1; col <= 5; col++) {
-                var category = sheet.Cell(row, col); if (block < active.Length) category.Value = active[block].Name;
-                var validation = category.CreateDataValidation(); validation.List("=CategoriasAlmuerzo", true); validation.IgnoreBlanks = true; validation.ShowErrorMessage = true; validation.ErrorTitle = "Categoría no disponible"; validation.ErrorMessage = "Selecciona una categoría de la lista de esta regional.";
-                category.Style.Fill.BackgroundColor = XLColor.FromHtml("#EFF6FF"); category.Style.Font.FontColor = XLColor.FromHtml("#1D4ED8"); category.Style.Font.Bold = true;
-            }
-            sheet.Row(row).Height = 27;
-            var dishes = sheet.Range(row + 1, 1, row + 3, 5); dishes.Style.Alignment.WrapText = true; dishes.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center; dishes.Style.Border.InsideBorder = XLBorderStyleValues.Hair; dishes.Style.Border.InsideBorderColor = XLColor.FromHtml("#E2E8F0");
-            sheet.Rows(row + 1, row + 3).Height = 52; sheet.Row(row + 4).Height = 10;
+            int row = 6 + block * 3;
+            var category = sheet.Cell(row, 1); category.Value = active[block].Name; category.Style.Protection.Locked = false;
+            var validation = category.CreateDataValidation(); validation.List("=CategoriasAlmuerzo", true); validation.IgnoreBlanks = false; validation.ErrorStyle = XLErrorStyle.Stop; validation.ShowErrorMessage = true; validation.ErrorTitle = "Categoría no disponible"; validation.ErrorMessage = "Selecciona una categoría de la lista de esta regional."; validation.InputTitle = "Categoría para los cinco días"; validation.InputMessage = "Para quitar o agregar categorías completas, usa el filtro del encabezado Categoría."; validation.ShowInputMessage = true;
+            // Repeat the key for the native filter, without repeating the visible label. No merged filter cells.
+            for (int slot = 1; slot < 3; slot++) { var continuation = sheet.Cell(row + slot, 1); continuation.FormulaA1 = $"A{row}"; continuation.Style.Protection.Hidden = true; }
+            var label = sheet.Range(row, 1, row + 2, 1); label.Style.Fill.BackgroundColor = pale; label.Style.Font.FontColor = blue; label.Style.Font.Bold = true; label.Style.Alignment.WrapText = true; label.Style.Alignment.Indent = 1;
+            sheet.Range(row + 1, 1, row + 2, 1).Style.Font.FontColor = pale;
+            var dishes = sheet.Range(row, 2, row + 2, 6); dishes.Style.Protection.Locked = false; dishes.Style.Fill.BackgroundColor = block % 2 == 0 ? XLColor.White : XLColor.FromHtml("#F8FAFC"); dishes.Style.Alignment.WrapText = true; dishes.Style.Alignment.Indent = 1; dishes.Style.Border.InsideBorder = XLBorderStyleValues.Hair; dishes.Style.Border.InsideBorderColor = XLColor.FromHtml("#E2E8F0");
+            var dishValidation = dishes.CreateDataValidation(); dishValidation.TextLength.EqualOrLessThan(300); dishValidation.IgnoreBlanks = true; dishValidation.ErrorStyle = XLErrorStyle.Stop; dishValidation.ShowErrorMessage = true; dishValidation.ErrorTitle = "Plato demasiado largo"; dishValidation.ErrorMessage = "Usa hasta 300 caracteres por plato."; dishValidation.InputTitle = "Un plato por casilla"; dishValidation.InputMessage = "Hasta tres platos por categoría y día. Deja vacías las casillas que no ofreces."; dishValidation.ShowInputMessage = true;
+            sheet.Rows(row, row + 2).Height = 36;
+            var blockRange = sheet.Range(row, 1, row + 2, 6); blockRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin; blockRange.Style.Border.OutsideBorderColor = line;
         }
-        sheet.ShowGridLines = false; sheet.SheetView.FreezeRows(6); sheet.PageSetup.PageOrientation = XLPageOrientation.Landscape; sheet.PageSetup.FitToPages(1, 0); sheet.PageSetup.SetRowsToRepeatAtTop(1, 6);
+        // Filtering a single column hides entire worksheet rows, including all five days.
+        sheet.Range(5, 1, lastRow, 1).SetAutoFilter();
+        sheet.ShowGridLines = false; sheet.SheetView.FreezeRows(5); sheet.SheetView.ZoomScale = 85; date.SetActive(); sheet.SelectedRanges.Add(sheet.Range("B3"));
+        sheet.PageSetup.PageOrientation = XLPageOrientation.Landscape; sheet.PageSetup.PaperSize = XLPaperSize.A4Paper; sheet.PageSetup.FitToPages(1, 0); sheet.PageSetup.SetRowsToRepeatAtTop(1, 5); sheet.PageSetup.PrintAreas.Add($"A1:F{lastRow}"); sheet.PageSetup.CenterHorizontally = true;
+        sheet.Protect(TemplateProtectionPassword, XLProtectionAlgorithm.Algorithm.SHA512, allowedElements: XLSheetProtectionElements.SelectUnlockedCells | XLSheetProtectionElements.AutoFilter);
+        meta.Protect(TemplateProtectionPassword, XLProtectionAlgorithm.Algorithm.SHA512, allowedElements: XLSheetProtectionElements.None);
         meta.Visibility = XLWorksheetVisibility.VeryHidden;
-        using var output = new MemoryStream(); book.SaveAs(output); return output.ToArray();
+        book.Protect(TemplateProtectionPassword, XLProtectionAlgorithm.Algorithm.SHA512, allowedElements: XLWorkbookProtectionElements.Windows);
+        using var output = new MemoryStream(); book.SaveAs(output, new SaveOptions { EvaluateFormulasBeforeSaving = true }); return output.ToArray();
     }
 }

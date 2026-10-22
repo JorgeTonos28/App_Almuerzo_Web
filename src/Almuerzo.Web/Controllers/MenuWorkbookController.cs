@@ -39,7 +39,7 @@ public class MenuWorkbookController(AppDbContext db, LunchService lunch, Busines
             catch (Exception ex) when (ex is not OperationCanceledException) {
                 // Do not retain or log cell values, filenames, provider payloads or the uploaded workbook.
                 logger.LogWarning("Se rechazó un libro de menú no legible ({ErrorType}).", ex.GetType().Name);
-                throw new BusinessException("No se pudo leer el Excel. Usa un archivo válido, sin contraseña, o descarga una nueva plantilla.");
+                throw new BusinessException("No se pudo leer el Excel. Usa un archivo válido, sin contraseña de apertura, o descarga una nueva plantilla. La protección de celdas de nuestra plantilla sí es compatible.");
             }
             Response.Headers.CacheControl = "no-store";
             return Json(new { ok = true, result });

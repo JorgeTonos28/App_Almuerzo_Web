@@ -4216,7 +4216,7 @@ return function render(_ctx, _cache) {
               _createCommentVNode(" Step 1: Input "),
               (_ctx.adminState.menuImportModal.step === 1)
                 ? (_openBlock(), _createElementBlock("div", _hoisted_537, [
-                    _cache[245] || (_cache[245] = _createElementVNode("div", { class: "bg-blue-50 p-4 rounded-xl text-blue-800 text-sm mb-4" }, [
+                    _cache[246] || (_cache[246] = _createElementVNode("div", { class: "bg-blue-50 p-4 rounded-xl text-blue-800 text-sm mb-4" }, [
                       _createElementVNode("i", { class: "fa-solid fa-circle-info mr-2" }),
                       _createTextVNode(" Carga el Excel del proveedor o pega sus celdas, incluyendo las categorías. Revisa la semana y la vista previa antes de importar. ")
                     ], -1 /* CACHED */)),
@@ -4273,6 +4273,11 @@ return function render(_ctx, _cache) {
                         ], 8 /* PROPS */, _hoisted_542)
                       ]),
                       _createElementVNode("p", null, ".xls o .xlsx · Hasta 2 MB · Categorías de " + _toDisplayString(_ctx.regionalName), 1 /* TEXT */),
+                      _cache[244] || (_cache[244] = _createElementVNode("p", null, [
+                        _createTextVNode("La plantilla está protegida. En Excel, usa la flecha de "),
+                        _createElementVNode("strong", null, "Categoría"),
+                        _createTextVNode(" para quitar o volver a agregar categorías completas a la semana. Las ocultas no se importan.")
+                      ], -1 /* CACHED */)),
                       (_ctx.adminState.menuImportModal.fileName)
                         ? (_openBlock(), _createElementBlock("p", _hoisted_543, [
                             _cache[243] || (_cache[243] = _createElementVNode("i", {
@@ -4289,7 +4294,7 @@ return function render(_ctx, _cache) {
                         : _createCommentVNode("v-if", true)
                     ], 8 /* PROPS */, _hoisted_539),
                     _createElementVNode("div", null, [
-                      _cache[244] || (_cache[244] = _createElementVNode("label", {
+                      _cache[245] || (_cache[245] = _createElementVNode("label", {
                         for: "menu-import-text",
                         class: "block text-xs font-bold text-gray-500 uppercase mb-1"
                       }, "O pega el contenido del menú", -1 /* CACHED */)),
@@ -4312,7 +4317,7 @@ return function render(_ctx, _cache) {
                 ? (_openBlock(), _createElementBlock("div", _hoisted_546, [
                     _createElementVNode("div", _hoisted_547, [
                       _createElementVNode("span", null, [
-                        _cache[246] || (_cache[246] = _createElementVNode("i", { class: "fa-solid fa-check-circle mr-2" }, null, -1 /* CACHED */)),
+                        _cache[247] || (_cache[247] = _createElementVNode("i", { class: "fa-solid fa-check-circle mr-2" }, null, -1 /* CACHED */)),
                         _createTextVNode(" " + _toDisplayString(_ctx.adminState.menuImportModal.itemCount) + " platos en " + _toDisplayString(_ctx.adminState.menuImportModal.preview.length) + " días. Verifica antes de guardar.", 1 /* TEXT */)
                       ]),
                       _createElementVNode("button", {
@@ -4329,12 +4334,12 @@ return function render(_ctx, _cache) {
                         ]))
                       : _createCommentVNode("v-if", true),
                     _createElementVNode("p", _hoisted_550, "Semana del " + _toDisplayString(_ctx.adminState.menuImportModal.weekStart) + " · " + _toDisplayString(_ctx.regionalName) + ". Los días sin platos no se modifican.", 1 /* TEXT */),
-                    _cache[248] || (_cache[248] = _createElementVNode("p", { class: "text-xs text-gray-500" }, "Se reemplazará el menú de los días mostrados. Los pedidos afectados por platos retirados se cancelarán con aviso.", -1 /* CACHED */)),
+                    _cache[249] || (_cache[249] = _createElementVNode("p", { class: "text-xs text-gray-500" }, "Se reemplazará el menú de los días mostrados. Los pedidos afectados por platos retirados se cancelarán con aviso.", -1 /* CACHED */)),
                     _createElementVNode("div", _hoisted_551, [
                       _createElementVNode("table", _hoisted_552, [
                         _createElementVNode("thead", _hoisted_553, [
                           _createElementVNode("tr", null, [
-                            _cache[247] || (_cache[247] = _createElementVNode("th", { class: "p-3 sticky left-0 bg-gray-50 border-r border-gray-200 z-10 w-24" }, "Categoría", -1 /* CACHED */)),
+                            _cache[248] || (_cache[248] = _createElementVNode("th", { class: "p-3 sticky left-0 bg-gray-50 border-r border-gray-200 z-10 w-24" }, "Categoría", -1 /* CACHED */)),
                             (_openBlock(true), _createElementBlock(_Fragment, null, _renderList(_ctx.adminState.menuImportModal.preview, (d) => {
                               return (_openBlock(), _createElementBlock("th", {
                                 key: d.date,
@@ -4370,7 +4375,7 @@ return function render(_ctx, _cache) {
                 : _createCommentVNode("v-if", true),
               (_ctx.adminState.menuImportModal.error)
                 ? (_openBlock(), _createElementBlock("div", _hoisted_558, [
-                    _cache[249] || (_cache[249] = _createElementVNode("i", { class: "fa-solid fa-circle-exclamation mr-1" }, null, -1 /* CACHED */)),
+                    _cache[250] || (_cache[250] = _createElementVNode("i", { class: "fa-solid fa-circle-exclamation mr-1" }, null, -1 /* CACHED */)),
                     _createTextVNode(" " + _toDisplayString(_ctx.adminState.menuImportModal.error), 1 /* TEXT */)
                   ]))
                 : _createCommentVNode("v-if", true)
@@ -4389,7 +4394,7 @@ return function render(_ctx, _cache) {
                     class: "px-6 py-2 rounded-lg text-sm font-bold bg-gray-900 text-white hover:bg-black transition-colors flex items-center gap-2 disabled:opacity-50"
                   }, [
                     _createTextVNode(_toDisplayString(_ctx.adminState.menuImportModal.busy ? 'Procesando…' : _ctx.adminState.menuImportModal.file ? 'Procesar Excel' : 'Procesar texto') + " ", 1 /* TEXT */),
-                    _cache[250] || (_cache[250] = _createElementVNode("i", { class: "fa-solid fa-arrow-right" }, null, -1 /* CACHED */))
+                    _cache[251] || (_cache[251] = _createElementVNode("i", { class: "fa-solid fa-arrow-right" }, null, -1 /* CACHED */))
                   ], 8 /* PROPS */, _hoisted_561))
                 : _createCommentVNode("v-if", true),
               (_ctx.adminState.menuImportModal.step === 2)
@@ -4412,7 +4417,7 @@ return function render(_ctx, _cache) {
     _createCommentVNode(" Footer "),
     _createElementVNode("footer", _hoisted_564, [
       _createElementVNode("div", _hoisted_565, [
-        _cache[251] || (_cache[251] = _createElementVNode("div", null, null, -1 /* CACHED */)),
+        _cache[252] || (_cache[252] = _createElementVNode("div", null, null, -1 /* CACHED */)),
         _createElementVNode("div", _hoisted_566, _toDisplayString(_ctx.footerText), 1 /* TEXT */),
         _createElementVNode("div", _hoisted_567, [
           (_ctx.footerSignatureUrl)
@@ -4436,17 +4441,17 @@ return function render(_ctx, _cache) {
           _createElementVNode("div", _hoisted_571, [
             _createCommentVNode(" Cover Banner Header "),
             _createElementVNode("div", _hoisted_572, [
-              _cache[254] || (_cache[254] = _createElementVNode("div", { class: "absolute -right-8 -bottom-8 w-36 h-36 bg-white/10 rounded-full blur-2xl pointer-events-none" }, null, -1 /* CACHED */)),
-              _cache[255] || (_cache[255] = _createElementVNode("div", { class: "absolute -left-6 -top-6 w-28 h-28 bg-white/10 rounded-full blur-xl pointer-events-none" }, null, -1 /* CACHED */)),
+              _cache[255] || (_cache[255] = _createElementVNode("div", { class: "absolute -right-8 -bottom-8 w-36 h-36 bg-white/10 rounded-full blur-2xl pointer-events-none" }, null, -1 /* CACHED */)),
+              _cache[256] || (_cache[256] = _createElementVNode("div", { class: "absolute -left-6 -top-6 w-28 h-28 bg-white/10 rounded-full blur-xl pointer-events-none" }, null, -1 /* CACHED */)),
               _createElementVNode("div", _hoisted_573, [
                 _createElementVNode("span", _hoisted_574, [
-                  _cache[252] || (_cache[252] = _createElementVNode("i", { class: "fa-solid fa-sparkles mr-1" }, null, -1 /* CACHED */)),
+                  _cache[253] || (_cache[253] = _createElementVNode("i", { class: "fa-solid fa-sparkles mr-1" }, null, -1 /* CACHED */)),
                   _createTextVNode(" " + _toDisplayString(_ctx.announcementConfig.slides[_ctx.announcementSlideIndex]?.badge || 'Novedad'), 1 /* TEXT */)
                 ]),
                 _createElementVNode("button", {
                   onClick: _ctx.dismissAnnouncement,
                   class: "w-8 h-8 rounded-full bg-black/20 hover:bg-black/40 text-white/80 hover:text-white flex items-center justify-center transition-all"
-                }, [...(_cache[253] || (_cache[253] = [
+                }, [...(_cache[254] || (_cache[254] = [
                   _createElementVNode("i", { class: "fa-solid fa-xmark text-sm" }, null, -1 /* CACHED */)
                 ]))], 8 /* PROPS */, _hoisted_575)
               ]),
@@ -4510,28 +4515,28 @@ return function render(_ctx, _cache) {
           _createElementVNode("div", _hoisted_591, [
             _createElementVNode("div", _hoisted_592, [
               _createElementVNode("div", _hoisted_593, [
-                _cache[257] || (_cache[257] = _createElementVNode("i", { class: "fa-solid fa-utensils text-amber-200 text-lg" }, null, -1 /* CACHED */)),
+                _cache[258] || (_cache[258] = _createElementVNode("i", { class: "fa-solid fa-utensils text-amber-200 text-lg" }, null, -1 /* CACHED */)),
                 _createElementVNode("div", null, [
-                  _cache[256] || (_cache[256] = _createElementVNode("h3", { class: "font-bold text-base text-white" }, "Valorar tu almuerzo", -1 /* CACHED */)),
+                  _cache[257] || (_cache[257] = _createElementVNode("h3", { class: "font-bold text-base text-white" }, "Valorar tu almuerzo", -1 /* CACHED */)),
                   _createElementVNode("p", _hoisted_594, _toDisplayString(_ctx.mealRatingModal.dateLabel), 1 /* TEXT */)
                 ])
               ]),
               _createElementVNode("button", {
                 onClick: $event => (_ctx.mealRatingModal.open = false),
                 class: "text-white/80 hover:text-white"
-              }, [...(_cache[258] || (_cache[258] = [
+              }, [...(_cache[259] || (_cache[259] = [
                 _createElementVNode("i", { class: "fa-solid fa-xmark" }, null, -1 /* CACHED */)
               ]))], 8 /* PROPS */, _hoisted_595)
             ]),
             _createElementVNode("div", _hoisted_596, [
               (_ctx.mealRatingModal.dishes)
                 ? (_openBlock(), _createElementBlock("div", _hoisted_597, [
-                    _cache[259] || (_cache[259] = _createElementVNode("span", { class: "font-bold text-gray-800" }, "Platos ordenados:", -1 /* CACHED */)),
+                    _cache[260] || (_cache[260] = _createElementVNode("span", { class: "font-bold text-gray-800" }, "Platos ordenados:", -1 /* CACHED */)),
                     _createTextVNode(" " + _toDisplayString(_ctx.mealRatingModal.dishes), 1 /* TEXT */)
                   ]))
                 : _createCommentVNode("v-if", true),
               _createElementVNode("div", _hoisted_598, [
-                _cache[260] || (_cache[260] = _createElementVNode("label", { class: "block text-xs font-bold uppercase tracking-wider text-gray-500" }, "¿Qué tal estuvo la comida?", -1 /* CACHED */)),
+                _cache[261] || (_cache[261] = _createElementVNode("label", { class: "block text-xs font-bold uppercase tracking-wider text-gray-500" }, "¿Qué tal estuvo la comida?", -1 /* CACHED */)),
                 _createElementVNode("div", _hoisted_599, [
                   (_openBlock(), _createElementBlock(_Fragment, null, _renderList(5, (star) => {
                     return _createElementVNode("button", {
@@ -4549,7 +4554,7 @@ return function render(_ctx, _cache) {
                 _createElementVNode("p", _hoisted_601, _toDisplayString(['Muy mala', 'Regular', 'Aceptable', 'Muy buena', 'Excelente'][_ctx.mealRatingModal.rating - 1]), 1 /* TEXT */)
               ]),
               _createElementVNode("div", null, [
-                _cache[261] || (_cache[261] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Comentario u opinión (opcional)", -1 /* CACHED */)),
+                _cache[262] || (_cache[262] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Comentario u opinión (opcional)", -1 /* CACHED */)),
                 _withDirectives(_createElementVNode("textarea", {
                   "onUpdate:modelValue": $event => ((_ctx.mealRatingModal.comment) = $event),
                   rows: "3",
@@ -4563,7 +4568,7 @@ return function render(_ctx, _cache) {
               ]),
               (_ctx.mealRatingModal.error)
                 ? (_openBlock(), _createElementBlock("div", _hoisted_604, [
-                    _cache[262] || (_cache[262] = _createElementVNode("i", { class: "fa-solid fa-circle-exclamation" }, null, -1 /* CACHED */)),
+                    _cache[263] || (_cache[263] = _createElementVNode("i", { class: "fa-solid fa-circle-exclamation" }, null, -1 /* CACHED */)),
                     _createElementVNode("span", null, _toDisplayString(_ctx.mealRatingModal.error), 1 /* TEXT */)
                   ]))
                 : _createCommentVNode("v-if", true)
@@ -4582,7 +4587,7 @@ return function render(_ctx, _cache) {
                 (_ctx.mealRatingModal.saving)
                   ? (_openBlock(), _createElementBlock("i", _hoisted_608))
                   : _createCommentVNode("v-if", true),
-                _cache[263] || (_cache[263] = _createTextVNode(" Guardar Valoración ", -1 /* CACHED */))
+                _cache[264] || (_cache[264] = _createTextVNode(" Guardar Valoración ", -1 /* CACHED */))
               ], 8 /* PROPS */, _hoisted_607)
             ])
           ])
@@ -4598,23 +4603,23 @@ return function render(_ctx, _cache) {
           _createElementVNode("div", _hoisted_611, [
             _createElementVNode("div", _hoisted_612, [
               _createElementVNode("div", _hoisted_613, [
-                _cache[265] || (_cache[265] = _createElementVNode("i", { class: "fa-solid fa-award text-amber-200 text-lg" }, null, -1 /* CACHED */)),
+                _cache[266] || (_cache[266] = _createElementVNode("i", { class: "fa-solid fa-award text-amber-200 text-lg" }, null, -1 /* CACHED */)),
                 _createElementVNode("div", null, [
-                  _cache[264] || (_cache[264] = _createElementVNode("h3", { class: "font-bold text-base text-white" }, "Calificar al Proveedor", -1 /* CACHED */)),
+                  _cache[265] || (_cache[265] = _createElementVNode("h3", { class: "font-bold text-base text-white" }, "Calificar al Proveedor", -1 /* CACHED */)),
                   _createElementVNode("p", _hoisted_614, _toDisplayString(_ctx.providerInfo.name), 1 /* TEXT */)
                 ])
               ]),
               _createElementVNode("button", {
                 onClick: $event => (_ctx.providerRatingModal.open = false),
                 class: "text-white/80 hover:text-white"
-              }, [...(_cache[266] || (_cache[266] = [
+              }, [...(_cache[267] || (_cache[267] = [
                 _createElementVNode("i", { class: "fa-solid fa-xmark" }, null, -1 /* CACHED */)
               ]))], 8 /* PROPS */, _hoisted_615)
             ]),
             _createElementVNode("div", _hoisted_616, [
-              _cache[270] || (_cache[270] = _createElementVNode("p", { class: "text-xs text-gray-500 leading-relaxed" }, " Tu opinión nos ayuda a supervisar la calidad del servicio contratado. Puedes actualizar tu calificación cuantas veces quieras a lo largo del tiempo. ", -1 /* CACHED */)),
+              _cache[271] || (_cache[271] = _createElementVNode("p", { class: "text-xs text-gray-500 leading-relaxed" }, " Tu opinión nos ayuda a supervisar la calidad del servicio contratado. Puedes actualizar tu calificación cuantas veces quieras a lo largo del tiempo. ", -1 /* CACHED */)),
               _createElementVNode("div", _hoisted_617, [
-                _cache[267] || (_cache[267] = _createElementVNode("label", { class: "block text-xs font-bold uppercase tracking-wider text-gray-500" }, "Satisfacción general con el proveedor", -1 /* CACHED */)),
+                _cache[268] || (_cache[268] = _createElementVNode("label", { class: "block text-xs font-bold uppercase tracking-wider text-gray-500" }, "Satisfacción general con el proveedor", -1 /* CACHED */)),
                 _createElementVNode("div", _hoisted_618, [
                   (_openBlock(), _createElementBlock(_Fragment, null, _renderList(5, (star) => {
                     return _createElementVNode("button", {
@@ -4632,7 +4637,7 @@ return function render(_ctx, _cache) {
                 _createElementVNode("p", _hoisted_620, _toDisplayString(['Muy Insatisfecho', 'Insatisfecho', 'Neutral / Regular', 'Satisfecho', 'Muy Satisfecho'][_ctx.providerRatingModal.rating - 1]), 1 /* TEXT */)
               ]),
               _createElementVNode("div", null, [
-                _cache[268] || (_cache[268] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Comentario o sugerencia (opcional)", -1 /* CACHED */)),
+                _cache[269] || (_cache[269] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Comentario o sugerencia (opcional)", -1 /* CACHED */)),
                 _withDirectives(_createElementVNode("textarea", {
                   "onUpdate:modelValue": $event => ((_ctx.providerRatingModal.comment) = $event),
                   rows: "3",
@@ -4646,7 +4651,7 @@ return function render(_ctx, _cache) {
               ]),
               (_ctx.providerRatingModal.error)
                 ? (_openBlock(), _createElementBlock("div", _hoisted_623, [
-                    _cache[269] || (_cache[269] = _createElementVNode("i", { class: "fa-solid fa-circle-exclamation" }, null, -1 /* CACHED */)),
+                    _cache[270] || (_cache[270] = _createElementVNode("i", { class: "fa-solid fa-circle-exclamation" }, null, -1 /* CACHED */)),
                     _createElementVNode("span", null, _toDisplayString(_ctx.providerRatingModal.error), 1 /* TEXT */)
                   ]))
                 : _createCommentVNode("v-if", true)
@@ -4665,7 +4670,7 @@ return function render(_ctx, _cache) {
                 (_ctx.providerRatingModal.saving)
                   ? (_openBlock(), _createElementBlock("i", _hoisted_627))
                   : _createCommentVNode("v-if", true),
-                _cache[271] || (_cache[271] = _createTextVNode(" Guardar Calificación ", -1 /* CACHED */))
+                _cache[272] || (_cache[272] = _createTextVNode(" Guardar Calificación ", -1 /* CACHED */))
               ], 8 /* PROPS */, _hoisted_626)
             ])
           ])
@@ -4680,21 +4685,21 @@ return function render(_ctx, _cache) {
           }, null, 8 /* PROPS */, _hoisted_629),
           _createElementVNode("div", _hoisted_630, [
             _createElementVNode("div", _hoisted_631, [
-              _cache[273] || (_cache[273] = _createElementVNode("div", { class: "flex items-center gap-2.5" }, [
+              _cache[274] || (_cache[274] = _createElementVNode("div", { class: "flex items-center gap-2.5" }, [
                 _createElementVNode("i", { class: "fa-solid fa-arrows-rotate text-blue-400" }),
                 _createElementVNode("h3", { class: "font-bold text-base text-white" }, "Cambiar Proveedor / Reiniciar Votos")
               ], -1 /* CACHED */)),
               _createElementVNode("button", {
                 onClick: $event => (_ctx.providerResetModal.open = false),
                 class: "text-white/80 hover:text-white"
-              }, [...(_cache[272] || (_cache[272] = [
+              }, [...(_cache[273] || (_cache[273] = [
                 _createElementVNode("i", { class: "fa-solid fa-xmark" }, null, -1 /* CACHED */)
               ]))], 8 /* PROPS */, _hoisted_632)
             ]),
             _createElementVNode("div", _hoisted_633, [
-              _cache[278] || (_cache[278] = _createElementVNode("p", { class: "text-xs text-gray-600 leading-relaxed" }, " Al cambiar el proveedor o iniciar un nuevo ciclo, se creará un nuevo período de evaluación. Las valoraciones anteriores quedarán archivadas en el historial. ", -1 /* CACHED */)),
+              _cache[279] || (_cache[279] = _createElementVNode("p", { class: "text-xs text-gray-600 leading-relaxed" }, " Al cambiar el proveedor o iniciar un nuevo ciclo, se creará un nuevo período de evaluación. Las valoraciones anteriores quedarán archivadas en el historial. ", -1 /* CACHED */)),
               _createElementVNode("div", null, [
-                _cache[274] || (_cache[274] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Nombre del nuevo proveedor", -1 /* CACHED */)),
+                _cache[275] || (_cache[275] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Nombre del nuevo proveedor", -1 /* CACHED */)),
                 _withDirectives(_createElementVNode("input", {
                   "onUpdate:modelValue": $event => ((_ctx.providerResetModal.providerName) = $event),
                   type: "text",
@@ -4706,7 +4711,7 @@ return function render(_ctx, _cache) {
                 ])
               ]),
               _createElementVNode("div", null, [
-                _cache[275] || (_cache[275] = _createElementVNode("label", {
+                _cache[276] || (_cache[276] = _createElementVNode("label", {
                   for: "new-provider-price",
                   class: "block text-xs font-bold text-gray-500 uppercase mb-2"
                 }, "Precio del almuerzo (RD$) · obligatorio", -1 /* CACHED */)),
@@ -4722,11 +4727,11 @@ return function render(_ctx, _cache) {
                 }, null, 8 /* PROPS */, _hoisted_635), [
                   [_vModelText, _ctx.providerResetModal.price]
                 ]),
-                _cache[276] || (_cache[276] = _createElementVNode("p", { class: "text-xs text-gray-500 mt-2" }, "Confirma el importe aunque coincida con el anterior. Proveedor y precio se guardan juntos para esta regional.", -1 /* CACHED */))
+                _cache[277] || (_cache[277] = _createElementVNode("p", { class: "text-xs text-gray-500 mt-2" }, "Confirma el importe aunque coincida con el anterior. Proveedor y precio se guardan juntos para esta regional.", -1 /* CACHED */))
               ]),
               (_ctx.providerResetModal.error)
                 ? (_openBlock(), _createElementBlock("div", _hoisted_636, [
-                    _cache[277] || (_cache[277] = _createElementVNode("i", { class: "fa-solid fa-circle-exclamation" }, null, -1 /* CACHED */)),
+                    _cache[278] || (_cache[278] = _createElementVNode("i", { class: "fa-solid fa-circle-exclamation" }, null, -1 /* CACHED */)),
                     _createElementVNode("span", null, _toDisplayString(_ctx.providerResetModal.error), 1 /* TEXT */)
                   ]))
                 : _createCommentVNode("v-if", true)
@@ -4745,7 +4750,7 @@ return function render(_ctx, _cache) {
                 (_ctx.providerResetModal.saving)
                   ? (_openBlock(), _createElementBlock("i", _hoisted_640))
                   : _createCommentVNode("v-if", true),
-                _cache[279] || (_cache[279] = _createTextVNode(" Iniciar Nuevo Período ", -1 /* CACHED */))
+                _cache[280] || (_cache[280] = _createTextVNode(" Iniciar Nuevo Período ", -1 /* CACHED */))
               ], 8 /* PROPS */, _hoisted_639)
             ])
           ])
@@ -4760,20 +4765,20 @@ return function render(_ctx, _cache) {
           }, null, 8 /* PROPS */, _hoisted_642),
           _createElementVNode("div", _hoisted_643, [
             _createElementVNode("div", _hoisted_644, [
-              _cache[281] || (_cache[281] = _createElementVNode("div", { class: "flex items-center gap-2.5" }, [
+              _cache[282] || (_cache[282] = _createElementVNode("div", { class: "flex items-center gap-2.5" }, [
                 _createElementVNode("i", { class: "fa-solid fa-bullhorn text-indigo-200" }),
                 _createElementVNode("h3", { class: "font-bold text-base text-white" }, "Configurar Aviso General")
               ], -1 /* CACHED */)),
               _createElementVNode("button", {
                 onClick: $event => (_ctx.announcementEditModal.open = false),
                 class: "text-white/80 hover:text-white"
-              }, [...(_cache[280] || (_cache[280] = [
+              }, [...(_cache[281] || (_cache[281] = [
                 _createElementVNode("i", { class: "fa-solid fa-xmark" }, null, -1 /* CACHED */)
               ]))], 8 /* PROPS */, _hoisted_645)
             ]),
             _createElementVNode("div", _hoisted_646, [
               _createElementVNode("div", _hoisted_647, [
-                _cache[282] || (_cache[282] = _createElementVNode("div", null, [
+                _cache[283] || (_cache[283] = _createElementVNode("div", null, [
                   _createElementVNode("div", { class: "font-bold text-xs text-indigo-950" }, "Estado del aviso"),
                   _createElementVNode("div", { class: "text-[11px] text-indigo-700" }, "Habilita o deshabilita la visualización del aviso general.")
                 ], -1 /* CACHED */)),
@@ -4787,7 +4792,7 @@ return function render(_ctx, _cache) {
               ]),
               _createElementVNode("div", _hoisted_649, [
                 _createElementVNode("div", null, [
-                  _cache[283] || (_cache[283] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Fecha de Expiración", -1 /* CACHED */)),
+                  _cache[284] || (_cache[284] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Fecha de Expiración", -1 /* CACHED */)),
                   _withDirectives(_createElementVNode("input", {
                     "onUpdate:modelValue": $event => ((_ctx.announcementEditModal.expiresOn) = $event),
                     type: "date",
@@ -4797,7 +4802,7 @@ return function render(_ctx, _cache) {
                   ])
                 ]),
                 _createElementVNode("div", null, [
-                  _cache[284] || (_cache[284] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Máx. Veces Cierre", -1 /* CACHED */)),
+                  _cache[285] || (_cache[285] = _createElementVNode("label", { class: "block text-xs font-bold text-gray-500 uppercase mb-1" }, "Máx. Veces Cierre", -1 /* CACHED */)),
                   _withDirectives(_createElementVNode("input", {
                     "onUpdate:modelValue": $event => ((_ctx.announcementEditModal.maxDismiss) = $event),
                     type: "number",
@@ -4823,7 +4828,7 @@ return function render(_ctx, _cache) {
                 }, null, 8 /* PROPS */, _hoisted_653), [
                   [_vModelCheckbox, _ctx.announcementEditModal.forceNewId]
                 ]),
-                _cache[285] || (_cache[285] = _createElementVNode("label", {
+                _cache[286] || (_cache[286] = _createElementVNode("label", {
                   for: "forceNewId",
                   class: "text-xs font-bold text-gray-700 cursor-pointer"
                 }, "Forzar que todos los usuarios lo vean de nuevo (Nuevo ID)", -1 /* CACHED */))
@@ -4836,7 +4841,7 @@ return function render(_ctx, _cache) {
                     onClick: _ctx.addAnnouncementSlide,
                     type: "button",
                     class: "px-3 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold flex items-center gap-1"
-                  }, [...(_cache[286] || (_cache[286] = [
+                  }, [...(_cache[287] || (_cache[287] = [
                     _createElementVNode("i", { class: "fa-solid fa-plus text-[10px]" }, null, -1 /* CACHED */),
                     _createTextVNode(" Agregar Slide ", -1 /* CACHED */)
                   ]))], 8 /* PROPS */, _hoisted_657)
@@ -4854,14 +4859,14 @@ return function render(_ctx, _cache) {
                             onClick: $event => (_ctx.removeAnnouncementSlide(sIdx)),
                             type: "button",
                             class: "text-red-500 hover:text-red-700 text-xs font-bold"
-                          }, [...(_cache[287] || (_cache[287] = [
+                          }, [...(_cache[288] || (_cache[288] = [
                             _createElementVNode("i", { class: "fa-solid fa-trash-can" }, null, -1 /* CACHED */)
                           ]))], 8 /* PROPS */, _hoisted_660))
                         : _createCommentVNode("v-if", true)
                     ]),
                     _createElementVNode("div", _hoisted_661, [
                       _createElementVNode("div", _hoisted_662, [
-                        _cache[288] || (_cache[288] = _createElementVNode("label", { class: "block text-[11px] font-bold text-gray-500 uppercase mb-1" }, "Título", -1 /* CACHED */)),
+                        _cache[289] || (_cache[289] = _createElementVNode("label", { class: "block text-[11px] font-bold text-gray-500 uppercase mb-1" }, "Título", -1 /* CACHED */)),
                         _withDirectives(_createElementVNode("input", {
                           "onUpdate:modelValue": $event => ((slide.title) = $event),
                           type: "text",
@@ -4872,7 +4877,7 @@ return function render(_ctx, _cache) {
                         ])
                       ]),
                       _createElementVNode("div", null, [
-                        _cache[289] || (_cache[289] = _createElementVNode("label", { class: "block text-[11px] font-bold text-gray-500 uppercase mb-1" }, "Badge", -1 /* CACHED */)),
+                        _cache[290] || (_cache[290] = _createElementVNode("label", { class: "block text-[11px] font-bold text-gray-500 uppercase mb-1" }, "Badge", -1 /* CACHED */)),
                         _withDirectives(_createElementVNode("input", {
                           "onUpdate:modelValue": $event => ((slide.badge) = $event),
                           type: "text",
@@ -4884,7 +4889,7 @@ return function render(_ctx, _cache) {
                       ])
                     ]),
                     _createElementVNode("div", null, [
-                      _cache[290] || (_cache[290] = _createElementVNode("label", { class: "block text-[11px] font-bold text-gray-500 uppercase mb-1" }, "Descripción", -1 /* CACHED */)),
+                      _cache[291] || (_cache[291] = _createElementVNode("label", { class: "block text-[11px] font-bold text-gray-500 uppercase mb-1" }, "Descripción", -1 /* CACHED */)),
                       _withDirectives(_createElementVNode("textarea", {
                         "onUpdate:modelValue": $event => ((slide.description) = $event),
                         rows: "3",
@@ -4912,7 +4917,7 @@ return function render(_ctx, _cache) {
                 (_ctx.announcementEditModal.saving)
                   ? (_openBlock(), _createElementBlock("i", _hoisted_669))
                   : _createCommentVNode("v-if", true),
-                _cache[291] || (_cache[291] = _createTextVNode(" Guardar Aviso ", -1 /* CACHED */))
+                _cache[292] || (_cache[292] = _createTextVNode(" Guardar Aviso ", -1 /* CACHED */))
               ], 8 /* PROPS */, _hoisted_668)
             ])
           ])
@@ -4928,11 +4933,11 @@ return function render(_ctx, _cache) {
           _createElementVNode("div", _hoisted_672, [
             _createCommentVNode(" Header "),
             _createElementVNode("div", _hoisted_673, [
-              _cache[293] || (_cache[293] = _createStaticVNode("<div class=\"flex items-center gap-3\"><div class=\"w-11 h-11 rounded-2xl bg-amber-500 text-white flex items-center justify-center font-bold text-xl shadow-md shadow-amber-500/30 shrink-0\"><i class=\"fa-solid fa-ranking-star\"></i></div><div><h3 class=\"font-black text-lg text-gray-900 leading-tight\">Satisfacción de la Comunidad</h3><p class=\"text-xs text-gray-500 mt-0.5\">Opiniones y promedios de calidad del servicio de comedor</p></div></div>", 1)),
+              _cache[294] || (_cache[294] = _createStaticVNode("<div class=\"flex items-center gap-3\"><div class=\"w-11 h-11 rounded-2xl bg-amber-500 text-white flex items-center justify-center font-bold text-xl shadow-md shadow-amber-500/30 shrink-0\"><i class=\"fa-solid fa-ranking-star\"></i></div><div><h3 class=\"font-black text-lg text-gray-900 leading-tight\">Satisfacción de la Comunidad</h3><p class=\"text-xs text-gray-500 mt-0.5\">Opiniones y promedios de calidad del servicio de comedor</p></div></div>", 1)),
               _createElementVNode("button", {
                 onClick: $event => (_ctx.satisfactionCommunityModal.open = false),
                 class: "text-gray-400 hover:text-gray-600 p-2 rounded-xl"
-              }, [...(_cache[292] || (_cache[292] = [
+              }, [...(_cache[293] || (_cache[293] = [
                 _createElementVNode("i", { class: "fa-solid fa-xmark text-lg" }, null, -1 /* CACHED */)
               ]))], 8 /* PROPS */, _hoisted_674)
             ]),
@@ -4941,14 +4946,14 @@ return function render(_ctx, _cache) {
               _createElementVNode("button", {
                 onClick: $event => (_ctx.satisfactionCommunityModal.activeTab = 'PROVIDER'),
                 class: _normalizeClass(['px-4 py-2.5 rounded-t-xl text-xs font-bold transition-all border-b-2 flex items-center gap-2', _ctx.satisfactionCommunityModal.activeTab === 'PROVIDER' ? 'border-amber-500 text-amber-700 bg-white shadow-sm' : 'border-transparent text-gray-500 hover:text-gray-800 hover:bg-white/50'])
-              }, [...(_cache[294] || (_cache[294] = [
+              }, [...(_cache[295] || (_cache[295] = [
                 _createElementVNode("i", { class: "fa-solid fa-award text-amber-500" }, null, -1 /* CACHED */),
                 _createElementVNode("span", null, "Proveedor de Alimentos", -1 /* CACHED */)
               ]))], 10 /* CLASS, PROPS */, _hoisted_676),
               _createElementVNode("button", {
                 onClick: $event => (_ctx.satisfactionCommunityModal.activeTab = 'MEALS'),
                 class: _normalizeClass(['px-4 py-2.5 rounded-t-xl text-xs font-bold transition-all border-b-2 flex items-center gap-2', _ctx.satisfactionCommunityModal.activeTab === 'MEALS' ? 'border-amber-500 text-amber-700 bg-white shadow-sm' : 'border-transparent text-gray-500 hover:text-gray-800 hover:bg-white/50'])
-              }, [...(_cache[295] || (_cache[295] = [
+              }, [...(_cache[296] || (_cache[296] = [
                 _createElementVNode("i", { class: "fa-solid fa-utensils text-orange-500" }, null, -1 /* CACHED */),
                 _createElementVNode("span", null, "Almuerzos Diarios", -1 /* CACHED */)
               ]))], 10 /* CLASS, PROPS */, _hoisted_677)
@@ -4956,7 +4961,7 @@ return function render(_ctx, _cache) {
             _createCommentVNode(" Body "),
             _createElementVNode("div", _hoisted_678, [
               (_ctx.satisfactionCommunityModal.loading)
-                ? (_openBlock(), _createElementBlock("div", _hoisted_679, [...(_cache[296] || (_cache[296] = [
+                ? (_openBlock(), _createElementBlock("div", _hoisted_679, [...(_cache[297] || (_cache[297] = [
                     _createElementVNode("i", { class: "fa-solid fa-circle-notch fa-spin text-3xl text-amber-500" }, null, -1 /* CACHED */),
                     _createElementVNode("p", { class: "text-xs font-medium" }, "Cargando métricas de satisfacción...", -1 /* CACHED */)
                   ]))]))
@@ -4969,10 +4974,10 @@ return function render(_ctx, _cache) {
                             _createElementVNode("div", _hoisted_682, [
                               _createElementVNode("div", _hoisted_683, [
                                 _createElementVNode("div", null, [
-                                  _cache[298] || (_cache[298] = _createElementVNode("span", { class: "text-[11px] font-black uppercase tracking-wider text-amber-800 bg-amber-100/80 px-2.5 py-1 rounded-full" }, "Proveedor Evaluado", -1 /* CACHED */)),
+                                  _cache[299] || (_cache[299] = _createElementVNode("span", { class: "text-[11px] font-black uppercase tracking-wider text-amber-800 bg-amber-100/80 px-2.5 py-1 rounded-full" }, "Proveedor Evaluado", -1 /* CACHED */)),
                                   _createElementVNode("h4", _hoisted_684, _toDisplayString(_ctx.satisfactionCommunityModal.data.providerStats?.providerInfo?.name || _ctx.providerInfo.name), 1 /* TEXT */),
                                   _createElementVNode("p", _hoisted_685, [
-                                    _cache[297] || (_cache[297] = _createTextVNode("Período activo: ", -1 /* CACHED */)),
+                                    _cache[298] || (_cache[298] = _createTextVNode("Período activo: ", -1 /* CACHED */)),
                                     _createElementVNode("span", _hoisted_686, _toDisplayString(_ctx.satisfactionCommunityModal.data.providerStats?.providerInfo?.periodId), 1 /* TEXT */)
                                   ])
                                 ]),
@@ -4987,7 +4992,7 @@ return function render(_ctx, _cache) {
                                   ]),
                                   _createElementVNode("div", _hoisted_689, [
                                     _createElementVNode("span", _hoisted_690, _toDisplayString(_ctx.satisfactionCommunityModal.data.providerStats?.average || 0), 1 /* TEXT */),
-                                    _cache[299] || (_cache[299] = _createElementVNode("span", { class: "text-xs text-gray-400 font-bold" }, " / 5.0", -1 /* CACHED */))
+                                    _cache[300] || (_cache[300] = _createElementVNode("span", { class: "text-xs text-gray-400 font-bold" }, " / 5.0", -1 /* CACHED */))
                                   ]),
                                   _createElementVNode("span", _hoisted_691, "(" + _toDisplayString(_ctx.satisfactionCommunityModal.data.providerStats?.total || 0) + " colaboradores)", 1 /* TEXT */)
                                 ])
@@ -5001,7 +5006,7 @@ return function render(_ctx, _cache) {
                                   }, [
                                     _createElementVNode("span", _hoisted_693, [
                                       _createTextVNode(_toDisplayString(star) + " ", 1 /* TEXT */),
-                                      _cache[300] || (_cache[300] = _createElementVNode("i", { class: "fa-solid fa-star text-amber-400 text-[10px]" }, null, -1 /* CACHED */))
+                                      _cache[301] || (_cache[301] = _createElementVNode("i", { class: "fa-solid fa-star text-amber-400 text-[10px]" }, null, -1 /* CACHED */))
                                     ]),
                                     _createElementVNode("div", _hoisted_694, [
                                       _createElementVNode("div", {
@@ -5016,7 +5021,7 @@ return function render(_ctx, _cache) {
                             ]),
                             _createCommentVNode(" Recent Comments (Top 5) "),
                             _createElementVNode("div", null, [
-                              _cache[301] || (_cache[301] = _createElementVNode("div", { class: "flex justify-between items-center mb-3" }, [
+                              _cache[302] || (_cache[302] = _createElementVNode("div", { class: "flex justify-between items-center mb-3" }, [
                                 _createElementVNode("h4", { class: "font-bold text-sm text-gray-800 flex items-center gap-2" }, [
                                   _createElementVNode("i", { class: "fa-solid fa-comments text-amber-500" }),
                                   _createTextVNode(" Últimas Opiniones sobre el Proveedor ")
@@ -5057,7 +5062,7 @@ return function render(_ctx, _cache) {
                               _createCommentVNode(" KPI Card "),
                               _createElementVNode("div", _hoisted_704, [
                                 _createElementVNode("div", _hoisted_705, [
-                                  _cache[303] || (_cache[303] = _createElementVNode("div", null, [
+                                  _cache[304] || (_cache[304] = _createElementVNode("div", null, [
                                     _createElementVNode("span", { class: "text-[11px] font-black uppercase tracking-wider text-orange-800 bg-orange-100/80 px-2.5 py-1 rounded-full" }, "Calidad de Almuerzos"),
                                     _createElementVNode("h4", { class: "text-xl font-bold text-gray-900 mt-2" }, "Satisfacción de Comidas"),
                                     _createElementVNode("p", { class: "text-xs text-gray-500 mt-0.5" }, "Evaluaciones diarias otorgadas por colaboradores")
@@ -5073,7 +5078,7 @@ return function render(_ctx, _cache) {
                                     ]),
                                     _createElementVNode("div", _hoisted_708, [
                                       _createElementVNode("span", _hoisted_709, _toDisplayString(_ctx.satisfactionCommunityModal.data.mealStats?.average || 0), 1 /* TEXT */),
-                                      _cache[302] || (_cache[302] = _createElementVNode("span", { class: "text-xs text-gray-400 font-bold" }, " / 5.0", -1 /* CACHED */))
+                                      _cache[303] || (_cache[303] = _createElementVNode("span", { class: "text-xs text-gray-400 font-bold" }, " / 5.0", -1 /* CACHED */))
                                     ]),
                                     _createElementVNode("span", _hoisted_710, "(" + _toDisplayString(_ctx.satisfactionCommunityModal.data.mealStats?.total || 0) + " platos calificados)", 1 /* TEXT */)
                                   ])
@@ -5087,7 +5092,7 @@ return function render(_ctx, _cache) {
                                     }, [
                                       _createElementVNode("span", _hoisted_712, [
                                         _createTextVNode(_toDisplayString(star) + " ", 1 /* TEXT */),
-                                        _cache[304] || (_cache[304] = _createElementVNode("i", { class: "fa-solid fa-star text-orange-400 text-[10px]" }, null, -1 /* CACHED */))
+                                        _cache[305] || (_cache[305] = _createElementVNode("i", { class: "fa-solid fa-star text-orange-400 text-[10px]" }, null, -1 /* CACHED */))
                                       ]),
                                       _createElementVNode("div", _hoisted_713, [
                                         _createElementVNode("div", {
@@ -5102,7 +5107,7 @@ return function render(_ctx, _cache) {
                               ]),
                               _createCommentVNode(" Recent Meal Comments (Top 5) "),
                               _createElementVNode("div", null, [
-                                _cache[306] || (_cache[306] = _createElementVNode("div", { class: "flex justify-between items-center mb-3" }, [
+                                _cache[307] || (_cache[307] = _createElementVNode("div", { class: "flex justify-between items-center mb-3" }, [
                                   _createElementVNode("h4", { class: "font-bold text-sm text-gray-800 flex items-center gap-2" }, [
                                     _createElementVNode("i", { class: "fa-solid fa-comments text-orange-500" }),
                                     _createTextVNode(" Últimas Opiniones sobre Almuerzos ")
@@ -5123,7 +5128,7 @@ return function render(_ctx, _cache) {
                                                 _createElementVNode("span", _hoisted_718, "(" + _toDisplayString(feedback.departamento) + ")", 1 /* TEXT */)
                                               ]),
                                               _createElementVNode("div", _hoisted_719, [
-                                                _cache[305] || (_cache[305] = _createElementVNode("i", { class: "fa-regular fa-calendar text-[10px]" }, null, -1 /* CACHED */)),
+                                                _cache[306] || (_cache[306] = _createElementVNode("i", { class: "fa-regular fa-calendar text-[10px]" }, null, -1 /* CACHED */)),
                                                 _createTextVNode(" " + _toDisplayString(feedback.fechaConsumo) + " • ", 1 /* TEXT */),
                                                 _createElementVNode("span", _hoisted_720, _toDisplayString(feedback.platos), 1 /* TEXT */)
                                               ])
@@ -5168,10 +5173,10 @@ return function render(_ctx, _cache) {
           _createElementVNode("div", _hoisted_728, [
             _createElementVNode("div", _hoisted_729, [
               (_ctx.msgModal.type === 'CONFIRM')
-                ? (_openBlock(), _createElementBlock("div", _hoisted_730, [...(_cache[307] || (_cache[307] = [
+                ? (_openBlock(), _createElementBlock("div", _hoisted_730, [...(_cache[308] || (_cache[308] = [
                     _createElementVNode("i", { class: "fa-solid fa-question" }, null, -1 /* CACHED */)
                   ]))]))
-                : (_openBlock(), _createElementBlock("div", _hoisted_731, [...(_cache[308] || (_cache[308] = [
+                : (_openBlock(), _createElementBlock("div", _hoisted_731, [...(_cache[309] || (_cache[309] = [
                     _createElementVNode("i", { class: "fa-solid fa-circle-info" }, null, -1 /* CACHED */)
                   ]))])),
               _createElementVNode("h3", _hoisted_732, _toDisplayString(_ctx.msgModal.title), 1 /* TEXT */),

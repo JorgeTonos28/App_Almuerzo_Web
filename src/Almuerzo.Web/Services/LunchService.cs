@@ -10,7 +10,7 @@ namespace Almuerzo.Web.Services;
 // The legacy view contract is retained; all identity, scope and integrity checks live here.
 public partial class LunchService(AppDbContext db, BusinessRules rules, ReportService reports, IConfiguration configuration)
 {
-    public const string Version = "0.5.0";
+    public const string Version = "0.5.1";
     public static JsonObject Obj(string? raw) => JsonNode.Parse(string.IsNullOrWhiteSpace(raw) ? "{}" : raw) as JsonObject ?? new();
     public static string Str(JsonNode? node, string key, string fallback = "") => node?[key]?.ToString() ?? fallback;
     public static int Num(JsonNode? node, string key, int fallback = 0) => int.TryParse(Str(node, key), out var v) ? v : fallback;

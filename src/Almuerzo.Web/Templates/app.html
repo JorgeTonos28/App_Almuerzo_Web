@@ -1450,6 +1450,7 @@
                       <button type="button" @click="downloadMenuTemplate" :disabled="adminState.menuImportModal.downloading || adminState.menuImportModal.busy" class="menu-template-download"><i :class="adminState.menuImportModal.downloading ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-download'" aria-hidden="true"></i> {{ adminState.menuImportModal.downloading ? 'Preparando…' : 'Descargar plantilla' }}</button>
                     </div>
                     <p>.xls o .xlsx · Hasta 2 MB · Categorías de {{ regionalName }}</p>
+                    <p>La plantilla está protegida. En Excel, usa la flecha de <strong>Categoría</strong> para quitar o volver a agregar categorías completas a la semana. Las ocultas no se importan.</p>
                     <p v-if="adminState.menuImportModal.fileName" class="menu-file-selected" role="status"><i class="fa-solid fa-paperclip" aria-hidden="true"></i> {{ adminState.menuImportModal.fileName }}<button type="button" @click="usePastedMenu" :disabled="adminState.menuImportModal.busy">Usar texto</button></p>
                   </div>
                  <div>

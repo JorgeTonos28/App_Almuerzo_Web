@@ -2,10 +2,13 @@ using System.IO.Compression;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json.Nodes;
+using System.Xml.Linq;
 using Almuerzo.Web.Data;
 using Almuerzo.Web.Models;
 using Almuerzo.Web.Services;
 using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Validation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -21,27 +24,77 @@ public class MenuWorkbookTests
         new() { Id = prefix + "Opcion_Rapida", Name = "Opción rápida", SortOrder = 5 }
     ];
     // ClosedXML retains its last target stream when the same workbook is saved again.
-    private static byte[] Bytes(XLWorkbook book) { var output = new MemoryStream(); book.SaveAs(output); return output.ToArray(); }
+    private static byte[] Bytes(XLWorkbook book) { var output = new MemoryStream(); book.SaveAs(output, new ClosedXML.Excel.SaveOptions { EvaluateFormulasBeforeSaving = true }); return output.ToArray(); }
     private static byte[] Template(string region = "central", List<MenuCategory>? categories = null) => MenuWorkbook.Template("2026-10-12", categories ?? Categories(), region, "Regional sintética");
     private static byte[] Filled(string region = "central", List<MenuCategory>? categories = null)
     {
         using var book = new XLWorkbook(new MemoryStream(Template(region, categories))); var sheet = book.Worksheet("Menú semanal");
-        for (int col = 1; col <= 5; col++) sheet.Cell(8, col).Value = "ARROZ DE PRUEBA";
-        sheet.Cell("A9").Value = "Arroz integral de prueba"; return Bytes(book);
+        for (int col = 2; col <= 6; col++) sheet.Cell(6, col).Value = "ARROZ DE PRUEBA";
+        sheet.Cell("B7").Value = "Arroz integral de prueba"; return Bytes(book);
     }
     private static MenuWorkbookPreview Read(byte[] bytes, string? week = null, List<MenuCategory>? categories = null, string region = "central", HashSet<string>? holidays = null, string today = "2026-10-09")
         => MenuWorkbook.Preview(bytes, "menu.xlsx", week, categories ?? Categories(), region, holidays ?? [], today);
 
-    [Fact] public void GeneratedTemplateHasNativeDropDownsTypedWeekDatesAndIndependentDailyCategories()
+    [Fact] public void GeneratedTemplateHasDropDownsTypedWeekDatesAndSharedWeeklyCategories()
     {
         var bytes = Filled(); using var book = new XLWorkbook(new MemoryStream(bytes)); var sheet = book.Worksheet("Menú semanal");
         Assert.Equal(new DateTime(2026, 10, 12), sheet.Cell("B3").GetDateTime());
-        Assert.True(sheet.Cell("A7").HasDataValidation); Assert.Contains("CategoriasAlmuerzo", sheet.Cell("A7").GetDataValidation().Value);
+        Assert.Equal("Menú Semanal INFOTEP", sheet.Cell("A1").GetString());
+        Assert.True(sheet.Cell("A6").HasDataValidation); Assert.Contains("CategoriasAlmuerzo", sheet.Cell("A6").GetDataValidation().Value);
         Assert.Equal(XLWorksheetVisibility.VeryHidden, book.Worksheet("_Almuerzo").Visibility);
-        sheet.Cell("B7").Value = "Carnes"; sheet.Cell("B8").Value = "Proteína de prueba";
+        sheet.Cell("C6").Value = ""; sheet.Cell("C9").Value = "Proteína de prueba";
         var preview = Read(Bytes(book)); Assert.Equal(6, preview.ItemCount); Assert.Equal(5, preview.Preview.Count); Assert.True(preview.CanSave);
         Assert.Equal(new[] { "Arroz de Prueba", "Arroz Integral de Prueba" }, preview.Preview[0].Items["Arroces"]);
         Assert.Equal("Proteína de Prueba", Assert.Single(preview.Preview[1].Items["Carnes"]));
+    }
+    [Fact] public void ProtectedWorkbookAllowsOnlyInputsAndCategoryFilteringWithoutSelectingLockedCells()
+    {
+        var bytes = Template(); using var book = new XLWorkbook(new MemoryStream(bytes)); var sheet = book.Worksheet("Menú semanal");
+        Assert.True(book.IsProtected); Assert.True(book.IsPasswordProtected); Assert.True(sheet.IsPasswordProtected);
+        Assert.Equal(XLSheetProtectionElements.SelectUnlockedCells | XLSheetProtectionElements.AutoFilter, sheet.Protection.AllowedElements);
+        Assert.False(sheet.Cell("B3").Style.Protection.Locked); Assert.False(sheet.Cell("A6").Style.Protection.Locked);
+        Assert.All(sheet.Range("B6:F8").Cells(), cell => Assert.False(cell.Style.Protection.Locked));
+        Assert.True(sheet.Cell("A1").Style.Protection.Locked); Assert.True(sheet.Cell("B4").Style.Protection.Locked); Assert.True(sheet.Cell("A7").Style.Protection.Locked);
+        Assert.True(sheet.Cell("B4").Style.Protection.Hidden); Assert.True(book.Worksheet("_Almuerzo").IsPasswordProtected);
+        using var zip = new ZipArchive(new MemoryStream(bytes)); XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+        using var xml = zip.GetEntry("xl/worksheets/sheet1.xml")!.Open(); var document = XDocument.Load(xml);
+        var protection = document.Root!.Element(ns + "sheetProtection")!;
+        Assert.True((bool)protection.Attribute("selectLockedCells")!); Assert.False((bool?)protection.Attribute("selectUnlockedCells") ?? false);
+        Assert.False((bool?)protection.Attribute("autoFilter") ?? false);
+        var filter = document.Root.Element(ns + "autoFilter")!; Assert.Equal("A5:A20", (string?)filter.Attribute("ref"));
+        using var package = SpreadsheetDocument.Open(new MemoryStream(bytes), false);
+        Assert.Empty(new OpenXmlValidator().Validate(package).Select(e => e.Description));
+        Assert.Throws<ArgumentException>(() => sheet.Unprotect("incorrecta"));
+        sheet.Unprotect(MenuWorkbook.TemplateProtectionPassword); book.Unprotect(MenuWorkbook.TemplateProtectionPassword); Assert.False(book.IsProtected); Assert.False(sheet.IsProtected);
+    }
+    [Fact] public void ChangingOnlyMondayRecalculatesEveryDayAndTheImportedWeek()
+    {
+        using var book = new XLWorkbook(new MemoryStream(Filled())); var sheet = book.Worksheet("Menú semanal");
+        sheet.Cell("B3").Value = new DateTime(2026, 10, 26);
+        book.RecalculateAllFormulas();
+        for (int col = 2; col <= 6; col++) Assert.Equal(new DateTime(2026, 10, 26).AddDays(col - 2).ToOADate(), sheet.Cell(4, col).GetDouble());
+        Assert.Equal("2026-10-26", Read(Bytes(book)).WeekStart);
+        sheet.Cell("B3").Value = new DateTime(2026, 10, 27); Assert.Throws<BusinessException>(() => Read(Bytes(book)));
+    }
+    [Fact] public void NativeCategoryFilterRemovesWholeWeekAndRestoresExistingDishesWithoutMacros()
+    {
+        using var book = new XLWorkbook(new MemoryStream(Filled())); var sheet = book.Worksheet("Menú semanal");
+        sheet.Cell("B9").Value = "Pollo de prueba";
+        book.RecalculateAllFormulas(); sheet.AutoFilter.Column(1).AddFilter("Arroces");
+        Assert.All(Enumerable.Range(9, 3), row => Assert.True(sheet.Row(row).IsHidden));
+        var selected = Read(Bytes(book)); Assert.Equal(6, selected.ItemCount); Assert.DoesNotContain(selected.Preview, d => d.Items.ContainsKey("Carnes")); Assert.Contains(selected.Warnings, w => w.Contains("4 categorías ocultas"));
+        foreach (var category in Categories().Skip(1)) sheet.AutoFilter.Column(1).AddFilter(category.Name);
+        var restored = Read(Bytes(book)); Assert.Equal(7, restored.ItemCount); Assert.Equal("Pollo de Prueba", Assert.Single(restored.Preview[0].Items["Carnes"]));
+        sheet.Row(7).Hide(); Assert.Contains("parcialmente oculta", Assert.Throws<BusinessException>(() => Read(Bytes(book))).Message);
+        sheet.Row(7).Unhide(); sheet.Rows(6, 20).Hide(); Assert.Throws<BusinessException>(() => Read(Bytes(book)));
+    }
+    [Fact] public void PreviousV1TemplatesRemainReadableWithDifferentCategoriesPerDay()
+    {
+        using var book = new XLWorkbook(); var sheet = book.AddWorksheet("Menú semanal"); var meta = book.AddWorksheet("_Almuerzo");
+        meta.Cell("A1").Value = "ALMUERZO_MENU_V1"; meta.Cell("A2").Value = "central"; meta.Cell("A3").Value = 1;
+        sheet.Cell("B3").Value = new DateTime(2026, 10, 12); sheet.Cell("B3").Style.DateFormat.Format = "dd/mm/yyyy";
+        for (int col = 1; col <= 5; col++) { sheet.Cell(5, col).Value = new[] { "Lunes", "Martes", "Miércoles", "Jueves", "Viernes" }[col - 1]; sheet.Cell(7, col).Value = col == 1 ? "Arroces" : "Carnes"; sheet.Cell(8, col).Value = "Plato de prueba"; }
+        var preview = Read(Bytes(book)); Assert.Equal(5, preview.ItemCount); Assert.Contains("Arroces", preview.Preview[0].Items.Keys); Assert.Contains("Carnes", preview.Preview[1].Items.Keys);
     }
     [Fact] public void OriginalFiveColumnLayoutUsesAnIndependentCategoryForEachDayAndKeepsMultilineCellsTogether()
     {
@@ -64,8 +117,8 @@ public class MenuWorkbookTests
     [Fact] public void CategoriesCannotBeMissingInactiveAmbiguousOrBorrowedFromAnotherRegional()
     {
         using var book = new XLWorkbook(new MemoryStream(Filled())); var sheet = book.Worksheet("Menú semanal");
-        sheet.Cell("A7").Value = "Categoría ajena"; Assert.Contains("A7", Assert.Throws<BusinessException>(() => Read(Bytes(book))).Message);
-        sheet.Cell("A7").Value = ""; Assert.Contains("A8", Assert.Throws<BusinessException>(() => Read(Bytes(book))).Message);
+        sheet.Cell("A6").Value = "Categoría ajena"; Assert.Contains("A6", Assert.Throws<BusinessException>(() => Read(Bytes(book))).Message);
+        sheet.Cell("A6").Value = ""; Assert.Contains("A6", Assert.Throws<BusinessException>(() => Read(Bytes(book))).Message);
         Assert.Throws<BusinessException>(() => Read(Filled("east", Categories("east:"))));
         var inactive = Categories(); inactive[0].Status = "INACTIVO"; Assert.Throws<BusinessException>(() => Read(Filled(), categories: inactive));
         var ambiguous = Categories(); ambiguous[1].Aliases = "Arróces"; Assert.Throws<BusinessException>(() => Read(Filled(), categories: ambiguous));
@@ -77,10 +130,10 @@ public class MenuWorkbookTests
     [Fact] public void DuplicateDishesUnexpectedCellsAndModifiedTemplateStructureAreRejected()
     {
         using var book = new XLWorkbook(new MemoryStream(Filled())); var sheet = book.Worksheet("Menú semanal");
-        sheet.Cell("A9").Value = "arroz de prueba"; Assert.Contains("duplicado", Assert.Throws<BusinessException>(() => Read(Bytes(book))).Message);
-        sheet.Cell("A9").Clear(); sheet.Cell("F8").Value = "Plato fuera del menú"; Assert.Throws<BusinessException>(() => Read(Bytes(book)));
-        sheet.Cell("F8").Clear(); sheet.Cell("A11").Value = "Fuera de casilla"; Assert.Throws<BusinessException>(() => Read(Bytes(book)));
-        sheet.Cell("A11").Clear(); sheet.Cell("A80").Value = "Fuera de bloques"; Assert.Throws<BusinessException>(() => Read(Bytes(book)));
+        sheet.Cell("B7").Value = "arroz de prueba"; Assert.Contains("duplicado", Assert.Throws<BusinessException>(() => Read(Bytes(book))).Message);
+        sheet.Cell("B7").Clear(); sheet.Cell("G6").Value = "Plato fuera del menú"; Assert.Throws<BusinessException>(() => Read(Bytes(book)));
+        sheet.Cell("G6").Clear(); sheet.Cell("A80").Value = "Fuera de bloques"; Assert.Throws<BusinessException>(() => Read(Bytes(book)));
+        sheet.Cell("A80").Clear(); book.Worksheet("_Almuerzo").Cell("A3").Value = "inválido"; Assert.Throws<BusinessException>(() => Read(Bytes(book)));
     }
     [Fact] public void InvalidFileFormatsCompressedPayloadsAndEmbeddedCodeAreRejectedBeforeReadingCells()
     {
